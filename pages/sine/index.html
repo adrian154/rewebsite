@@ -1,0 +1,180 @@
+<html>
+    <head>
+        <title>Sine Demo</title>
+        <style>
+            #area {
+                width: 1280px;
+                height: 720px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                margin: auto;
+                border: 1px solid #aaaaaa;
+            }
+
+            #blurb {
+				position: absolute;
+				top: 0;
+				left: 0;
+				background-color: #eeeeee88;
+				padding: 1.0em 1.0em;
+				width: 15em;
+			}
+        </style>
+    </head>
+    <body>
+        <div id="area">
+            <canvas id="theCanvas" width="1280" height="720"></canvas>
+            <div id="blurb">
+                <input type="checkbox" id="units" onclick="degrees = this.checked;">
+                <label for="units">Degrees (default is radians)</label>
+            </div>
+        </div>
+        <script>
+            const canvas = document.getElementById("theCanvas");
+            const ctx = canvas.getContext("2d");
+
+            ctx.textAlign = "center";
+            ctx.font = "16px Consolas";
+
+            let degrees = false;
+
+            const drawVertAngle = function(gx, gy, angle, text) {
+                
+                let x = gx + angle / 2 / Math.PI * 400;
+                ctx.beginPath();
+                ctx.moveTo(x, gy - 200);
+                ctx.lineTo(x, gy + 200);
+                ctx.closePath();
+                ctx.stroke();
+
+                ctx.fillText(text, x, gy - 210);
+
+            };
+
+            const dot = function(x, y, color) {
+
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fill();
+
+            }
+
+            const draw = function(angle) {
+
+                let gx = canvas.width * 3 / 4 - 200;
+                let gy = canvas.height / 2;
+                let ox = canvas.width / 4;
+                let oy = canvas.height / 2;
+
+                // draw the angle markers
+                ctx.strokeStyle = "#cccccc";
+                ctx.fillStyle = "#000000";
+                ctx.lineWidth = 1;
+
+                // ...for circle
+                ctx.beginPath();
+                ctx.moveTo(ox - 200, oy);
+                ctx.lineTo(ox + 200, oy);
+                ctx.closePath();
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(ox, oy - 200);
+                ctx.lineTo(ox, oy + 200);
+                ctx.closePath();
+                ctx.stroke();
+
+                ctx.fillText(degrees ? "0°" : "0", ox + 210, oy);
+                ctx.fillText(degrees ? "90°" : "0.5π", ox, oy - 210);
+                ctx.fillText(degrees ? "180°" : "π", ox - 210, oy);
+                ctx.fillText(degrees ? "270°" : "1.5π", ox, oy + 215);
+
+                // ...for graph
+                ctx.beginPath();
+                ctx.moveTo(gx, gy);
+                ctx.lineTo(gx + 400, gy);
+                ctx.closePath();
+                ctx.stroke();
+
+                drawVertAngle(gx, gy, 0, degrees ? "0°" : "0");
+                drawVertAngle(gx, gy, Math.PI, degrees ? "180°" : "π");
+                drawVertAngle(gx, gy, 2 * Math.PI, degrees ? "360°" : "2π");
+
+                // draw the circle!
+                ctx.strokeStyle = "#aaaaaa";
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(ox, oy, 200, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.stroke();
+
+                // draw right triangle
+                let x = Math.cos(angle);
+                let y = Math.sin(angle);
+                ctx.strokeStyle = "#000000";
+                ctx.beginPath();
+                ctx.moveTo(ox, oy);
+                ctx.lineTo(ox + x * 200, oy);
+                ctx.lineTo(ox + x * 200, oy - y * 200);
+                ctx.closePath();
+                ctx.stroke();
+
+                // draw connectorbar
+                ctx.strokeStyle = "#888888";
+                let theGx = gx + (angle / 2 / Math.PI) * 400;
+                ctx.beginPath();
+                ctx.moveTo(ox + x * 200, oy - y * 200);
+                ctx.lineTo(theGx, oy - y * 200)
+                ctx.closePath();
+                ctx.stroke();
+                dot(theGx, oy - y * 200, "#ff0000");
+
+                // draw phasebar
+                ctx.beginPath();
+                ctx.moveTo(theGx, gy - 200);
+                ctx.lineTo(theGx, gy + 200);
+                ctx.closePath();
+                ctx.stroke();
+
+                // draw the arc
+                ctx.strokeStyle = "#0000ff";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(ox, oy, 200, 0, -angle, true);
+                ctx.stroke();
+                ctx.closePath();
+                dot(ox + x * 200, oy - y * 200, "#0000ff");
+
+                // draw sine
+                ctx.strokeStyle = "#ff0000";
+                ctx.beginPath();
+                for(let i = 0; i < 400; i++) {
+                    let y = Math.sin(i * (2 * Math.PI) / 400) * 200;
+                    if(i == 0)
+                        ctx.moveTo(gx + i, gy - y);
+                    else
+                        ctx.lineTo(gx + i, gy - y);
+                }
+                ctx.stroke();
+                ctx.closePath();
+
+            };
+
+            let angle = 0;
+            const animate = function() {
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                draw(angle);
+                angle += 0.005;
+                angle = angle % (2 * Math.PI);
+                requestAnimationFrame(animate);
+            };
+
+            animate();
+        </script>
+    </body>
+</html>

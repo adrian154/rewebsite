@@ -1,0 +1,177 @@
+<html>
+    <head>
+        <style>
+            #canvas {
+                border: 1px solid #aaaaaa;
+            }
+        </style>
+    </head>
+    <body>
+        <p>This code is a JavaScript port of a <a href="https://github.com/cerrno/mueller-sph">C++ implementation</a> of Smoothed Particle Hydrodynamics as described in <a href="https://matthias-research.github.io/pages/publications/sca03.pdf">this paper</a> by M&uuml;ller et. al (2003).</p>
+        <canvas id="canvas" width="800" height="600"></canvas>
+        <script>
+
+// THIS IS A JAVASCRIPT PORT OF AN IMPLEMENTATION OF SPH IN C++
+// The original source code is at https://github.com/cerrno/mueller-sph/blob/master/src/main.cpp
+
+const GRAVITY = 12000 * -9.8;   // on the y-coordinate
+const REST_DENSITY = 1000;
+const GAS_CONSTANT = 2000;
+const H = 16;                   // radius of each particle
+const HSQ = H * H;              // radius squared for optimization
+const MASS = 65;                // mass of each particle
+const VISCOSITY = 250;          // viscosity constant
+const DT = 0.0008;              // integration timestep
+
+// constants used to calculate smoothing kernels
+const POLY6 = 315 / (64 * Math.PI * Math.pow(H, 9));
+const SPIKY_GRAD = -45 / (Math.PI * Math.pow(H, 6));
+const VISCOSITY_LAPLACIAN = 45 / (Math.PI * Math.pow(H, 6));
+
+// "coefficient of restitution" of the boundary
+const BOUNDARY_DAMPING = -0.5;
+
+let particles = [];
+
+// window stuff
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const DAM_PARTICLES = 500;
+
+const integrate = function() {
+    for(let particle of particles) {
+
+        particle.dx += DT * particle.fx / particle.rho;
+        particle.dy += DT * particle.fy / particle.rho;
+
+        particle.x += DT * particle.dx;
+        particle.y += DT * particle.dy;
+
+        // enforce boundary conditions
+        if(particle.x - H < 0) {
+            particle.dx *= BOUNDARY_DAMPING;
+            particle.x = H;
+        }
+
+        if(particle.x + H > canvas.width) {
+            particle.dx *= BOUNDARY_DAMPING;
+            particle.x = canvas.width - H;
+        }
+
+        if(particle.y - H < 0) {
+            particle.dy *= BOUNDARY_DAMPING;
+            particle.y = H;
+        }
+
+        if(particle.y + H > canvas.height) {
+            particle.dy *= BOUNDARY_DAMPING;
+            particle.y = canvas.height - H;
+        }
+
+    }
+};
+
+const computeDensityPressure = function() {
+
+    for(let particle0 of particles) {
+        particle0.rho = 0;
+        for(let particle1 of particles) {
+            
+            let dx = particle1.x - particle0.x;
+            let dy = particle1.y - particle0.y;
+            
+            let distSquared = dx * dx + dy * dy;
+            if(distSquared < HSQ) {
+                particle0.rho += MASS * POLY6 * Math.pow(HSQ - distSquared, 3);
+            }
+
+        }
+        particle0.p = GAS_CONSTANT * (particle0.rho - REST_DENSITY);
+    }
+
+};
+
+const computeForces = function() {
+
+    for(let i = 0; i < particles.length; i++) {
+        let particle0 = particles[i];
+
+        let fPressureX = 0;
+        let fPressureY = 0;
+        let fViscosityX = 0;
+        let fViscosityY = 0;
+
+        for(let j = 0; j < particles.length; j++) {
+
+            if(i == j) {
+                continue;
+            }
+
+            let particle1 = particles[j];
+
+            let dx = particle1.x - particle0.x;
+            let dy = particle1.y - particle0.y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+
+            if(dist < H) {
+                let fPressure = MASS * (particle0.p + particle1.p) / (2 * particle1.rho) * SPIKY_GRAD * Math.pow(H - dist, 2);
+                fPressureX += (-dx / dist) * fPressure;
+                fPressureY += (-dy / dist) * fPressure;
+
+                let fViscosity = VISCOSITY * MASS / particle1.rho * VISCOSITY_LAPLACIAN * (H - dist);
+                let dvx = particle1.dx - particle0.dx;
+                let dvy = particle1.dy - particle0.dy;
+                fViscosityX += dvx * fViscosity;
+                fViscosityY += dvy * fViscosity;
+
+            }
+
+        }
+
+        particle0.fx = fPressureX + fViscosityX;
+        particle0.fy = fPressureY + fViscosityY + GRAVITY * particle0.rho;    
+
+    }
+
+};
+
+const draw = function() {
+    ctx.globalAlpha = 1.0;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = "#0000ff";
+    for(let particle of particles) {
+        ctx.fillRect(particle.x, canvas.height - particle.y, 5, 5);
+    }
+};
+
+const update = function() {
+    draw();
+    computeDensityPressure();
+    computeForces();
+    integrate();
+    requestAnimationFrame(update);
+};
+
+canvas.addEventListener("click", event => {
+    for(let dx = -100; dx <= 100; dx += H) {
+        for(let dy = -100; dy <= 100; dy += H) {
+            particles.push({
+                x: event.offsetX + dx + Math.random() * 4 - 2,
+                y: canvas.height - event.offsetY  + dy + Math.random() * 4 - 2,
+                dx: 0,
+                dy: 0,
+                fx: 0,
+                fy: 0,
+                rho: 0,
+                p: 0
+            });
+        }
+    }
+});
+
+update();
+        </script>
+    </body>
+</html>

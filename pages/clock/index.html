@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Clock</title>
+        <style>
+            body, html {
+                background-color: #ffffff;
+                margin: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            #clock {
+                width: 75vmin;
+                height: 75vmin;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="clock"></canvas>
+        <script>
+
+            const canvas = document.getElementById("clock");
+            const ctx = canvas.getContext("2d");
+
+            // horrible code to round size to full pixel since
+            // fractional pixels => full canvas scaling => slight bluriness 
+            const handleResize = () => {
+                canvas.style.width = "75vmin";
+                canvas.style.height = "75vmin";
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+                canvas.style.width = Math.floor(rect.width) + "px";
+                canvas.style.height = Math.floor(rect.height) + "px";
+            };
+
+            const PI2 = Math.PI * 2;
+
+            const drawRing = (radius, thickness, proportion) => {
+
+                const starting = -Math.PI / 2;
+                proportion = proportion % PI2 + starting;
+
+                const sin = Math.sin(proportion), cos = Math.cos(proportion);
+                const innerRadius = radius - thickness;
+
+                ctx.beginPath();
+                ctx.moveTo(0, -innerRadius);
+                ctx.lineTo(0, -radius);
+                ctx.arc(0, 0, radius, starting, proportion);
+                ctx.lineTo(cos * innerRadius, sin * innerRadius);
+                ctx.arc(0, 0, innerRadius, proportion, starting, true);
+                ctx.closePath();
+                ctx.fill();
+
+            };  
+
+            const drawFullRing = (radius, thickness, proportion, color) => {
+
+                ctx.fillStyle = color;
+                ctx.globalAlpha = 0.2;
+                drawRing(radius, thickness, PI2 - 0.001);
+                
+                ctx.globalAlpha = 1.0;
+                drawRing(radius, thickness, proportion);
+
+            };
+
+            const pad = number => String(number).padStart(2, '0');
+
+            const ordinal = number => {
+                if(number % 100 >= 11 && number % 100 <= 13) return number + "th";
+                const lastDigit = number % 10;
+                if(lastDigit === 1) return number + "st";
+                if(lastDigit === 2) return number + "nd";
+                if(lastDigit === 3) return number + "rd";
+                return number + "th";
+            };
+
+            const animate = () => {
+
+                requestAnimationFrame(animate);
+
+                ctx.resetTransform();
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+
+                const time = new Date();
+                const radius = canvas.width / 2 - 10;
+
+                const msMinute = time.getSeconds() * 1000 + time.getMilliseconds();
+                const msHour = time.getMinutes() * 60 * 1000 + msMinute;
+                const msDay = time.getHours() * 60 * 60 * 1000 + msHour;
+                
+                // draw seconds bar
+                drawFullRing(radius, 20, msMinute / 60 / 1000 * PI2, "#fc7f03");
+                drawFullRing(radius - 25, 20, msHour / 60 / 60 / 1000 * PI2, "#03c2fc");
+                drawFullRing(radius - 50, 20, msDay / 24 / 60 / 60 / 1000 * PI2, "#a903fc")
+            
+                ctx.fillStyle = "#000000";
+                ctx.font = "72px monospace";
+                ctx.textAlign = "center";
+                ctx.fillText(`${pad(time.getHours())}:${pad(time.getMinutes())}:${pad(time.getSeconds())}`, 0, 20);
+
+                ctx.font = "36px Consolas";
+                const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                ctx.fillText(`${days[time.getDay()]}, ${months[time.getMonth()]} ${ordinal(time.getDate())}`, 0, 65);
+
+            };
+
+
+            //document.addEventListener("resize", handleResize);
+            window.addEventListener("resize", handleResize);
+            handleResize();
+            animate();
+
+        </script>
+    </body>
+</html>

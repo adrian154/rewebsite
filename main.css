@@ -1,0 +1,72 @@
+body {
+    background-color: #eeeeee;
+}
+
+#vertical-container {
+    font-family: 'Open Sans', serif;
+    max-width: 40em;
+    margin: auto;
+    margin-top: 3.0em;
+}
+
+.bubble {
+    margin-bottom: 1.0em;
+    border-radius: 5px;
+    padding: 1.5em;
+    background-color: #ffffff;
+    font-size: 11pt;
+    box-shadow: 0px 0px 8px #cccccc;
+}
+
+#misc-block {
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+h1, h2, h3 {
+    font-family: monospace;
+}
+
+#copyright {
+    font-size: 10pt;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+a {
+    color: #2bc2ff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #a3a3a3;
+}
+
+.bubble img {
+    display: block;
+    max-width: 100%;
+    margin: 2.0em auto;
+}
+
+.blurb {
+    background-color: rgba(83, 207, 93, 10%);
+    border-left: 2px solid #53cf5d;
+    padding: 0.5em 1.0em;
+}
+
+#misc-box {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    grid-gap: 1.0em;
+}
+
+#misc-box .bubble {
+    margin: 0;
+}
+
+#misc-box a {
+    font-weight: bold;
+}

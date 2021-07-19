@@ -1,0 +1,119 @@
+<html>
+    <head>
+        <style>
+            body {
+                max-width: 40em;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 3.0em;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            }
+
+            #error {
+                color: red;
+            }
+
+            input {
+                width: 100%;   
+            }
+
+            button {
+                width: 15em;
+                border: none;
+                border-radius: 5px;
+                background-color: #0000ff;
+                padding: 1.0em;
+                font-family: inherit;
+                color: #ffffff;
+                cursor: pointer;
+                margin-top: 1.0em;
+                margin-right: 1.0em;
+                font-weight: bold;
+            }
+
+            button:hover {
+                color: #dddddd;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            td {
+                border: 1px solid #aaaaaa;
+                padding: 1.0em;
+                font-weight: bold;
+            }
+        </style>
+        <title>Mirror Calculator</title>
+    </head>
+    <body>
+        <h1>Mirror Calculator</h1>
+        <p>To calculate the sagitta of a mirror, enter its diameter and focal length and click "Calculate sagitta". To calculate the focal length of a mirror, enter its diameter and sagitta and click "Calculate focal length".</p>
+        <p>This calculator knows no units. Make sure you are entering all of your parameters in the same units or nonsensical results will be produced.</p>
+        <noscript><p><b>Sorry, but this site requires JavaScript to function.</b> If you are seeing this message, it is because your browser does not support JavaScript or you have disabled it in your settings.</p></noscript>
+        
+        <p id="error"></p>
+
+        <table>
+            <tr>
+                <td>Mirror diameter (required)</td>
+                <td><input type="text" id="field-mirror-diameter" placeholder="Diameter..."></td>
+            </tr>
+            <tr>
+                <td>Mirror sagitta</td>
+                <td><input type="text" id="field-mirror-sagitta" placeholder="Focal length..."></td>
+            </tr>
+            <tr>
+                <td>Mirror focal length</td>
+                <td><input type="text" id="field-mirror-focal-length" placeholder="Sagitta..."></td>
+            </tr>
+        </table>
+        
+        <button onclick="calculate('focal')">Calculate focal length</button><button onclick="calculate('sagitta')">Calculate sagitta</button>
+
+        <script>
+
+            /* This code is public domain. */
+            const mirrorDiameterElem = document.getElementById("field-mirror-diameter");
+            const sagittaElem = document.getElementById("field-mirror-sagitta");
+            const focalLengthElem = document.getElementById("field-mirror-focal-length");
+            const errElem = document.getElementById("error");
+
+            const calculate = function(which) {
+                
+                let diameter = Number(mirrorDiameterElem.value);
+                let sagitta = Number(sagittaElem.value);
+                let focalLength = Number(focalLengthElem.value);
+
+                if(!diameter) {
+                    error.innerHTML = "You must enter a valid mirror diameter.";
+                    return;
+                }
+
+                if(which == 'focal') {
+
+                    if(!sagitta) {
+                        error.innerHTML = "You must enter a valid sagitta.";
+                        return;
+                    }
+
+                    focalLengthElem.value =  Math.pow(diameter / 2, 2) / (sagitta * 4);
+
+                } else if(which == 'sagitta') {
+
+                    if(!focalLength) {
+                        error.innerHTML = "You must enter a valid focal length.";
+                        return;
+                    }
+
+                    sagittaElem.value = 1 / (4 * focalLength) * Math.pow(diameter / 2, 2);
+
+                }
+
+            };
+
+        </script>
+    </body>
+</html>

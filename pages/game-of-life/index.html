@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta property="og:title" content="Game of Life">
+		<meta property="og:description" content="A tiny implementation of Conway's Game of Life cellular automaton.">
+		<title>Game of Life</title>
+	</head>
+	<body>
+		<canvas id="output">If you're reading this message, then your browser does not support the Canvas API, which this webpage uses to display graphics. Sorry.</canvas>
+		<noscript>If you're reading this message, you've either disabled JavaScript or your browser does not support it. Either way, this demo cannot run without JS. Sorry.</noscript>
+		
+		<button onclick="toggle()">Stop</button>
+		<button onclick="step()">Step once</button>
+
+		<textarea id="pattern" cols="60" rows="10"></textarea><br><br>
+		<button onclick="putPattern()">Use Pattern</button>
+		
+		<pre id="link"></pre>
+
+		<script src="gol.js"></script>
+	</body>
+</html>

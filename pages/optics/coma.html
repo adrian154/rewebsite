@@ -1,0 +1,161 @@
+<html>
+    <head>
+        <title>Spherical Mirror Demo</title>
+        <style>
+            #area {
+				width: 840;
+				height: 840;
+                border: 1px solid #aaaaaa;
+                
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                margin: auto;
+            }
+			
+			#blurb {
+				position: absolute;
+				top: 0;
+				left: 0;
+				background-color: #eeeeee88;
+				padding: 0 1.0em;
+				width: 15em;
+			}
+        </style>
+    </head>
+    <body>
+		<div id="area">
+			<div id="blurb">
+				<p>This is a demonstration of <i>coma</i>, an optical aberration where a parabolic mirror cannot focus light from a distant source into a point when it is not centered on the vertical axis.</p>
+				<p>Move the cursor around to control the direction which the beam is coming from. Notice how as the beam's direction grows further from the center, the light starts to deviate from a point focus.</p>
+				<p>For more, check out the corresponding demo on <a href="spheric.html">spherical aberration</a>.</p>
+			</div>
+			<canvas id="canvas" width="840" height="840"></canvas>
+		</div>
+        <script>
+
+            // WARNING:
+            // This code will make you lose what little respect you had for me.
+            // Tread lightly!
+
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+
+            const MIRR_CONST = 0.0009;
+
+            const func = function(x) {
+                return MIRR_CONST * x * x;
+            };
+
+            const drawMirror = function() {
+                
+                let first = true;
+
+                ctx.beginPath();
+                for(let x = -canvas.width / 2; x < canvas.width; x++) {
+                    let y = func(x);
+                    if(first) {
+                        ctx.moveTo(x, y);
+                        first = false;
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                ctx.closePath();
+
+            };
+
+            // this code is oh so very bad but i cant be bothered since im running off fumes here
+            const drawRay = function(origX, origY, dirX, dirY) {
+
+                if(Math.abs(dirX) < 0.001) dirX = 0.00001;
+
+                let len = Math.sqrt(dirX * dirX + dirY * dirY);
+                dirX /= len;
+                dirY /= len;
+
+                let a = MIRR_CONST * dirX * dirX;
+                let b = 2 * MIRR_CONST * origX * dirX - dirY;
+                let c = MIRR_CONST * origX * origX - origY;
+
+                let discrim = b * b - 4 * a * c;
+                if(discrim >= 0) {
+
+                    discrim = Math.sqrt(discrim);
+                    let t0 = (-b - discrim) / (2*a);
+                    let t1 = (-b + discrim) / (2 * a);
+                    if(t0 < 0 && t1 < 0) return;
+                    let t = t0 < 0 ? t1 : Math.min(t0, t1);
+
+                    let x = origX + dirX * t;
+                    let y = origY + dirY * t;
+
+                    ctx.strokeStyle = "#ff0000";
+                    ctx.beginPath();
+                    ctx.moveTo(origX, origY);
+                    ctx.lineTo(x, y);
+                    ctx.closePath();
+                    ctx.stroke();
+
+                    // calculate normal
+                    /// this method is super wacky
+                    let m = 2 * MIRR_CONST * x;
+                    let normX = -m;
+                    let normY = 1;
+                    let len = Math.sqrt(normX * normX + normY * normY);
+                    normX /= len;
+                    normY /= len;
+
+                    // reflect
+                    // even more jank
+                    /// need sleep
+                    let dot = dirX * normX + dirY * normY;
+                    let rdx = dirX - 2 * dot * normX;
+                    let rdy = dirY - 2 * dot * normY;
+                    
+                    ctx.strokeStyle = "#0000ff";
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x + rdx * 10000, y + rdy * 10000);
+                    ctx.closePath();
+                    ctx.stroke();
+
+                }
+
+            };
+
+            let dirCoeff = 0;
+
+            const draw = function() {
+
+                ctx.resetTransform();
+                ctx.globalAlpha = 1.0;
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.strokeStyle = "#000000";
+                ctx.translate(canvas.width / 2, canvas.height);
+                ctx.scale(1, -1);
+                drawMirror();
+                
+                ctx.globalAlpha = 0.3;
+                for(let x = -200; x <= 200; x += 50) {
+                    drawRay(x, canvas.height, dirCoeff, -1);
+                }
+
+                requestAnimationFrame(draw);
+
+            };
+
+            canvas.addEventListener("mousemove", (event) => {
+                dirCoeff = (event.offsetX - canvas.width / 2) / event.offsetY
+            });
+
+            draw();
+
+        </script>
+    </body>
+</html>

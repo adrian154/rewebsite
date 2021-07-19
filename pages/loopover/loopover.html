@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Loopover</title>
+        <style>
+            #theCanvas {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="theCanvas" width="500" height="500"></canvas>
+        <script>
+const canvas = document.getElementById("theCanvas");
+const ctx = canvas.getContext("2d");
+
+const WIDTH = 5, HEIGHT = 5;
+const cellWidth = canvas.width / WIDTH, cellHeight = canvas.height / HEIGHT;
+
+const board = new Array(WIDTH).fill(0).map(() => new Array(HEIGHT).fill(0));
+const alpha = "abdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+
+const toHex = (r, g, b) => {
+    const encodeByte = (number) => (number < 16 ? "0" : "") +  Math.floor(number).toString(16);
+    return `#${encodeByte(r)}${encodeByte(g)}${encodeByte(b)}`;
+};
+
+const generateColors = () => {
+
+    let colors = new Array(WIDTH * HEIGHT);
+    let max = 255;
+    let base = 0;
+
+    for(let x = 0; x < WIDTH; x++) {
+        for(let y = 0; y < HEIGHT; y++) {
+            let a = x / WIDTH;
+            let b = y / HEIGHT;
+            let lum = Math.sqrt(a * a + b * b) + 0.6;
+            a /= lum;
+            b /= lum;
+            colors[y * WIDTH + x] = toHex((max - base) * a + base, (max - base) * b + base, max);
+        }
+    }
+
+    return colors;
+
+};
+
+const colors = generateColors();
+
+const initBoard = () => {
+    for(let x = 0; x < WIDTH; x++) {
+        for(let y = 0; y < HEIGHT; y++) {
+            board[x][y] = y * WIDTH + x;
+        }
+    }
+};
+
+const getRow = (which, isRow) => {
+    
+    if(isRow) {
+        
+        let arr = [];
+        for(let i = 0; i < board[which].length; i++) {
+            arr.push(board[i][which]);
+        }
+
+        return arr;
+
+    }
+
+    return board[which];
+
+};
+
+const putRow = (row, which, isRow) => {
+
+    if(isRow) {
+        for(let i = 0; i < board[which].length; i++) {
+            board[i][which] = row[i];
+        }
+    } else {
+        board[which] = row;
+    }
+
+};
+
+const shiftArr = (arr, dir) => {
+
+    let newArr = new Array(arr.length);
+    for(let i = 0; i < arr.length; i++) {
+        console.log(i, (i + dir) % arr.length);
+        newArr[(i + dir + arr.length) % arr.length] = arr[i];
+    }
+
+    return newArr;
+
+};
+
+// isRow == true -> row, isRow == false -> col
+const shift = (which, dir, isRow) => {
+    putRow(shiftArr(getRow(which, isRow), dir), which, isRow);
+};
+
+const randShift = () => {
+    shift(Math.floor(Math.random() * WIDTH), Math.random() > 0.5 ? 1 : -1, Math.random() > 0.5);
+};
+
+const scramble = () => {
+    for(let i = 0; i < 100; i++) {
+        randShift();
+    }
+};
+
+const draw = () => {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = "64px Arial";
+    ctx.textAlign = "center";
+
+    for(let x = 0; x < board.length; x++) {
+        for(let y = 0; y < board[x].length; y++) {
+
+            ctx.fillStyle = colors[board[x][y]];
+            ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
+
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(alpha[board[x][y]], x * cellWidth + cellWidth / 2, y * cellHeight + cellHeight / 2 + 20);
+        
+        }
+    }
+
+    requestAnimationFrame(draw);
+
+};
+
+const tileX = (screenCoordX) => Math.floor(screenCoordX / cellWidth);
+const tileY = (screenCoordY) => Math.floor(screenCoordY / cellHeight);
+
+let mouseDown = false;
+let prevMouseX, prevMouseY;
+window.addEventListener("mousedown", () => mouseDown = true);
+window.addEventListener("mouseup", () => mouseDown = false);
+canvas.addEventListener("mousemove", (event) => {
+
+    if(!prevMouseX || !prevMouseY) {
+        prevMouseX = event.offsetX;
+        prevMouseY = event.offsetY;
+        return;
+    }
+
+    const prevTx = tileX(prevMouseX), prevTy = tileY(prevMouseY);
+    const tx = tileX(event.offsetX), ty = tileY(event.offsetY);
+
+    if(mouseDown && (tx != prevTx || ty != prevTy)) {
+        if(tx != prevTx) shift(ty, tx - prevTx, true);
+        if(ty != prevTy) shift(tx, ty - prevTy, false);
+    }
+
+    prevMouseX = event.offsetX;
+    prevMouseY = event.offsetY;
+
+});
+
+initBoard();
+draw();
+
+        </script>
+    </body>
+</html>
