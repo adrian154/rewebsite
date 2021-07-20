@@ -1,24 +1,12 @@
 <html>
     <body>  
-        <h1>Click anywhere to see a random LightShot</h1>
+        <img id="image">
         <script>
-const CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
-
-const randomFrom = function(list) {
-    return list[Math.floor(Math.random() * list.length)];
-} 
-
-const genURL = function() {
-    let url = "";
-    for(let i = 0; i < 6; i++) url += randomFrom(CHARS);
-    return "https://prnt.sc/" + url;
-};
-
-const go = function() {
-    window.location.href = genURL();
-};
-
-document.addEventListener("click", go);
+const url = `https://prnt.sc/${Math.floor(Math.random() * 2981820662).toString(36)}`;
+fetch(url).then(r => r.text()).then(html => {
+    const image = html.match(/<img class="no-click screenshot-image zoomed"> src="([\w:\/]+)"/);
+    console.log(image[1]);
+}).catch(console.error);
         </script>
     </body>
 </html>
