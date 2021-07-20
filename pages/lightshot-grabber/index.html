@@ -1,11 +1,14 @@
 <html>
     <body>  
-        <img id="image">
+        <img id="image" referrerpolicy="no-referrer">
         <script>
 const url = `https://prnt.sc/${Math.floor(Math.random() * 2981820662).toString(36)}`;
+
 fetch(url).then(r => r.text()).then(html => {
-    const image = html.match(/<img class="no-click screenshot-image zoomed"> src="([\w:\/]+)"/);
-    console.log(image[1]);
+    const image = html.match(/property="og:image" content="([\.\w:\/]+)"/); 
+    if(image) {
+        document.getElementById("image").src = image[1];
+    }
 }).catch(console.error);
         </script>
     </body>
