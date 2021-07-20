@@ -116,8 +116,10 @@ const updateURL = () => {
 	url.searchParams.set("initialType", initialType);
 	if(initialType === "random") {
 		url.searchParams.set("density", density);
+		url.searchParams.delete("pattern");
 	} else if(initialType === "pattern") {
 		url.searchParams.set("pattern", pattern);
+		url.searchParams.delete("density");
 	}
 	window.history.replaceState(null, null, url.href);
 };
