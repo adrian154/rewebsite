@@ -164,7 +164,7 @@ const loadPattern = (pattern) => {
 
 	for(let x = 0; x < width; x++) {
 		for(let y = 0; y < height; y++) {
-			board[which][x + xMargin][y + yMargin] = (lines[y][x] && lines[y][x] != '.') ? 1 : 0;
+			board[which][y + yMargin][x + xMargin] = (lines[y][x] && lines[y][x] != '.') ? 1 : 0;
 		}
 	}
 	
