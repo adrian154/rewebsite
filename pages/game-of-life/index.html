@@ -6,18 +6,78 @@
 		<meta property="og:title" content="Game of Life">
 		<meta property="og:description" content="A tiny implementation of Conway's Game of Life cellular automaton.">
 		<title>Game of Life</title>
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+		<style>
+			body, html {
+				width: 100%;
+				height: 100%;
+			}
+
+			body {
+				margin: 0;
+				font-family: 'Open Sans', sans-serif;
+			}
+
+			#content {
+				width: 512px;
+				margin: auto;
+				padding-top: 2.0em;
+			}
+
+			#modals {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.3);	
+				z-index: 1;
+			}
+			
+			.modal-box {
+				font-family: 'Open Sans';
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				background-color: #ffffff;
+				border-radius: 5px;
+				padding: 1.0em;
+			}
+
+			.modal-box textarea {
+				border: 1px solid #aaaaaa;
+			}
+
+			input[type="range"] {
+				vertical-align: middle;
+			}
+		</style>
 	</head>
 	<body>
-		<canvas id="output">If you're reading this message, then your browser does not support the Canvas API, which this webpage uses to display graphics. Sorry.</canvas>
-		<noscript>If you're reading this message, you've either disabled JavaScript or your browser does not support it. Either way, this demo cannot run without JS. Sorry.</noscript>
-		
-		<button onclick="toggle()">Stop</button>
-		<button onclick="step()">Step once</button>
 
-		<textarea id="pattern" cols="60" rows="10"></textarea><br><br>
-		<button onclick="putPattern()">Use Pattern</button>
-		
-		<pre id="link"></pre>
+		<div id="content">
+			<canvas id="output">If you're reading this message, then your browser does not support the Canvas API, which this webpage uses to display graphics. Sorry.</canvas><br>
+			<noscript>If you're reading this message, you've either disabled JavaScript or your browser does not support it. Either way, this demo cannot run without JS. Sorry.</noscript>
+			<button onclick="toggle()">stop/go</button>
+			<button onclick="step()">step once</button>
+			<button onclick="changeRules()">change rules</button>
+			<button onclick="changeStartConds()">change initial conditions</button>
+			<button onclick="init()">reset</button>
+			<button onclick="share()">share</button>
+		</div>
+
+		<div id="modals" style="display: none;">
+			<div class="modal-box" id="init-dialog" style="display: none;">
+				<p><b>change initial conditions</b></p>
+				<div><input type="radio" id="init-pattern" name="init-type"><label for="init-pattern">start with pattern</label></div>
+				<div><input type="radio" id="init-random" name="init-type"><label for="init-random">start with random field</label></div><br>
+				<div id="density-control" style="display: none;"><label for="range">density: </label><input type="range" id="init-density"></div>
+				<div id="pattern-control" style="display: none;"><textarea id="pattern" rows="10" cols="60" placeholder="Pattern..."></textarea><br></div>
+				<button onclick="updateStartConds()">save and reset</button>
+			</div>
+		</div>
 
 		<script src="gol.js"></script>
 	</body>

@@ -3,10 +3,9 @@ const ctx = canvas.getContext("2d");
 const patternField = document.getElementById("pattern");
 const link = document.getElementById("link");
 
-// Default CGOL rules
+// Automata rules
 let born = [3];
 let survive = [2, 3];
-let initDensity = 0.5;
 
 // Parse URL
 const url = new URL(window.location.href);
@@ -17,10 +16,10 @@ if(rule) {
 	survive = rule[2].split("").map(str => parseInt(str));
 }
 
-let initDensityParam = url.searchParams.get("density");
-if(initDensityParam !== null) {
-    initDensity = Number(initDensityParam);
-}
+// set up initial conds based on url 
+let initialType = url.searchParams.get("initialType") || "random";
+let density = url.searchParams.get("density") || 0.5;
+let pattern = url.searchParams.get("pattern");
 
 // other simulation state
 let running = true;
@@ -34,36 +33,38 @@ canvas.width = WIDTH * CELL_SIZE;
 canvas.height = HEIGHT * CELL_SIZE;
 const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
-const make2DArr = function(xSize, ySize) {
-	let result = new Array(xSize);
+const make2DArr = (xSize, ySize) => {
+	const result = new Array(xSize);
 	for(let x = 0; x < xSize; x++) {
 		result[x] = new Array(ySize);
 	}
 	return result;
-}
+};
 
 // Double-buffer board 
 const board = [make2DArr(WIDTH, HEIGHT), make2DArr(WIDTH * HEIGHT)];
-let which = 0;
+let which;
 
-const clear = function() {
+const clear = () => {
 	for(let x = 0; x < WIDTH; x++) {
 		for(let y = 0; y < HEIGHT; y++) {
 			board[which][x][y] = 0;
 		}
-	}	
+	}
 };
 
 const init = function() {
-	if(url.searchParams.get("pattern") != null) {
-		clear();
-		loadPattern(url.searchParams.get("pattern"));
-	} else {
+	which = 0;
+	if(initialType === "random") {
 		for(let x = 0; x < WIDTH; x++) {
 			for(let y = 0; y < HEIGHT; y++) {
-				board[which][x][y] = Math.random() < initDensity ? 1 : 0;
+				board[which][x][y] = Math.random() < density ? 1 : 0;
 			}
-        }
+		}
+	} else if(initialType === "pattern") {
+		loadPattern(pattern);
+	} else {
+		alert("Couldn't initialize: unknown initial type");
 	}
 };
 
@@ -104,30 +105,83 @@ const step = function() {
 
 };
 
-const run = function() {
+const run = () => {
 	if(running) step();
 	setTimeout(() => {requestAnimationFrame(run);}, 30);
 };
 
-const putPattern = function() {
-	clear();
-	loadPattern(patternField.value);
-	url.searchParams.set("pattern", patternField.value);
-	document.getElementById("link").innerHTML = url;
+// --- control funcs
+
+// elements
+const modalLayer = document.getElementById("modals");
+const initDialog = document.getElementById("init-dialog");
+const patternButton = document.getElementById("init-pattern");
+const randomButton = document.getElementById("init-random");
+const densityControl = document.getElementById("density-control");
+const patternControl = document.getElementById("pattern-control");
+const densitySlider = document.getElementById("init-density");
+const patternTextbox = document.getElementById("pattern");
+
+const toggle = () => {
+	running = !running;
 };
 
-const loadPattern = function(pattern) {
+const changeRules = () => {
+
+};
+
+const changeStartConds = () => {
+	modalLayer.style.display = "block";
+	initDialog.style.display = "block";
+};
+
+const updateStartConds = () => {
+	if(!patternButton.checked && !randomButton.checked) return alert("You haven't selected an initial condition.");
+	initialType = patternButton.checked ? "pattern" : "random";
+	density = densitySlider.value / 100;
+	pattern = patternTextbox.value;
+	init();
+	initDialog.style.display = "none";
+	modalLayer.style.display = "none";
+};
+
+const loadPattern = (pattern) => {
+	
+	// clear
+	clear();
+
 	const lines = pattern.split("\n");
-	const width = lines[0].length;
+	
+	// find longest line for width
+	let width = 0;
+	for(const line of lines) {
+		width = Math.max(line.length, width);
+	}
+
 	const height = lines.length;
 	const xMargin = Math.floor((WIDTH - width) / 2);
 	const yMargin = Math.floor((HEIGHT - height) / 2);
+
 	for(let x = 0; x < width; x++) {
 		for(let y = 0; y < height; y++) {
-			board[which][x + xMargin][y + yMargin] = lines[y][x] != '.' ? 1 : 0;
+			board[which][x + xMargin][y + yMargin] = (lines[y][x] && lines[y][x] != '.') ? 1 : 0;
 		}
 	}
+	
 }
+
+const onInitTypeChange = () => {
+	if(patternButton.checked) {
+		densityControl.style.display = "none";
+		patternControl.style.display = "block";
+	} else if(randomButton.checked) {
+		densityControl.style.display = "block";
+		patternControl.style.display = "none";
+	}
+};
+
+patternButton.addEventListener("input", onInitTypeChange);
+randomButton.addEventListener("input", onInitTypeChange);
 
 init();
 run();
