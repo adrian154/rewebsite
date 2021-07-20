@@ -110,10 +110,23 @@ const run = () => {
 	setTimeout(() => {requestAnimationFrame(run);}, 30);
 };
 
+const updateURL = () => {
+	const url = new URL(window.location);
+	url.searchParams.set("rule", `b${born.join("")}s${survive.join("")}`);
+	url.searchParams.set("initialType", initialType);
+	if(initialType === "random") {
+		url.searchParams.set("density", density);
+	} else if(initialType === "pattern") {
+		url.searchParams.set("pattern", pattern);
+	}
+	window.history.replaceState(null, null, url.href);
+};
+
 // --- control funcs
 
 // elements
 const modalLayer = document.getElementById("modals");
+
 const initDialog = document.getElementById("init-dialog");
 const patternButton = document.getElementById("init-pattern");
 const randomButton = document.getElementById("init-random");
@@ -122,17 +135,27 @@ const patternControl = document.getElementById("pattern-control");
 const densitySlider = document.getElementById("init-density");
 const patternTextbox = document.getElementById("pattern");
 
+const rulesDialog = document.getElementById("rules-dialog");
+const birthRules = document.getElementById("birth-rules");
+const surviveRules = document.getElementById("survive-rules");
+
+let currentDialog;
+
 const toggle = () => {
 	running = !running;
 };
 
-const changeRules = () => {
-
+const displayDialog = (dialog, visible) => {
+	modalLayer.style.display = visible ? "block" : "none";
+	dialog.style.display = visible ? "block" : "none";
+	if(visible) currentDialog = dialog;
 };
 
-const changeStartConds = () => {
-	modalLayer.style.display = "block";
-	initDialog.style.display = "block";
+const updateRules = () => {
+	born = birthRules.value.split("").map(Number);
+	survive = surviveRules.value.split("").map(Number);
+	displayDialog(rulesDialog, false);
+	updateURL();
 };
 
 const updateStartConds = () => {
@@ -141,8 +164,8 @@ const updateStartConds = () => {
 	density = densitySlider.value / 100;
 	pattern = patternTextbox.value;
 	init();
-	initDialog.style.display = "none";
-	modalLayer.style.display = "none";
+	displayDialog(initDialog, false);
+	updateURL();
 };
 
 const loadPattern = (pattern) => {
@@ -185,3 +208,8 @@ randomButton.addEventListener("input", onInitTypeChange);
 
 init();
 run();
+updateURL();
+
+window.addEventListener("keydown", (event) => {
+	if(event.key === "Escape" && currentDialog) displayDialog(currentDialog, false); 
+});

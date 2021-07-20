@@ -36,6 +36,7 @@
 			}
 			
 			.modal-box {
+				display: none;
 				font-family: 'Open Sans';
 				position: fixed;
 				top: 50%;
@@ -53,6 +54,11 @@
 			input[type="range"] {
 				vertical-align: middle;
 			}
+
+			input[type="text"] {
+				margin: 0.4em;
+				padding: 0.3em;
+			}
 		</style>
 	</head>
 	<body>
@@ -62,20 +68,33 @@
 			<noscript>If you're reading this message, you've either disabled JavaScript or your browser does not support it. Either way, this demo cannot run without JS. Sorry.</noscript>
 			<button onclick="toggle()">stop/go</button>
 			<button onclick="step()">step once</button>
-			<button onclick="changeRules()">change rules</button>
-			<button onclick="changeStartConds()">change initial conditions</button>
+			<button onclick="displayDialog(rulesDialog, true)">change rules</button>
+			<button onclick="displayDialog(initDialog, true)">change initial conditions</button>
 			<button onclick="init()">reset</button>
 			<button onclick="share()">share</button>
 		</div>
 
 		<div id="modals" style="display: none;">
-			<div class="modal-box" id="init-dialog" style="display: none;">
+			<div class="modal-box" id="init-dialog">
 				<p><b>change initial conditions</b></p>
 				<div><input type="radio" id="init-pattern" name="init-type"><label for="init-pattern">start with pattern</label></div>
 				<div><input type="radio" id="init-random" name="init-type"><label for="init-random">start with random field</label></div><br>
 				<div id="density-control" style="display: none;"><label for="range">density: </label><input type="range" id="init-density"></div>
 				<div id="pattern-control" style="display: none;"><textarea id="pattern" rows="10" cols="60" placeholder="Pattern..."></textarea><br></div>
 				<button onclick="updateStartConds()">save and reset</button>
+			</div>
+			<div class="modal-box" id="rules-dialog">
+				<p><b>change rules</b></p>
+				<table>
+					<tr>
+						<td><label for="birth-rules">Birth conditions</label></td>
+						<td><input type="text" id="birth-rules" placeholder="Neighbor counts..." value="3"></td>
+					</tr>
+					<tr>
+						<td><label for="death-rules">Survival conditions</label></td>
+						<td><input type="text" id="survive-rules" placeholder="Neighbor counts..." value="23"></td>
+				</table>
+				<button onclick="updateRules()">save</button>
 			</div>
 		</div>
 
