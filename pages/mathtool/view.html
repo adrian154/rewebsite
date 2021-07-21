@@ -13,6 +13,7 @@
         <p id="info"><a id="edit-link">Edit</a> &bull; <a href="index.html">Create New</a> &bull; Powered by <a href="https://katex.org/">KaTeX</a></p>
         <script>
             const render = () => {
+                const url = new URL(window.location);
                 const equation = url.searchParams.get("content") || "";
                 katex.render(equation, document.getElementById("output"), {
                     displayMode: true,
