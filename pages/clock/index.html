@@ -102,12 +102,14 @@
                 drawFullRing(radius - 25, 20, msHour / 60 / 60 / 1000 * PI2, "#03c2fc");
                 drawFullRing(radius - 50, 20, msDay / 24 / 60 / 60 / 1000 * PI2, "#a903fc")
             
+                const textSize = canvas.width * (72 / 792);
+
                 ctx.fillStyle = "#000000";
-                ctx.font = "72px monospace";
+                ctx.font = `${textSize}px monospace`;
                 ctx.textAlign = "center";
                 ctx.fillText(`${pad(time.getHours())}:${pad(time.getMinutes())}:${pad(time.getSeconds())}`, 0, 20);
 
-                ctx.font = "36px Consolas";
+                ctx.font = `${textSize / 2}px monospace`;
                 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
                 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                 ctx.fillText(`${days[time.getDay()]}, ${months[time.getMonth()]} ${ordinal(time.getDate())}`, 0, 65);
