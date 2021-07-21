@@ -12,7 +12,7 @@
         <p><b>NEW!</b> This site now supports the mhchem extension for typesetting chemical equations.</p>
         <textarea id="editor" placeholder="LaTeX content goes here..."></textarea>
         <p id="output"></p>
-        <p><b>Link:</b> <a href="#" id="link" target="_blank" rel="noreferrer noopener"></a></p>
+        <p><b>Link:</b> <a href="#" id="link" target="_blank" rel="noreferrer noopener">Click to share</a></p>
         <p id="info">View source on <a href="https://github.com/adrian154/adrian154.github.io/tree/master/mathtool">GitHub</a> &bull; Powered by <a href="https://katex.org/">KaTeX</a></p>
         <script>
             const link = document.getElementById("link");
@@ -31,10 +31,7 @@
                     displayMode: true,
                     throwOnError: false
                 });
-                url.pathname = url.pathname.replace("createmath.html", "math.html");
-                url.searchParams.set("content", text);
-                link.href = url;
-                link.textContent = url;
+                link.href = "view.html?content=" + encodeURIComponent(text);
             }
             
             editor.addEventListener("keyup", update);
