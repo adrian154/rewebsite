@@ -68,7 +68,7 @@ a:visited {
     grid-gap: 1.0em;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 600px) {
     #misc-box {
         grid-template-columns: auto;
     }
