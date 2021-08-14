@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="xkcd calendar fact generator">
+        <meta property="og:description" content="Learn about calendars with xkcd #1930">
+        <title>Calendar Facts</title>
+    </head>
+    <body>
+        <p id="fact"></p>
+        <p>Inspired by <a href="https://xkcd.com/1930/">xkcd #1930</a>.</p>
+        <button onclick="showFact()">Another one!</button>
+        <script>
+const pick = list => list[Math.floor(Math.random() * list.length)];
+document.getElementById("fact").textContent = `Did you know that ${pick([`the ${pick(["fall", "spring"])} equinox`, `the ${pick(["Winter", "Summer"])} ${pick(["Solstice", "Olympics"])}`, `the ${pick(["earliest", "latest"])} ${pick(["sunrise", "sunset"])}`, `daylight ${pick(["saving", "savings"])} time`, `the leap ${pick(["day", "year"])}`, "Easter", `the ${pick(["Harvest", "Super", "Blood"])} moon`, "Toyota Truck Month", "Shark Week"])} ${pick([`happens ${pick(["earlier", "later", "at the wrong time"])} every year`, `drifts out of sync with the ${pick(["sun", "moon", "zodiac", `${pick(["Gregorian", "Mayan", "Lunar", "iPhone"])} calendar`, "atomic clock in Colorado"])}`, `might ${pick(["not happen", "happen twice"])} this year`])} because of ${pick([`time zone legislation in ${pick(["Indiana", "Arizona", "Russia"])}`, "a decree by the Pope in the 1500s", `${pick(["precession", "libration", "nutation", "libation", "eccentricity", "obliquity"])} of the ${pick(["Moon", "Sun", "Earth's axis", "Equator", "Prime Meridian", `${pick(["International Date", "Mason-Dixon"])} line`])}`, "magnetic field reversal", `an arbitrary decision by ${pick(["Benjamin Franklin", "Isaac Newton", "FDR"])}`])}? Apparently, ${pick(["it causes a predictable increase in car accidents", "that's why we have leap seconds", "scientists are really worried", `it was even more extreme during the ${pick(["Bronze Age", "Ice Age", "Cretaceous", "1990s"])}`, `there's a proposal to fix it, but it ${pick(["will never happen", "actually makes things worse", "is stalled in Congress", "might be unconstitutional"])}`, "it's getting worse and no one knows why"])}. While it may seem like trivia, it ${pick(["causes huge headaches for software developers", "is taken advantage of by high-speed traders", "triggered the 2003 Northeast Blackout", "has to be corrected for by GPS satellites", "is now recognized as a major cause of World War I"])}.`;
+        </script>
+    </body>
+</html>

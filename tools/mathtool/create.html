@@ -2,18 +2,20 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Math Editor">
+        <meta property="og:description" content="Edit LaTeX content in your browser">
         <title>Math Editor</title>
-        <link rel="stylesheet" href="styles.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
-        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous" onload="render()"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.3/dist/contrib/mhchem.min.js" integrity="sha384-LIgAiYlGSAdpNC9+YDjDPF6JeS/RRIumtNo0CmyQERZ/+g0h9MbuYQwf/5pQ4Y4M" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="../common.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css" integrity="sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js" integrity="sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8" crossorigin="anonymous" onload="render()"></script>
     </head>
     <body>
-        <p><b>NEW!</b> This site now supports the mhchem extension for typesetting chemical equations.</p>
-        <textarea id="editor" placeholder="LaTeX content goes here..."></textarea>
-        <p id="output"></p>
+        <h1>Math Editor</h1>
+        <textarea id="editor" style="width: 100%; height: 10em; margin-top: 1.0em;" placeholder="LaTeX content goes here..."></textarea>
+        <div id="output" style="font-size: 13pt"></div>
         <p><b>Link:</b> <a href="#" id="link" target="_blank" rel="noreferrer noopener">Click to share</a></p>
-        <p id="info">Powered by <a href="https://katex.org/">KaTeX</a></p>
+        <p class="footnote">Powered by <a href="https://katex.org/">KaTeX</a></p>
         <script>
             const link = document.getElementById("link");
             const output = document.getElementById("output");

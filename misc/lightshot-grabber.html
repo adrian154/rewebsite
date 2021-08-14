@@ -1,10 +1,16 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="LightShot Grabber">
+        <meta property="og:description" content="See random screenshots uploaded to LightShot, because of their horrible ID scheme.">
+        <title>LightShot Grabber</title>
+    </head>
     <body>  
-        
         <p>Screenshots uploaded via LightShot can be accessed because the IDs assigned to each image is highly predictable.</p>
         <p><a id="link">See the image on prnt.sc.</a> Or, reload to see another.</p>
         <img id="image" referrerpolicy="no-referrer">
-
         <script>
 const url = `https://prnt.sc/${Math.floor(Math.random() * 2981820662).toString(36)}`;
 
@@ -16,6 +22,5 @@ fetch(url).then(r => r.text()).then(html => {
     }
 }).catch(console.error);
         </script>
-    
     </body>
 </html>
