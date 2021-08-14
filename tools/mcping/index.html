@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta property="og:title" content="Minecraft Server Pinger">
+        <meta property="og:description" content="An online tool for pinging Minecraft servers">
+        <title>Minecraft Server Pinger</title>
+        <link rel="icon" type="image/png" href="/images/favicon.png">
+        <link rel="stylesheet" href="../common.css">
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <h1>Minecraft Server Pinger</h1>
+        <div style="display: flex; flex-direction: row;">
+            <div style="flex-basis: 100%;">
+                <input type="text" onkeyup="if(event.key === 'Enter') pingClicked()" id="host" placeholder="Server IP or domain goes here...">
+            </div>
+            <div>
+                <button id="ping-button" onclick="pingClicked()">Ping</button>
+            </div>
+        </div>
+        <template id="server-info-template">
+            <div class="server-info">
+                <div style="display: flex; flex-direction: row; align-items: center;">
+                    <div style="height: 64px;"><img id="favicon"></div>
+                    <div><h1 id="host-name"></h1></div>
+                </div>
+                <p><b>Version</b><br><span id="version"></span></p>
+                <p><b>Players</b><br><span id="playercount"></span></p>
+                <p><b>MOTD</b><br><span id="motd"></span></p>
+                <h2>Technical Info</h2>
+                <p><b>Protocol version number</b><br><span id="protocol-version"></span></p>
+                <p><b>Raw JSON response</b><br><a target="_blank" rel="noopener noreferrer" id="raw-json">View</a></p>
+            </div>
+        </template>
+        <template id="ping-failure-template">
+            <div class="server-info">
+                <p>Sorry, but <b id="host"></b> is not responding to pings. This could be because:</p>
+                <ol>
+                    <li>The server is offline</li>
+                    <li>The server is configured to ignore pings</li>
+                    <li>The server is too old (<1.7)</li>
+                </ol>
+                <p>If you have reason to believe that this site is broken, please contact me. Note that this site does use caching to reduce network traffic and improve response times. It may take several minutes before information here is updated.</p>
+                <p>Actual error message: <code id="error-reason"></code></p>
+            </div>
+        </template>
+        <span id="anchor"></span>
+        <p class="footnote">&copy; 2020 <a href="https://github.com/adrian154">Adrian Zhang</a> &bull; Powered by <a href="https://www.npmjs.com/package/node-mc-api">node-mc-api</a></p>
+        <script src="mcformat.js"></script>
+        <script src="ping.js"></script>
+    </body>
+</html>

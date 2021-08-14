@@ -14,7 +14,7 @@
         <script>
 const url = `https://prnt.sc/${Math.floor(Math.random() * 2981820662).toString(36)}`;
 
-fetch(url).then(r => r.text()).then(html => {
+fetch(`https://apis.bithole.dev/cors-proxy?url=${encodeURIComponent(url)}`).then(r => r.text()).then(html => {
     const image = html.match(/property="og:image" content="([\.\w:\/]+)"/); 
     if(image) {
         document.getElementById("link").href = url;

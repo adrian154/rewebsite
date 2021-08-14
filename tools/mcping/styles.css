@@ -1,0 +1,88 @@
+input[type="text"] {
+    box-sizing: border-box;
+    width: 100%;
+    height: 2.5em;
+    font-family: monospace;
+    font-size: inherit;
+    border: 1px solid #aaaaaa;
+    border-radius: 3px;
+    padding-left: 0.5em;
+}
+
+button {
+    height: 2.5em;
+    margin-left: 0.5em;
+}
+
+.server-info {
+    border: 1px solid #bbbbbb;
+    border-radius: 5px;
+    margin: 1.0em 0;
+    padding: 1.0em;
+}
+
+.server-info h1, h2 {
+    font-weight: 400;
+}
+
+.server-info h1 {
+    margin: 0;
+    margin-left: 0.5em;
+    font-family: monospace;
+    font-size: 24pt;
+}
+
+.server-info h2 {
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid #cccccc;
+}
+
+img {
+    width: 64px;
+    height: 64px;
+}
+
+#motd {
+    display: inline-block;
+    font-family: monospace;
+    padding: 0.3em;
+    background-color: #000000;
+    white-space: pre-line;
+}
+
+#recents-box {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#recents-box a {
+    padding: 0 0.2em;
+    color: #80c4ff;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Minecraft formatting codes */
+.f0 { color: #000000; }
+.f1 { color: #0000aa; }
+.f2 { color: #00aa00; }
+.f3 { color: #00aaaa; }
+.f4 { color: #aa0000; }
+.f5 { color: #aa00aa; }
+.f6 { color: #ffaa00; }
+.f7 { color: #aaaaaa; }
+.f8 { color: #555555; }
+.f9 { color: #5555ff; }
+.fa { color: #55ff55; }
+.fb { color: #55ffff; }
+.fc { color: #ff5555; }
+.fd { color: #ff55ff; }
+.fe { color: #ffff55; }
+.ff { color: #ffffff; }
+.fl { font-weight: bold; }
+.fm { text-decoration: line-through; }
+.fn { text-decoration: underline; }
+.fo { font-style: italic; }
+.fr { color: #ffffff; text-decoration: none; font-style: normal; font-weight: normal; }
