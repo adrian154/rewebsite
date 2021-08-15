@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="SVG Converter">
+        <meta property="og:description" content="Convert SVGs to raster images in your browser">
+        <link rel="stylesheet" href="common.css">
+        <style>
+            #raster-canvas {
+                width: 100%;
+                object-fit: contain;
+            }
+
+            #raster-image {
+                z-index: 1;
+                position: fixed;
+                top: 0; left: 0;
+                visibility: hidden;
+            }
+        </style>
+        <title>SVG Converter</title>
+    </head>
+    <body>
+        <h1>SVG Converter</h1>
+        <input type="file" id="file-upload" accept="image/svg+xml"><br>
+        <button class="button1" onclick="convert()">Rasterize</button>
+        <img id="raster-image"></img>
+        <canvas id="raster-canvas"></canvas>
+        <script>
+            const input = document.getElementById("file-upload");
+            const canvas = document.getElementById("raster-canvas");
+            const ctx = canvas.getContext("2d");
+
+            const convert = () => {
+                
+                if(input.files.length == 0) {
+                    alert("You didn't upload any files.");
+                    return;
+                }
+
+                const objectURL = window.URL.createObjectURL(input.files[0]);
+                const image = document.getElementById("raster-image");
+                image.onload = () => {
+                    [canvas.width, canvas.height] = [image.width, image.height];
+                    ctx.drawImage(image, 0, 0);
+                    const link = document.createElement("a");
+                    link.download = input.files[0].name.match(/(.+).svg/)[1] + ".png";
+                    link.href = canvas.toDataURL();
+                    link.click();
+                };
+
+                image.src = objectURL;
+
+            };
+        </script>
+    </body>
+</html>
