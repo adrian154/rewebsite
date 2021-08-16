@@ -7,8 +7,9 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 // constants
-const BACKDROP_COLOR = "#baf4ff";
+const BACKDROP_COLOR = "#333333";
 const WIDTH = 256, HEIGHT = 256;
+const GROW_TIME = 30;
 
 [hiddenCtx.canvas.width, hiddenCtx.canvas.height] = [WIDTH, HEIGHT];
 
@@ -21,9 +22,9 @@ const Tile = Object.freeze({
 
 const TileColors = Object.freeze({
     [Tile.DIRT]: "#8f694c",
-    [Tile.GRASS]: "#46ab55",
+    [Tile.GRASS]: "#10ad3d",
     [Tile.ROCKS]: "#bababa",
-    [Tile.WATER]: "#3b9dff",
+    [Tile.WATER]: "#00c3ff",
     [Tile.SNOW]: "#fafafa"
 });
 
@@ -34,7 +35,16 @@ const generateWorld = () => {
 
     for(let x = 0; x < WIDTH; x++) {
         for(let y = 0; y < HEIGHT; y++) {
-            tiles[x][y] = {id: Math.random() < 0.5 ? Tile.GRASS : Tile.DIRT};
+            const random = Math.random() * 100;
+            let tile;
+            if(random < 1) {
+                tile = Tile.ROCKS;
+            } else if(random < 44) {
+                tile = Tile.WATER;
+            } else {
+                tile = Tile.GRASS;
+            }
+            tiles[x][y] = {id: tile};
         }
     }
 
@@ -68,35 +78,42 @@ redrawWorld();
 
 const setTile = (x, y, id) => {
     world.tiles[x][y].id = id;
-    hiddenCtx.fillStyle = TileColors[id];
-    hiddenCtx.fillRect(x, y, 1, 1);
+    if(world.time > world.GROW_TIME) {
+        hiddenCtx.fillStyle = TileColors[id];
+        hiddenCtx.fillRect(x, y, 1, 1);
+    }
 };
 
 // loop funcs
 const step = () => {
-    
-    world.time++;
 
     for(let x = 0; x < WIDTH; x++) {
         for(let y = 0; y < HEIGHT; y++) {
 
             const tile = world.tiles[x][y];
             
-            if(tile.id == Tile.DIRT) {
-                
-                let grass = 0;
-                for(let dx = -1; dx <= 1; dx++) {
-                    for(let dy = -1; dy <= 1; dy++) {
-                        if(world.tiles[x + dx]?.[y + dy]?.id == Tile.GRASS) {
-                            grass++;
-                        }
-                    }
-                }    
+            let grass = 0, water = 0, rocks = 0;
+            for(let dx = -1; dx <= 1; dx++) {
+                for(let dy = -1; dy <= 1; dy++) {
+                    if(dx == 0 && dy == 0) continue;
+                    const neighbor = world.tiles[x + dx]?.[y + dy]?.id;
+                    if(neighbor == Tile.GRASS) grass++;
+                    if(neighbor == Tile.WATER) water++;
+                    if(neighbor == Tile.ROCKS) rocks++;
+                }
+            }    
 
-                if(Math.random() < 0.001 * grass) {
+            if(tile.id === Tile.DIRT && Math.random() < 0.001 * grass) {
+                tile.next = Tile.GRASS;
+            }
+
+            // growth stage
+            if(world.time < GROW_TIME) {
+                if(water >= 5 || (tile.id == Tile.WATER && water >= 4)) {
+                    tile.next = Tile.WATER;
+                } else {
                     tile.next = Tile.GRASS;
                 }
-
             }
 
         }
@@ -111,6 +128,12 @@ const step = () => {
         }
     }
 
+    if(world.time == GROW_TIME) {
+        redrawWorld();
+    }
+
+    world.time++;
+
 };
 
 const draw = () => {
@@ -122,6 +145,15 @@ const draw = () => {
 
     // set up transform
     ctx.translate(canvas.width / 2, canvas.height / 2);
+
+    // draw ui
+    if(world.time < GROW_TIME) {
+        ctx.fillStyle = "#ff0000";
+        ctx.font = "72px sans-serif";
+        ctx.fillText("generating world", 0, 0);
+    }
+
+    // worldtransform
     ctx.scale(camera.scale, camera.scale);
     ctx.translate(camera.x, camera.y);
 
