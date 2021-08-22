@@ -36,3 +36,16 @@ h1 {
 .button1:hover {
     color: #dddddd;
 }
+
+a {
+    color: #2bc2ff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #a3a3a3;
+}
