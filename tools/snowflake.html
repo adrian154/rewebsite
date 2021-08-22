@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Discord Snowflake Decoder">
+        <meta property="og:description" content="Decode Discord IDs">
+        <title>Discord Snowflake Decoder</title>
+        <link rel="stylesheet" href="common.css">
+        <style>
+            table, td {
+                border-collapse: collapse;
+                margin: 1.0em 0;
+            }
+
+            td {
+                border: 1px solid #aaaaaa;
+                padding: 1.0em;
+            }
+
+            td:first-child {
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Discord Snowflake Decoder</h1>
+        <p><a href="index.html">&#8593; More Tools</a></p>
+        <input id="input" placeholder="Discord ID..."> <button id="decode">Decode</button>
+        <table>
+            <tr>
+                <td>Date</td>
+                <td id="date"></td>
+            </tr>
+            <tr>
+                <td>Timestamp</td>
+                <td id="timestamp"></td>
+            </tr>
+            <tr>
+                <td>Internal Worker ID</td>
+                <td id="workerID"></td>
+            </tr>
+            <tr>
+                <td>Internal Process ID</td>
+                <td id="processID"></td>
+            </tr>
+            <tr>
+                <td>Increment</td>
+                <td id="increment"></td>
+            </tr>
+        </table>
+        <script>
+            document.getElementById("decode").addEventListener("click", function() {
+                const snowflake = BigInt(document.getElementById("input").value);
+                const timestamp = Number(snowflake >> 22n) + 1420070400000;
+                document.getElementById("date").textContent = new Date(timestamp).toLocaleString([], {dateStyle: "full"});
+                document.getElementById("timestamp").textContent = timestamp;
+                document.getElementById("workerID").textContent = Number(snowflake >> 17n & 0b11111n);
+                document.getElementById("processID").textContent = Number(snowflake >> 12n & 0b11111n);
+                document.getElementById("increment").textContent = Number(snowflake & 0x1FFn);
+            });
+        </script>
+    </body>
+</html>
