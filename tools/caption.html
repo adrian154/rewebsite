@@ -3,18 +3,18 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta property="og:title" content="OpenGraph Image Captioner">
-        <meta property="og:description" content="Text goes here">
-        <title>OpenGraph Image Captioner</title>
+        <meta property="og:title" content="OpenGraph Embed Customizer">
+        <meta property="og:description" content="Your text could be here :)">
+        <title>OpenGraph Embed Customizer</title>
         <link rel="stylesheet" href="common.css">
     </head>
     <body>
-        <h1>OpenGraph Image Captioner</h1>
+        <h1>OpenGraph Embed Customizer</h1>
         <p><a href="index.html">&#8593; More Tools</a></p>
         <input id="url" placeholder="Image URL..."><br>
         <input id="title" placeholder="Title..."><br>
         <input id="description" placeholder="Description..."><br>
-        <button onclick="caption()">Caption</button>
+        <button onclick="caption()">Embed</button>
         <script>
             const caption = () => {
                 window.location.href = `https://apis.bithole.dev/embed?title=${document.getElementById("title").value}&desc=${document.getElementById("description")}&url=${document.getElementById("url")}`;
