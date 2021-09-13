@@ -40,7 +40,7 @@
                     const interval = now - lastClickTime;
                     total += interval;
                     intervals.push(interval); 
-                    if(interval.length > 5) total -= intervals.shift();
+                    if(intervals.length > 5) total -= intervals.shift();
                     display.textContent = "BPM: " + ((1000 * 60) / (total / intervals.length)).toFixed(1);
                 }
                 lastClickTime = now;

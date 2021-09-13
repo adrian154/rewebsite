@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sampling Demo</title>
+    </head>
+    <body>
+        <canvas id="canvas" width="512" height="512"></canvas>
+        <script>
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+
+            const sample = (x, y) => {
+
+                if(x * x + y * y < 1) { 
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(x * canvas.width, (1 - y) * canvas.height, 2, 2);
+                    return true;
+                }
+
+                ctx.fillStyle = "blue";
+                ctx.fillRect(x * canvas.width, (1 - y) * canvas.height, 2, 2);
+                return false;
+
+            };
+
+            const uniform = (samples) => {
+                let hit = 0;
+                for(let i = 0; i < samples; i++) {
+                    if(sample(Math.random(), Math.random())) hit++;
+                }
+                return hit;
+            };
+
+            const regular = (samples) => {
+                const dim = Math.sqrt(samples);
+                let hit = 0;
+                for(let x = 0; x < dim; x++) {
+                    for(let y = 0; y < dim; y++) {
+                        if(sample(x / dim, y / dim)) hit++;
+                    }
+                }
+                return hit;
+            };
+                
+            const stratified = (samples) => {
+                const dim = Math.sqrt(samples);
+                const sz = 1 / dim;
+                let hit = 0;
+                for(let x = 0; x < dim; x++) {
+                    for(let y = 0; y < dim; y++) {
+                        if(sample(x / dim + Math.random() * sz, y / dim + Math.random() * sz)) hit++;
+                    }
+                }
+                return hit;
+            };
+
+            const varianceGuided = (samples) => {
+                
+                const tiles = 8, sz = 1 / tiles;
+                let hit = 0;
+
+                // flat array for simplicity
+                let scores = new Array(tiles * tiles).fill(0), totScore = 0;
+                const samplesPer = samples / 2 / (tiles * tiles);
+                for(let x = 0; x < tiles; x++) {
+                    for(let y = 0; y < tiles; y++) {
+                        let tileHit = 0, tileMiss = 0;
+                        for(let i = 0; i < samplesPer; i++) {
+                            if(sample(x / tiles + Math.random() * sz, y / tiles + Math.random() * sz))
+                                hit++;
+                            else
+                                miss++;
+                        } 
+                        const score = Math.min(hit, miss) / Math.max(hit, miss);
+                        score[y * tiles + x] = score;
+                        totScore += score;
+                    }
+                }
+
+                // second pass
+                for(let x = 0; x < tiles; x++) {
+                    for(let y = 0; y < tiles; y++) {
+
+                    }
+                }
+
+            };
+
+            const rmse = (sampler, trials) => {
+                let tse = 0;
+                for(let i = 0; i < trials; i++) {
+                    const hit = sampler(1024);
+                    const estimate = hit / 256; 
+                    tse += (estimate - Math.PI)**2;
+                }
+                return Math.sqrt(tse / trials);
+            };
+
+        </script>
+    </body>
+</html>
