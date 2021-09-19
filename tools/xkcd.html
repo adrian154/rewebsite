@@ -49,7 +49,12 @@
                 color: rgba(0, 0, 0, 60%);
             }
 
-            #title:hover {
+            #footnote, #footnote a, #footnote a:visited {
+                color: rgba(0, 0, 0, 50%);
+                font-size: 10pt;
+            }
+
+            a:hover {
                 text-decoration: underline;
             }
 
@@ -100,13 +105,13 @@
             <p id="subtitle"></p>
             <img id="image">
             <p id="alt-text"></p>
+            <p id="footnote"><a href="https://xkcd.com/">xkcd</a> &bull; <a href="https://github.com/adrian154/rewebsite/blob/main/tools/xkcd.html">source code</a> &bull; <a href="https://bithole.dev/tools/">other tools</a></p>
         </div>
         <script>
             const image = document.getElementById("image"),
                   title = document.getElementById("title"),
                   subTitle = document.getElementById("subtitle"),
                   altText = document.getElementById("alt-text");
-
 
             const url = new URL(window.location);
 
@@ -115,7 +120,7 @@
 
             const goto = (num) => {
                 window.scrollTo({top: 0});
-                if(num > max || num < 1) return;
+                if(typeof num === "number" && (num < 0 || num > max)) return;
                 fetch(`https://apis.bithole.dev/cors-proxy?url=${encodeURIComponent(`https://xkcd.com/${num || ""}/info.0.json`)}`).then(resp => resp.json()).then(data => {
                     console.log(data);
                     image.onload = () => {
