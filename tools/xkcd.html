@@ -54,7 +54,7 @@
                 font-size: 10pt;
             }
 
-            a:hover {
+            h1:hover {
                 text-decoration: underline;
             }
 
@@ -103,6 +103,8 @@
             </div>
             <h1><a id="title"></a></h1>
             <p id="subtitle"></p>
+            <p id="disclaimer" style="display: none;"><b>This comic features interactive content, view it on the official xkcd website to experience it!</b></p>
+            <noscript><b>Sorry, but this page relies on JavaScript to display comics.</b> Try using the official xkcd website instead.</noscript>
             <img id="image">
             <p id="alt-text"></p>
             <p id="footnote"><a href="https://xkcd.com/">xkcd</a> &bull; <a href="https://github.com/adrian154/rewebsite/blob/main/tools/xkcd.html">source code</a> &bull; <a href="https://bithole.dev/tools/">other tools</a></p>
@@ -111,7 +113,8 @@
             const image = document.getElementById("image"),
                   title = document.getElementById("title"),
                   subTitle = document.getElementById("subtitle"),
-                  altText = document.getElementById("alt-text");
+                  altText = document.getElementById("alt-text"),
+                  disclaimer = document.getElementById("disclaimer");
 
             const url = new URL(window.location);
 
@@ -130,6 +133,7 @@
                         image.title = data.alt;
                         altText.textContent = data.alt;
                         subTitle.innerHTML = `${["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][data.month]} ${data.day}, ${data.year} &bull; <a href="${`https://explainxkcd.com/${data.num}/`}">explain this</a>`;
+                        disclaimer.style.display = data.extra_parts ? "block" : "none";
                     };
                     image.src = data.img;
                     number = data.num;
