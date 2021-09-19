@@ -107,9 +107,11 @@
                   subTitle = document.getElementById("subtitle"),
                   altText = document.getElementById("alt-text");
 
-            let number = 0;
-            let max;
+
             const url = new URL(window.location);
+
+            let number = url.searchParams.get("number");
+            let max;
 
             const goto = (num) => {
                 window.scrollTo({top: 0});
@@ -134,7 +136,7 @@
                 });
             };
 
-            goto();
+            goto(number);
         </script>
     </body>
 </html>
