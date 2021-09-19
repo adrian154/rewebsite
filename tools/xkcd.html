@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="xkcd viewer">
+        <meta property="og:description" content="Unofficial viewer for the xkcd webcomic">
+        <title>xkcd viewer</title>
+        <style>
+            body, html {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+            }
+
+            body {
+                display: flex;
+            }
+
+            #container {
+                max-width: 100%;
+                box-sizing: border-box;
+                padding: 1.0em;
+                margin: 0 auto;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; 
+            }
+
+            h1 {
+                text-align: center;
+                font-weight: 500;
+                margin: 0.5em 0;
+                margin-bottom: 0;
+                font-size: 20pt;
+            }
+
+            img {
+                display: block;
+                margin: auto;
+            }
+
+            #title {
+                color: #000;
+                text-decoration: none;
+            }
+
+            #subtitle {
+                margin-top: 0;
+                text-align: center;
+                color: rgba(0, 0, 0, 60%);
+            }
+
+            #title:hover {
+                text-decoration: underline;
+            }
+
+            #alt-text {
+                color: rgba(0, 0, 0, 75%);
+                font-style: italic;
+            }
+
+            @media (pointer: fine) {
+                #alt-text {
+                    display: none;
+                }
+            }
+
+            #buttons {
+                display: flex;
+                width: 100%;
+                justify-content: center;
+                margin: 1.0em 0;
+            }
+
+            #buttons button {
+                font-size: 14pt;
+                padding: 0;
+                width: 4.5em;
+                margin: 0 0.5em;
+                border: 1px solid rgba(0, 0, 0, 0.5);
+                border-radius: 5px;
+                background: none;
+            }
+
+            #buttons button:hover {
+                background: rgba(0, 0, 0, 10%);
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div id="buttons">
+                <button onclick="goto(1)">&#8676;</button>
+                <button onclick="goto(number - 1)">prev</button>
+                <button onclick="goto(Math.floor(Math.random() * max) + 1)">random</button>
+                <button onclick="goto(number + 1)">next</button>
+                <button onclick="goto()">&#8677;</button>
+            </div>
+            <h1><a id="title"></a></h1>
+            <p id="subtitle"></p>
+            <img id="image">
+            <p id="alt-text"></p>
+        </div>
+        <script>
+            const image = document.getElementById("image"),
+                  title = document.getElementById("title"),
+                  subTitle = document.getElementById("subtitle"),
+                  altText = document.getElementById("alt-text");
+
+            let number = 0;
+            let max;
+            const url = new URL(window.location);
+
+            const goto = (num) => {
+                window.scrollTo({top: 0});
+                if(num > max || num < 1) return;
+                fetch(`https://apis.bithole.dev/cors-proxy?url=${encodeURIComponent(`https://xkcd.com/${num || ""}/info.0.json`)}`).then(resp => resp.json()).then(data => {
+                    console.log(data);
+                    image.onload = () => {
+                        title.textContent = `xkcd - ${data.title}`;
+                        title.href = `https://xkcd.com/${data.num}`;
+                        image.alt = data.alt;
+                        image.title = data.alt;
+                        altText.textContent = data.alt;
+                        subTitle.innerHTML = `${["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][data.month]} ${data.day}, ${data.year} &bull; <a href="${`https://explainxkcd.com/${data.num}/`}">explain this</a>`;
+                    };
+                    image.src = data.img;
+                    number = data.num;
+                    url.searchParams.set("number", num || "");
+                    window.history.pushState({}, "", url);
+                    if(!num) {
+                        max = data.num;
+                    }
+                });
+            };
+
+            goto();
+        </script>
+    </body>
+</html>
