@@ -49,3 +49,21 @@ a:hover {
 a:visited {
     color: #a3a3a3;
 }
+
+.box {
+    border: 1px solid #bbbbbb;
+    border-radius: 5px;
+    margin: 1.0em 0;
+    padding: 1.0em;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table td, .table th {
+    border: 1px solid #aaaaaa;
+    padding: 1.0em;
+    font-weight: bold;
+}

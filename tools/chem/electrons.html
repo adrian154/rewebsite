@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Electron Solver">
+        <meta property="og:description" content="Because life doesn't need to be any harder than it already is">
+        <title>Electron Solver</title>
+        <link rel="stylesheet" href="../common.css">
+    </head>
+    <body>
+        
+        <h1>Electron Solver</h1>
+        <p><a href="../index.html">&#8593; More Tools</a></p>
+        
+        <p><b>Function 1:</b> Determine electron configuration and quantum numbers based on atomic number.</p>
+        <input type="number" id="field-atomic-number" placeholder="Atomic number...">
+        <button id="solve-atomic">Solve</button>
+        
+        <p><b>Function 2:</b> Determine atomic number and electron configuration based on quantum numbers.</p>
+        <input type="number" placeholder="Principal (n)"><br>
+        <input type="number" placeholder="Subshell (l)"><br>
+        <input type="number" placeholder="Magnetic (ml)"><br>
+        <select id="spin">
+            <option value="+1/2">+1/2</option>
+            <option value="-1/2">-1/2</option>
+        </select><br>
+        <button id="solve-quantum">Solve</button>
+        
+        <div class="box">
+            <p><b>Atomic Number: </b><span id="result-atomic-number"></span></p>
+            <p><b>Configuration: </b><span id="result-config"></span></p>
+            <p><b>Electrons</b></p>
+            <table class="table" id="electrons-table">
+                <thead>
+                    <tr>
+                        <th>Principal (<i>n</i>)</th>
+                        <th>Subshell (<i>l</i>)</th>
+                        <th>Magnetic (<i>m<sub>l</sub></i>)</th>
+                        <th>Spin (<i>m<sub>s</sub></i>)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            // as with everything on this site, all this code is MIT licensed
+            // beware, though: it sucks - there's no point in going through all the electrons
+            // i just did this for simplicity. maybe I'll clean things up later
+
+            const SUBSHELLS = "spdfghi";
+
+            // iterate over electrons w/ exit condition depending on what's being solved
+            const solve = (options) => {
+
+                const electrons = [];
+                const orbitals = [];
+
+                // outer loop: iterate through subshells according to Aufbau
+                for(let nmax = 1;; nmax++) {
+                    for(let lmax = nmax - 2; lmax < nmax; lmax++) {
+
+                        // degenerate case >:(
+                        if(lmax < 0) continue;
+
+                        for(let l = lmax; l >= 0; l--) {
+                            const n = nmax + lmax - l;
+                            let exit = false, count = 0;
+
+                            // hund's rule: all orbitals fill with single electrons of the same spin
+                            // ... before filling with electrons of the opposite spin
+                            // assume that they start spin-up because reasons :)
+                            out:
+                            for(const ms of ["-1/2", "+1/2"]) {
+                                for(let ml = -l; ml <= l; ml++) {
+
+                                    // add electron
+                                    count++;
+                                    electrons.push({n, l, ml, ms});
+                                    if(electrons.length === options || (n == options?.n && l == options?.l && ml == options?.ml && ms == options?.ms)) {
+                                        exit = true;
+                                        break out;
+                                    }
+
+
+                                }
+                            }
+
+                            orbitals.push(n + SUBSHELLS[l] + count);
+
+                            if(exit) {
+                                return {electrons, orbitals};
+                            }
+
+                        }
+
+                    }
+                }
+
+            };
+
+            const cell = text => {
+                const elem = document.createElement("td");
+                elem.textContent = text;
+                return elem;
+            };
+
+            const update = (solved) => {
+                
+                document.getElementById("result-atomic-number").textContent = solved.electrons.length;
+                document.getElementById("result-config").textContent = solved.orbitals.join(" ");
+
+                const table = document.getElementById("electrons-table");
+                table.querySelector("tbody").remove();
+                const tbody = document.createElement("tbody");
+                for(const electron of solved.electrons) {
+                    const row = document.createElement("tr");
+                    row.append(cell(electron.n));
+                    row.append(cell(electron.l));
+                    row.append(cell(electron.ml));
+                    row.append(cell(electron.ms));
+                    tbody.append(row);
+                }
+                table.append(tbody);
+
+            };
+            
+            document.getElementById("solve-atomic").addEventListener("click", (event) => {
+                const value = Number(document.getElementById("field-atomic-number").value);
+                if(value >= 0) {
+                    update(solve(value));
+                } else {
+                    alert("invalid value >:(");
+                }
+            });
+        </script>
+    </body>
+</html>

@@ -68,6 +68,33 @@ a:visited {
     grid-gap: 1.0em;
 }
 
+#misc-box p {
+    margin-bottom: 0;
+}
+
+#misc-box .bubble span:first-child {
+    font-weight: bold;
+    font-size: 9pt;
+    margin: 0.5em 0;
+    line-height: 11pt;
+}
+
+.demo {
+    color: #ff8d54;
+}
+
+.tool {
+    color: #54b5ff;
+}
+
+.game {
+    color: #b254ff;
+}
+
+.misc {
+    color: #c7c7c7;
+}
+
 @media (max-width: 600px) {
     #misc-box {
         grid-template-columns: auto;
