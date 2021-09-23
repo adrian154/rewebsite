@@ -13,15 +13,17 @@
         <h1>Electron Solver</h1>
         <p><a href="../index.html">&#8593; More Tools</a></p>
         
+        <p>This tool is still in development! It may have sneaky problems (though I'm confident that it doesn't). Please contact me if there's anything unexpected.</p>
+
         <p><b>Function 1:</b> Determine electron configuration and quantum numbers based on atomic number.</p>
         <input type="number" id="field-atomic-number" placeholder="Atomic number...">
         <button id="solve-atomic">Solve</button>
         
         <p><b>Function 2:</b> Determine atomic number and electron configuration based on quantum numbers.</p>
-        <input type="number" placeholder="Principal (n)"><br>
-        <input type="number" placeholder="Subshell (l)"><br>
-        <input type="number" placeholder="Magnetic (ml)"><br>
-        <select id="spin">
+        <input type="number" id="field-n" placeholder="Principal (n)"><br>
+        <input type="number" id="field-l" placeholder="Subshell (l)"><br>
+        <input type="number" id="field-ml" placeholder="Magnetic (ml)"><br>
+        <select id="field-ms">
             <option value="+1/2">+1/2</option>
             <option value="-1/2">-1/2</option>
         </select><br>
@@ -73,7 +75,7 @@
                             // ... before filling with electrons of the opposite spin
                             // assume that they start spin-up because reasons :)
                             out:
-                            for(const ms of ["-1/2", "+1/2"]) {
+                            for(const ms of ["+1/2", "-1/2"]) {
                                 for(let ml = -l; ml <= l; ml++) {
 
                                     // add electron
@@ -134,6 +136,22 @@
                 } else {
                     alert("invalid value >:(");
                 }
+            });
+
+            document.getElementById("solve-quantum").addEventListener("click", (event) => {
+                
+                const n = Number(document.getElementById("field-n").value),
+                      l = Number(document.getElementById("field-l").value),
+                      ml = Number(document.getElementById("field-ml").value),
+                      ms = document.getElementById("field-ms").value;
+
+                console.log(n,l,ml,ms);
+                if(n >= 0 && l >= 0 && l < n && ml >= -l && ml <= l) {
+                    update(solve({n, l, ml, ms}));
+                } else {
+                    alert("invalid value >:(");
+                }
+
             });
         </script>
     </body>
