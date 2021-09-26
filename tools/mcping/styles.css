@@ -14,18 +14,18 @@ button {
     margin-left: 0.5em;
 }
 
-.server-info h1, h2 {
+.box h1, h2 {
     font-weight: 400;
 }
 
-.server-info h1 {
+.box h1 {
     margin: 0;
     margin-left: 0.5em;
     font-family: monospace;
     font-size: 24pt;
 }
 
-.server-info h2 {
+.box h2 {
     padding-bottom: 0.3em;
     border-bottom: 1px solid #cccccc;
 }
