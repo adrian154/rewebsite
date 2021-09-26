@@ -13,7 +13,7 @@ const button = document.getElementById("ping-button");
 const pingClicked = async () => {
     
     // remove existing
-    const info = document.querySelector(".server-info");
+    const info = document.querySelector(".box");
     if(info) {
         info.remove();
     }
