@@ -17,7 +17,7 @@
         <button onclick="caption()">Embed</button>
         <script>
             const caption = () => {
-                window.location.href = `https://apis.bithole.dev/embed?title=${document.getElementById("title").value}&desc=${document.getElementById("description")}&url=${document.getElementById("url")}`;
+                window.location.href = `https://apis.bithole.dev/embed?title=${encodeURIComponent(document.getElementById("title").value)}&desc=${encodeURIComponent(document.getElementById("description").value)}&url=${encodeURIComponent(document.getElementById("url").value)}`;
             };
         </script>
     </body>
