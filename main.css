@@ -1,5 +1,5 @@
 body {
-    background-color: #eeeeee;
+    background-color: #cff8ff;
 }
 
 #vertical-container {
@@ -19,7 +19,7 @@ body {
     padding: 1.5em;
     background-color: #ffffff;
     font-size: 11pt;
-    box-shadow: 0px 0px 8px #cccccc;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 30%);
     overflow-wrap: break-word;
 }
 
@@ -30,6 +30,11 @@ body {
 
 h1, h2, h3 {
     font-family: monospace;
+}
+
+h1 {
+    margin-top: 1.0em;
+    margin-bottom: 0.4em;
 }
 
 #copyright {
