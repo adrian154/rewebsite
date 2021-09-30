@@ -204,12 +204,12 @@
         </div>
 
         <script>
-            document.body.style.backgroundColor = `hsl(${Math.random() * 360}, 25%, 90%)`;
+            document.body.style.background = `hsl(${Math.random() * 360}, 25%, 90%)`;
 
             let color = 0;
             const animate = () => {
-                document.body.style.backgroundColor = `hsl(${color}, 100%, 85%)`;
-                color++;
+                document.body.style.background = `linear-gradient(${(Math.sin(color / 200) + 1) * 180}deg, hsl(${color}, 100%, 75%), hsl(${(color + 180) % 360}, 100%, 75%))`;
+                color += 2;
                 requestAnimationFrame(animate);
             };
         </script>
