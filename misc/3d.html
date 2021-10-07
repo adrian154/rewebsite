@@ -62,13 +62,6 @@
             };
 
             animate();
-
-            window.addEventListener("mousemove", (event) => {
-                const dim = Math.min(window.innerWidth, window.innerHeight);
-                console.log(dim, event.offsetX);
-                x = (event.offsetX - dim / 2) / 100;
-                y = (event.offsetY - dim / 2) / 100;
-            });
         </script>
     </body>
 </html>
