@@ -46,10 +46,9 @@
             const target = url.searchParams.get("url") || "https://en.wikipedia.org/wiki/Special:Random";
             frame.src = target;
 
-            const x = Math.random()-0.5, y = Math.random()-0.5, z = Math.random()-0.5;
             let t = 0;
             const animate = () => {
-                frame.style.transform = `rotate3d(${x}, ${y}, ${z}, ${t}deg)`;
+                frame.style.transform = `rotate3d(${Math.sin(t / 100)}, ${Math.cos(t / 100)}, ${Math.cos(t / 100 + 2.0)}, ${t}deg)`;
                 t++;
                 requestAnimationFrame(animate);
             };
@@ -63,6 +62,13 @@
             };
 
             animate();
+
+            window.addEventListener("mousemove", (event) => {
+                const dim = Math.min(window.innerWidth, window.innerHeight);
+                console.log(dim, event.offsetX);
+                x = (event.offsetX - dim / 2) / 100;
+                y = (event.offsetY - dim / 2) / 100;
+            });
         </script>
     </body>
 </html>
