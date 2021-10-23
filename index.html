@@ -88,13 +88,16 @@
 
             /* christmas countdown */
             const SECOND = 1000, MINUTE = 60 * SECOND, HOUR = 60 * MINUTE, DAY = 24 * HOUR;
+            const format = (qty, unit) => qty > 0 ? `${qty} ${unit}${qty != 1 ? "s" : ""}` : "";
             const christmasDate = new Date(2021, 11, 25);
 
             const countdown = () => {
-                const difference = christmasDate - Date.now();
-                const days   = Math.floor(difference / DAY),
-                      hours  = Math.floor((difference - DAY * days) / HOUR); 
-                document.getElementById("christmas-countdown").textContent = `It will be Christmas in ${(days > 0 ? `${days} days,` : "")} ${(hours > 0 ? `${hours} hours` : "")}.`;
+                let difference = christmasDate - Date.now();
+                const days    = Math.floor(difference / DAY),
+                      hours   = Math.floor((difference -= DAY * days) / HOUR),
+                      minutes = Math.floor((difference -= HOUR * hours) / MINUTE),
+                      seconds = Math.floor((difference -= MINUTE * minutes) / SECOND); 
+                document.getElementById("christmas-countdown").textContent = `It will be Christmas in ${[format(days, "day"), format(hours, "hour"), format(minutes, "minute"), format(seconds, "second")].filter(Boolean).join(", ")}`;
             };
 
             setInterval(countdown, 1000);
