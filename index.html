@@ -3,184 +3,54 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta property="og:title" content="Adrian's Homepage">
+        <meta property="og:title" content="bithole.dev">
+        <meta property="og:description" content="Adrian's homepage">
         <title>Adrian's Homepage</title>
         <link rel="stylesheet" href="fonts.css">
         <link rel="stylesheet" href="main.css">
     </head>
     <body>
+        <div id="background"></div>
         <div id="vertical-container">
             <div id="inner-col">
+                
                 <h1>about</h1>
                 <div class="bubble">
+
                     <div class="blurb">
-                        <div style="display: flex; flex-direction: row;">
-                            <div style="align-items: center; margin-right: 1.0em;">
-                                <p><img src="images/minecraft-icon.png" style="width: 5.0em; margin: 0;"></p>
-                            </div>
-                            <div>
-                                <p><b>Do you have Minecraft?</b> Come play on our 1.17.1 survival server! Join at <code>mc.bithole.dev</code>, or check out the <a href="https://dynmap.bithole.dev">online map</a>. See you there!</p>
-                            </div>
+                        <div>
+                            <p><img src="images/minecraft-icon.png"></p>
+                        </div>
+                        <div>
+                            <p><b>Do you have Minecraft?</b> Come play on our 1.17.1 survival server! Join at <code>mc.bithole.dev</code>, or check out the <a href="https://dynmap.bithole.dev">online map</a>. See you there!</p>
                         </div>
                     </div>
-                    <p>Hi, I'm Adrian. I'm a student and a programmer. This is my website, where I put my random tinkerings. You can view its code on <a href="https://github.com/adrian154/rewebsite">GitHub</a>.</p>
+
+                    <div class="blurb" style="background-color: rgba(207, 83, 83, 10%); border-left: 2px solid #cf5353;">
+                        <div>
+                            <p><img src="images/christmas-icon.png"></p>
+                        </div>
+                        <div>
+                            <p id="christmas-countdown">Christmas is coming soon... are you ready? Enable JavaScript to see a live countdown here.</p>
+                        </div>
+                    </div>
+
+                    <p>Hi, I'm Adrian. I am, among other things, a student and a programmer. This is my website, where I put random things I've made. You can contribute to its code on <a href="https://github.com/adrian154/rewebsite">GitHub</a>. Or, browse my <a href="projects.html">projects</a> and <a href="misc.html">miscellaneous tinkerings</a>.</p>
                     <p><i>Remember Aaron Swartz. <a href="https://custodians.online/">Stand behind Open Access</a>.</i></p>
-                    <noscript><b>Looks like you've got JavaScript disabled.</b> This page doesn't use JS, but many of the interactive demos linked here won't work.</noscript>
+                
                 </div>
 
                 <h1>profiles / contact</h1>
                 <div class="bubble">
                     <ul>
+                        <li><b>Discord (preferred): drain#5012</b></li>
+                        <li><b>Email:</b> azhangcc@gmail.com</li>
                         <li><b>GitHub:</b> <a href="https://github.com/adrian154">@adrian154</a></li>
                         <li><b>Flickr:</b> <a href="https://www.flickr.com/photos/192931620@N06/">@adrian.z</a></li>
-                        <lI><b>PGP Key:</b> 00808F37AD07B10B3AC04D706833FD7CB77A9385 (key available <a href="/pgp-key.txt">here</a>)</lI>
+                        <li><b>NPM:</b> <a href="https://www.npmjs.com/~adrian154">adrian154</a></li>
+                        <lI><b>PGP Key:</b> 00808F37AD07B10B3AC04D706833FD7CB77A9385 (<a href="pgp-key.txt">key</a>)</lI>
                     </ul>
-                    <p>My preferred method of contact is through Discord; my tag is <b>drain#5012</b>. If you would rather reach me through digital snailmail, you can also try my email at <b>azhangcc@gmail.com</b>, though be warned that I check it infrequently.</p>
                     <p>You can send me some bitcoins at <a href="bitcoin:BC1Q3HPYPQYHRFT6A67DHLRT22CL6SAW775KD2H298">bc1q3hpypqyhrft6a67dhlrt22cl6saw775kd2h298</a>, though personally I am a bigger advocate for <a href="https://nano.org/">Nano</a>. Please excuse the address reuse.</p>
-                </div>
-
-                <h1>projects</h1>
-                
-                <div class="bubble">
-                    <h2>Pixels</h2>
-                    <p>An r/place clone, built with JS and websockets</p>
-                    <p><a href="https://pixels.bithole.dev">Try it out!</a></p>
-                    <a href="images/canvas.png"><img src="images/canvas.png" alt="canvas"></img></a>
-                </div>
-
-                <div class="bubble">
-                    <h2>egg-kernel</h2>
-                    <p>A tiny kernel for x86, created using C and assembly.</p>
-                    <p><a href="https://github.com/adrian154/egg-kernel">See it on GitHub!</a></p>
-                    <a href="images/egg-kernel.png"><img src="images/egg-kernel.png" alt="Picture of the kernel at startup"></a>
-                </div>
-
-                <div class="bubble">
-                    <h2>JavaPathtracer</h2>
-                    <p>A photorealistic renderer written in Java.</p>
-                    <p><a href="https://github.com/adrian154/JavaPathtracer">See it on GitHub!</a></p>
-                    <a href="images/javapathtracer.png"><img src="images/javapathtracer.png" alt="Scene rendered with the pathtracer"></a>
-                </div>
-
-                <div class="bubble">
-                    <h2>Tiny Virtual Machine (TVM)</h2>
-                    <p>An artificial, emulated CPU, useful for teaching assembly programming and low-level concepts while avoiding the historical baggage of real architectures.</p>
-                    <p><a href="https://github.com/adrian154/tvm">See it on GitHub!</a></p>
-                    <a href="images/tvm.png"><img src="images/tvm.png" alt="A picture of the TVM workspace"></a>
-                </div>
-
-                <div class="bubble">
-                    <h2>MCWebSocketPlugin</h2>
-                    <p>A simple framework for building websocket-based Minecraft integrations like Discord bots or web consoles.</p>
-                    <p><a href="https://github.com/adrian154/MCWebSocketPlugin">See it on GitHub!</a></p>
-                </div>
-
-                <div class="bubble">
-                    <h2>MineLink</h2>
-                    <p>A Discord-Minecraft interlink system built on top of MCWebSocket. Currently used on my SMP.</p>
-                    <p><a href="https://github.com/adrian154/minelink">See it on GitHub!</a></p>
-                    <a href="images/minelink.PNG"><img src="images/minelink.PNG" alt="MineLink at work"></a>
-                </div>
-
-                <div class="bubble">
-                    <h2>node-mc-api</h2>
-                    <p>A NodeJS package providing functions for pinging Minecraft servers and interacting with Mojang's official API. Capable of authenticating users, updating skins, and looking up name histories.</p>
-                    <p><a href="https://github.com/adrian154/node-mc-api">See it on GitHub!</a></p>
-                </div>
-
-                <h1>miscellaneous</h1>
-
-                <div id="misc-box">
-                    <div class="bubble">
-                        <span class="game">GAME</span> &bull;
-                        <a href="https://soccer.bithole.dev">Soccer</a>
-                        <p>Multiplayer soccer game in your browser</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="demo">DEMO</span> &bull;
-                        <a href="demos/barycentric-coords">Barycentric Coordinates</a>
-                        <p>See how barycentric coordinates can be used to determine whether a point lands within a triangle.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="tool">TOOL</span> &bull;
-                        <a href="tools/bpm-identifier.html">BPM Identifier</a>
-                        <p>Determine the tempo of anything by clicking your mouse to the beat.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="demo">DEMO</span> &bull;
-                        <a href="demos/game-of-life/">Game of Life</a>
-                        <p>Simulate different <i>Life</i>-like cellular automata in the browser.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="misc">MISC</span> &bull;
-                        <a href="misc/lightshot-grabber.html">Lightshot Grabber</a>
-                        <p>Look at random screenshots taken through Lightshot, thanks to their horrible URL security.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="tool">TOOL</span> &bull;
-                        <a href="tools/mathtool/create.html">MathTool</a>
-                        <p>Create beautiful math equations and share the link with friends.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="game">GAME</span> &bull;
-                        <a href="games/minesweeper.html">Minesweeper</a>
-                        <p>Classic Minesweeper in your browser.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="demo">DEMO</span> &bull;
-                        <a href="demos/optics/coma.html">Coma Demo</a>
-                        <p>See why parabolic mirrors fail to focus off-axis rays from infinity.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="demo">DEMO</span> &bull;
-                        <a href="demos/optics/spherical-aberration.html">Spherical Aberration Demo</a>
-                        <p>See why spherical mirrors can never focus light to a point.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="tool">TOOL</span> &bull;
-                        <a href="tools/mirror-calculator.html">Telescope Mirror Calculator</a>
-                        <p>A simple tool to determine mirror sagitta from focal length and vice versa.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="demo">DEMO</span> &bull;
-                        <a href="demos/sine.html">Sine Demo</a>
-                        <p>See how circles and trigonometric functions are related.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="game">GAME</span> &bull;
-                        <a href="games/spacegame">SpaceGame</a>
-                        <p>Dodge asteroids and try to stave off your inevitable death.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="demo">DEMO</span> &bull;
-                        <a href="demos/sph.html">SPH</a>
-                        <p>Play with semi-realistic water simulated using smoothed particle hydrodynamics.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="demo">DEMO</span> &bull;
-                        <a href="demos/springs">Springs</a>
-                        <p>Mess around with simulated springs.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="misc">MISC</span> &bull;
-                        <a href="misc/calendar-fact.html">CalendarFact</a>
-                        <p>Generate <s>fake</s> real calendar facts as per <a href="https://xkcd.com/1930/">xkcd #1930</a>.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="game">GAME</span> &bull;
-                        <a href="games/spacegame2">SpaceGame 2</a>
-                        <p>Now with 100% more explosions!</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="tool">TOOL</span> &bull;
-                        <a href="tools/mcping">Minecraft Server Pinger</a>
-                        <p>Check the status of your favorite Minecraft servers from the browser.</p>
-                    </div>
-                    <div class="bubble">
-                        <span class="tool">TOOL</span> &bull;
-                        <a href="tools/svg-converter.html">SVG Rasterizer</a>
-                        <p>Convert vector images to PNG</p>
-                    </div>
                 </div>
 
                 <h1>other links</h1>
@@ -205,14 +75,31 @@
         </div>
 
         <script>
-            document.body.style.background = `hsl(${Math.random() * 360}, 25%, 90%)`;
 
+            /* partymode */
             let color = 0;
+            const background = document.getElementById("background");
+
             const animate = () => {
-                document.body.style.background = `linear-gradient(${(Math.sin(color / 200) + 1) * 180}deg, hsl(${color}, 100%, 75%), hsl(${(color + 180) % 360}, 100%, 75%))`;
+                background.style.background = `linear-gradient(${color}deg, hsl(${color}, 100%, 75%), hsl(${(color + 180) % 360}, 100%, 75%))`;
                 color += 2;
                 requestAnimationFrame(animate);
             };
+
+            /* christmas countdown */
+            const SECOND = 1000, MINUTE = 60 * SECOND, HOUR = 60 * MINUTE, DAY = 24 * HOUR;
+            const christmasDate = new Date(2021, 11, 25);
+
+            const countdown = () => {
+                const difference = christmasDate - Date.now();
+                const days   = Math.floor(difference / DAY),
+                      hours  = Math.floor((difference - DAY * days) / HOUR); 
+                document.getElementById("christmas-countdown").textContent = `It will be Christmas in ${(days > 0 ? `${days} days,` : "")} ${(hours > 0 ? `${hours} hours` : "")}.`;
+            };
+
+            setInterval(countdown, 1000);
+            countdown();
+
         </script>
 
     </body>
