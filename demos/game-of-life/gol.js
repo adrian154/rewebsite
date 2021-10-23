@@ -7,9 +7,6 @@ const link = document.getElementById("link");
 let born = [3];
 let survive = [2, 3];
 
-// other settings
-let aliveColor, deadColor;
-
 // Parse URL
 const url = new URL(window.location.href);
 const rule = url.searchParams.get("rule")?.match(/b(\d+)s(\d+)/);
@@ -23,6 +20,8 @@ if(rule) {
 let initialType = url.searchParams.get("initialType") || "random";
 let density = url.searchParams.get("density") || 0.5;
 let pattern = url.searchParams.get("pattern");
+let aliveColor = url.searchParams.get("aliveColor") || "#ffffff", deadColor = url.searchParams.get("deadColor") || "#000000";
+
 
 // other simulation state
 let running = true;
@@ -36,16 +35,10 @@ canvas.width = WIDTH * CELL_SIZE;
 canvas.height = HEIGHT * CELL_SIZE;
 const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
-const make2DArr = (xSize, ySize) => {
-	const result = new Array(xSize);
-	for(let x = 0; x < xSize; x++) {
-		result[x] = new Array(ySize);
-	}
-	return result;
-};
+const make2DArr = (xSize, ySize) => Array.from({length: xSize}, () => new Array(ySize).fill(0));
 
 // Double-buffer board 
-const board = [make2DArr(WIDTH, HEIGHT), make2DArr(WIDTH * HEIGHT)];
+const board = [make2DArr(WIDTH, HEIGHT), make2DArr(WIDTH, HEIGHT)];
 let which;
 
 const clear = () => {
@@ -75,6 +68,13 @@ const step = function() {
 
 	let next = 1 - which;
 
+	start = Date.now();
+
+	// parse colors
+	const alive = parseInt(aliveColor.slice(1), 16), dead = parseInt(deadColor.slice(1), 16);
+	const aliveR = alive >> 16, aliveG = (alive >> 8) & 0xFF, aliveB = alive & 0xFF;
+	const deadR = dead >> 16, deadG = (dead >> 8) & 0xFF, deadB = dead & 0xFF;
+
 	for(let x = 0; x < WIDTH; x++) {
 		for(let y = 0; y < HEIGHT; y++) {
 		
@@ -93,9 +93,9 @@ const step = function() {
             for(let px = 0; px < CELL_SIZE; px++) {
                 for(let py = 0; py < CELL_SIZE; py++) {
                     const idx = ((x * CELL_SIZE + px) * canvas.height + (y * CELL_SIZE + py)) * 4;
-                    imgData.data[idx] = nextVal ? 255 : 0;
-                    imgData.data[idx + 1] = nextVal ? 255 : 0;
-                    imgData.data[idx + 2] = nextVal ? 255 : 0;
+                    imgData.data[idx] = nextVal ? aliveR : deadR;
+                    imgData.data[idx + 1] = nextVal ? aliveG : deadG;
+                    imgData.data[idx + 2] = nextVal ? aliveB : deadB;
                     imgData.data[idx + 3] = 255;
                 }
             }
@@ -105,6 +105,8 @@ const step = function() {
 
 	which = next;
     ctx.putImageData(imgData, 0, 0);
+
+	console.log(Date.now() - start);
 
 };
 
@@ -118,7 +120,9 @@ const updateURL = () => {
 	const url = new URL(window.location);
 	url.searchParams.set("rule", `b${born.join("")}s${survive.join("")}`);
 	url.searchParams.set("initialType", initialType);
-	
+	url.searchParams.set("aliveColor", aliveColor);
+	url.searchParams.set("deadColor", deadColor);
+
 	if(initialType === "random") {
 		url.searchParams.set("density", density);
 		url.searchParams.delete("pattern");
@@ -229,12 +233,14 @@ randomButton.addEventListener("input", onInitTypeChange);
 document.getElementById("alive-color").addEventListener("input", (event) => {
 	if(event.target.value) {
 		aliveColor = event.target.value;
+		updateURL();
 	}
 });
 
 document.getElementById("dead-color").addEventListener("input", (event) => {
 	if(event.target.value) {
 		deadColor = event.target.value;
+		updateURL();
 	}
 });
 
