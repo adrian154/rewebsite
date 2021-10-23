@@ -1,0 +1,24 @@
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+}
+
+#demo {
+    position: relative;
+    margin: auto;
+}
+
+canvas {
+    border: 1px solid #aaaaaa;
+}
+
+#blurb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #eeeeee88;
+    padding: 0 1.0em;
+    width: 15em;
+}

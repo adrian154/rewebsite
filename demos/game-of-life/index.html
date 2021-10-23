@@ -9,20 +9,17 @@
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
 		<style>
-			body, html {
-				width: 100%;
-				height: 100%;
-			}
-
 			body {
+				display: flex;
 				margin: 0;
+				width: 100vw;
+				height: 100vh;
 				font-family: 'Open Sans', sans-serif;
 			}
 
 			#content {
 				width: 512px;
 				margin: auto;
-				padding-top: 2.0em;
 			}
 
 			#modals {
@@ -59,22 +56,54 @@
 				margin: 0.4em;
 				padding: 0.3em;
 			}
+
+			#settings button {
+				border: none;
+				background: none;
+				padding: 0.7em;
+			}
+
+			#settings button:hover {
+				text-decoration: underline;
+				cursor: pointer;
+			}
+
+			#controls button {
+				border: none;
+				border-radius: 5px;
+				color: #111;
+				background-color: #ddd;
+				font-weight: bold;
+				margin: 0.5em;
+				padding: 0.5em;
+				width: 5em;
+			}
 		</style>
 	</head>
 	<body>
 
 		<div id="content">
-			<canvas id="output">If you're reading this message, then your browser does not support the Canvas API, which this webpage uses to display graphics. Sorry.</canvas><br>
+			
+			<div id="settings">
+				<button onclick="showDialog(rulesDialog)">rules</button>
+				<button onclick="showDialog(initDialog)">initial conditions</button>
+				<button onclick="showDialog(colorSchemeDialog)">color scheme</button>
+				<button onclick="init()">reset</button>
+				<button onclick="showDialog(shareDialog)">share</button>
+			</div>
+
+			<canvas id="output"></canvas><br>
 			<noscript>If you're reading this message, you've either disabled JavaScript or your browser does not support it. Either way, this demo cannot run without JS. Sorry.</noscript>
-			<button onclick="toggle()">stop/go</button>
-			<button onclick="step()">step once</button>
-			<button onclick="displayDialog(rulesDialog, true)">change rules</button>
-			<button onclick="displayDialog(initDialog, true)">change initial conditions</button>
-			<button onclick="init()">reset</button>
-			<button onclick="share()">share</button>
+		
+			<div id="controls" style="display: flex; justify-content: center;">
+				<button id="toggle" onclick="toggle()">pause</button>
+				<button onclick="step()">step</button>
+			</div>
+
 		</div>
 
 		<div id="modals" style="display: none;">
+
 			<div class="modal-box" id="init-dialog">
 				<p><b>change initial conditions</b></p>
 				<div><input type="radio" id="init-pattern" name="init-type"><label for="init-pattern">start with pattern</label></div>
@@ -82,7 +111,9 @@
 				<div id="density-control" style="display: none;"><label for="range">density: </label><input type="range" id="init-density"></div>
 				<div id="pattern-control" style="display: none;"><textarea id="pattern" rows="10" cols="60" placeholder="Pattern..."></textarea><br></div>
 				<button onclick="updateStartConds()">save and reset</button>
+				<button onclick="hideDialog(currentDialog)">cancel</button>
 			</div>
+			
 			<div class="modal-box" id="rules-dialog">
 				<p><b>change rules</b></p>
 				<table>
@@ -95,7 +126,31 @@
 						<td><input type="text" id="survive-rules" placeholder="Neighbor counts..." value="23"></td>
 				</table>
 				<button onclick="updateRules()">save</button>
+				<button onclick="hideDialog(currentDialog)">cancel</button>
 			</div>
+
+			<div class="modal-box" id="colorscheme-dialog">
+				<p><b>color scheme</b></p>
+				<table>
+					<tr>
+						<td><label for="alive-color">Alive color</label></td>
+						<td><input type="color" id="alive-color" value="#ffffff"></td>
+					</tr>
+					<tr>
+						<td><label for="dead-color">Dead color</label></td>
+						<td><input type="color" id="dead-color" value="#000000"></td>
+					</tr>
+				</table>
+				<button onclick="hideDialog(currentDialog)">exit</button>
+			</div>
+
+			<div class="modal-box" id="share-dialog">
+				<p><b>share</b></p>
+				<p>Use this link to share the current game of life.</p>
+				<input id="share-link" readonly>
+				<button onclick="hideDialog(currentDialog)">exit</button>
+			</div>
+			
 		</div>
 
 		<script src="gol.js"></script>

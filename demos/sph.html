@@ -1,14 +1,16 @@
+<!DOCTYPE html>
 <html>
     <head>
-        <style>
-            #canvas {
-                border: 1px solid #aaaaaa;
-            }
-        </style>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SPH Demo</title>
+        <link rel="stylesheet" href="demos.css">
     </head>
     <body>
-        <p>This code is a JavaScript port of a <a href="https://github.com/cerrno/mueller-sph">C++ implementation</a> of Smoothed Particle Hydrodynamics as described in <a href="https://matthias-research.github.io/pages/publications/sca03.pdf">this paper</a> by M&uuml;ller et. al (2003).</p>
-        <canvas id="canvas" width="800" height="600"></canvas>
+        <div id="demo">
+            <p>This code is a JavaScript port of a <a href="https://github.com/cerrno/mueller-sph">C++ implementation</a> of Smoothed Particle Hydrodynamics as described by <a href="https://matthias-research.github.io/pages/publications/sca03.pdf">M&uuml;ller et. al (2003)</a>.</p>
+            <canvas id="canvas" width="800" height="600"></canvas>
+        </div>
         <script>
 
 // THIS IS A JAVASCRIPT PORT OF AN IMPLEMENTATION OF SPH IN C++
@@ -141,7 +143,7 @@ const draw = function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.globalAlpha = 0.5;
     ctx.fillStyle = "#0000ff";
-    for(let particle of particles) {
+    for(const particle of particles) {
         ctx.fillRect(particle.x, canvas.height - particle.y, 5, 5);
     }
 };

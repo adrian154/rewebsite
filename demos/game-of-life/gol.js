@@ -7,6 +7,9 @@ const link = document.getElementById("link");
 let born = [3];
 let survive = [2, 3];
 
+// other settings
+let aliveColor, deadColor;
+
 // Parse URL
 const url = new URL(window.location.href);
 const rule = url.searchParams.get("rule")?.match(/b(\d+)s(\d+)/);
@@ -69,7 +72,7 @@ const init = function() {
 };
 
 const step = function() {
-		
+
 	let next = 1 - which;
 
 	for(let x = 0; x < WIDTH; x++) {
@@ -107,13 +110,15 @@ const step = function() {
 
 const run = () => {
 	if(running) step();
-	setTimeout(() => {requestAnimationFrame(run);}, 30);
+	setTimeout(run, 30);
 };
 
 const updateURL = () => {
+	
 	const url = new URL(window.location);
 	url.searchParams.set("rule", `b${born.join("")}s${survive.join("")}`);
 	url.searchParams.set("initialType", initialType);
+	
 	if(initialType === "random") {
 		url.searchParams.set("density", density);
 		url.searchParams.delete("pattern");
@@ -121,14 +126,16 @@ const updateURL = () => {
 		url.searchParams.set("pattern", pattern);
 		url.searchParams.delete("density");
 	}
+	
 	window.history.replaceState(null, null, url.href);
+	document.getElementById("share-link").value = url.href;
+
 };
 
 // --- control funcs
 
 // elements
 const modalLayer = document.getElementById("modals");
-
 const initDialog = document.getElementById("init-dialog");
 const patternButton = document.getElementById("init-pattern");
 const randomButton = document.getElementById("init-random");
@@ -136,27 +143,38 @@ const densityControl = document.getElementById("density-control");
 const patternControl = document.getElementById("pattern-control");
 const densitySlider = document.getElementById("init-density");
 const patternTextbox = document.getElementById("pattern");
-
 const rulesDialog = document.getElementById("rules-dialog");
 const birthRules = document.getElementById("birth-rules");
 const surviveRules = document.getElementById("survive-rules");
+const colorSchemeDialog = document.getElementById("colorscheme-dialog");
+const shareDialog = document.getElementById("share-dialog");
+const toggleButton = document.getElementById("toggle");
 
 let currentDialog;
 
 const toggle = () => {
-	running = !running;
+	if((running = !running)) {
+		toggleButton.style.background = "#f24949";
+		toggleButton.textContent = "pause";
+	} else {
+		toggleButton.style.background = "#5dcf5d";
+		toggleButton.textContent = "go";
+	}
 };
 
-const displayDialog = (dialog, visible) => {
+const setDialogVisibility = (dialog, visible) => {
 	modalLayer.style.display = visible ? "block" : "none";
 	dialog.style.display = visible ? "block" : "none";
 	if(visible) currentDialog = dialog;
 };
 
+const showDialog = (dialog) => setDialogVisibility(dialog, true);
+const hideDialog = (dialog) => setDialogVisibility(dialog, false);
+
 const updateRules = () => {
 	born = birthRules.value.split("").map(Number);
 	survive = surviveRules.value.split("").map(Number);
-	displayDialog(rulesDialog, false);
+	hideDialog(rulesDialog);
 	updateURL();
 };
 
@@ -166,7 +184,7 @@ const updateStartConds = () => {
 	density = densitySlider.value / 100;
 	pattern = patternTextbox.value;
 	init();
-	displayDialog(initDialog, false);
+	hideDialog(initDialog);
 	updateURL();
 };
 
@@ -208,10 +226,22 @@ const onInitTypeChange = () => {
 patternButton.addEventListener("input", onInitTypeChange);
 randomButton.addEventListener("input", onInitTypeChange);
 
+document.getElementById("alive-color").addEventListener("input", (event) => {
+	if(event.target.value) {
+		aliveColor = event.target.value;
+	}
+});
+
+document.getElementById("dead-color").addEventListener("input", (event) => {
+	if(event.target.value) {
+		deadColor = event.target.value;
+	}
+});
+
 init();
 run();
 updateURL();
 
 window.addEventListener("keydown", (event) => {
-	if(event.key === "Escape" && currentDialog) displayDialog(currentDialog, false); 
+	if(event.key === "Escape" && currentDialog) hideDialog(currentDialog); 
 });

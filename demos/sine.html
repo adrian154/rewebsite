@@ -2,32 +2,12 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Sine Demo</title>
-        <style>
-            #area {
-                width: 1280px;
-                height: 720px;
-                position: absolute;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                right: 0;
-                margin: auto;
-                border: 1px solid #aaaaaa;
-            }
-
-            #blurb {
-				position: absolute;
-				top: 0;
-				left: 0;
-				background-color: #eeeeee88;
-				padding: 1.0em 1.0em;
-				width: 15em;
-			}
-        </style>
+        <link rel="stylesheet" href="demos.css">
     </head>
     <body>
-        <div id="area">
+        <div id="demo">
             <canvas id="theCanvas" width="1280" height="720"></canvas>
             <div id="blurb">
                 <input type="checkbox" id="units" onclick="degrees = this.checked;">

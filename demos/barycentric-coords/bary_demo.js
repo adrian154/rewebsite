@@ -1,3 +1,5 @@
+// BEWARE: highly unreadable code, which even I can no longer decipher...
+
 // Points of the triangle
 const points = [];
 const mousePos = [0, 0];
