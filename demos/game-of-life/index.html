@@ -88,8 +88,7 @@
 				<button onclick="showDialog(rulesDialog)">rules</button>
 				<button onclick="showDialog(initDialog)">initial conditions</button>
 				<button onclick="showDialog(colorSchemeDialog)">color scheme</button>
-				<button onclick="init()">reset</button>
-				<button>clear</button>
+				<button onclick="location.href = window.location.pathname;">clear</button>
 				<button onclick="showDialog(shareDialog)">share</button>
 			</div>
 
@@ -99,6 +98,7 @@
 			<div id="controls" style="display: flex; justify-content: center;">
 				<button id="toggle" onclick="toggle()">pause</button>
 				<button onclick="step()">step</button>
+				<button onclick="init()">reset</button>
 			</div>
 
 		</div>

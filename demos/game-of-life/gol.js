@@ -67,9 +67,7 @@ const init = function() {
 const step = function() {
 
 	let next = 1 - which;
-
-	start = Date.now();
-
+	
 	// parse colors
 	const alive = parseInt(aliveColor.slice(1), 16), dead = parseInt(deadColor.slice(1), 16);
 	const aliveR = alive >> 16, aliveG = (alive >> 8) & 0xFF, aliveB = alive & 0xFF;
@@ -78,24 +76,28 @@ const step = function() {
 	for(let x = 0; x < WIDTH; x++) {
 		for(let y = 0; y < HEIGHT; y++) {
 		
-			let neighbors = 0;
-			for(let dx = -1; dx <= 1; dx++) {
-				for(let dy = -1; dy <= 1; dy++) {
-					if(dx == 0 && dy == 0) continue;
-					neighbors += board[which][(x + dx + WIDTH) % WIDTH][(y + dy + HEIGHT) % HEIGHT];
-				}	
+			if(running) {
+
+				let neighbors = 0;
+				for(let dx = -1; dx <= 1; dx++) {
+					for(let dy = -1; dy <= 1; dy++) {
+						if(dx == 0 && dy == 0) continue;
+						neighbors += board[which][(x + dx + WIDTH) % WIDTH][(y + dy + HEIGHT) % HEIGHT];
+					}	
+				}
+
+				const nextVal = born.includes(neighbors) ? 1 : (survive.includes(neighbors) ? board[which][x][y] : 0);
+				board[next][x][y] = nextVal;
 			}
 
-            const nextVal = born.includes(neighbors) ? 1 : (survive.includes(neighbors) ? board[which][x][y] : 0);
-			board[next][x][y] = nextVal;
-
             // Draw
-            for(let px = 0; px < CELL_SIZE; px++) {
+			const value = board[which][x][y];
+			for(let px = 0; px < CELL_SIZE; px++) {
                 for(let py = 0; py < CELL_SIZE; py++) {
                     const idx = ((x * CELL_SIZE + px) * canvas.height + (y * CELL_SIZE + py)) * 4;
-                    imgData.data[idx] = nextVal ? aliveR : deadR;
-                    imgData.data[idx + 1] = nextVal ? aliveG : deadG;
-                    imgData.data[idx + 2] = nextVal ? aliveB : deadB;
+                    imgData.data[idx] = value ? aliveR : deadR;
+                    imgData.data[idx + 1] = value ? aliveG : deadG;
+                    imgData.data[idx + 2] = value ? aliveB : deadB;
                     imgData.data[idx + 3] = 255;
                 }
             }
@@ -103,15 +105,16 @@ const step = function() {
 		}
 	}
 
-	which = next;
-    ctx.putImageData(imgData, 0, 0);
+	if(running) {
+		which = next;
+	}
 
-	console.log(Date.now() - start);
+    ctx.putImageData(imgData, 0, 0);
 
 };
 
 const run = () => {
-	if(running) step();
+	step();
 	setTimeout(run, 30);
 };
 
@@ -157,7 +160,12 @@ const toggleButton = document.getElementById("toggle");
 let currentDialog;
 
 const toggle = () => {
-	if((running = !running)) {
+	running = !running;
+	updateButton();
+};
+
+const updateButton = () => {
+	if(running) {
 		toggleButton.style.background = "#f24949";
 		toggleButton.textContent = "pause";
 	} else {
@@ -246,6 +254,7 @@ document.getElementById("dead-color").addEventListener("input", (event) => {
 
 init();
 run();
+updateButton();
 updateURL();
 
 window.addEventListener("keydown", (event) => {
