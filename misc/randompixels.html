@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>RandomPixels</title>
+        <meta property="og:title" content="RandomPixels">
+        <meta property="og:description" content="wow much fast">
+        <style>
+            body {
+                width: 100vw;
+                height: 100vh;
+                margin: 0;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+        <script src="shaders.js"></script>
+        <script>
+
+            const canvas = document.getElementById("canvas");
+
+            // resize canvas
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const createShader = (gl, type, src) => {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, src);
+                gl.compileShader(shader);
+                if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    console.error(gl.getShaderInfoLog(shader));
+                    gl.deleteShader(shader);
+                    throw new Error("Shader compile failed");
+                }
+                return shader;
+            };
+
+            try { (() => {
+
+                const gl = canvas.getContext("webgl");
+                if(!gl) {
+                    throw new Error("WebGL not available :(");
+                }
+
+                // compile all the shaders
+                const vertex = createShader(gl, gl.VERTEX_SHADER, VERTEX_SRC);
+                const fragment = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SRC);
+
+                // make program
+                const program = gl.createProgram();
+                gl.attachShader(program, vertex);
+                gl.attachShader(program, fragment);
+                gl.linkProgram(program);
+                if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                    console.error(gl.getProgramInfoLog(program));
+                    gl.deleteProgram(program);
+                    throw new Error("Program link failed")
+                }
+
+                // fetch attributes
+                const posAttr = gl.getAttribLocation(program, "position");
+                const posBuf = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+
+                // feed the vertex shader our screen quad
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+                    
+                    // triangle 0
+                    -1, -1,
+                    -1, 1,
+                    1, -1,
+
+                    // triangle 1
+                    -1, 1,
+                    1, -1,
+                    1, 1
+
+                ]), gl.STATIC_DRAW);
+
+                // set up for render
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                gl.useProgram(program);
+
+                // tell webgl how our data's structured
+                gl.enableVertexAttribArray(posAttr);
+                gl.vertexAttribPointer(
+                    posAttr,
+                    2,        // 2 components per element (2D points)
+                    gl.FLOAT, // type=float
+                    false,    // normalize=false
+                    0,        // stride=0 (elements are packed)
+                    0         // offset=0 (start at beginning)
+                );
+
+                // get uniforms
+                const uniformTime = gl.getUniformLocation(program, "time");
+
+                // 6 points
+                let frame = 0;
+                const animate = () => {
+                    gl.uniform1f(uniformTime, frame);
+                    gl.drawArrays(gl.TRIANGLES, 0, 6);
+                    frame++;
+                    requestAnimationFrame(animate);
+                };
+
+                animate();
+
+            })() } catch(error) { alert(error); };
+        </script>
+    </body>
+</html>
