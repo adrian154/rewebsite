@@ -1,0 +1,15 @@
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+}
+
+#container {
+    margin: auto;
+}
+
+#game-canvas {
+    border: 10px solid #666666;
+    box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
+}

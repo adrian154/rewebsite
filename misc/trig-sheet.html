@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Trig Sheet</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.20/dist/katex.min.css" integrity="sha384-cRxb1HsKSl8bTfU9fBcGsjktUfQa6w+fwvkYnU8XjFH4Qg8To1+/9OXv5iRzrKX4" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.20/dist/katex.min.js" integrity="sha384-ov99pRO2tAc0JuxTVzf63RHHeQTJ0CIawbDZFiFTzB07aqFZwEu2pz4uzqL+5OPG" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.20/dist/contrib/auto-render.min.js" integrity="sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR" crossorigin="anonymous" onload="renderMath()"></script>
+        <style>
+            body {
+                column-count: 2;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+                font-size: 11pt;
+            }
+
+            div {
+                break-inside: avoid;
+            }
+
+            td {
+                padding: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <div style="column-span: all">
+            <h1 style="margin-bottom: 0;">Trigonometric Identities</h1>
+            <p><i>Original available online at <a href="https://bithole.dev/misc/trig-sheet.pdf">https://bithole.dev/misc/trig-sheet.pdf</a>.</i></p>
+        </div>
+
+        <div>
+            <p style="margin-top: 0;"><b>Reciprocal Identities</b></p>
+            <table>
+                <tr>
+                    <td>$\sin u = \frac{1}{\csc u}$</td>
+                    <td>$\csc u = \frac{1}{\sin u}$</td>
+                </tr>
+                <tr>
+                    <td>$\cos u = \frac{1}{\sec u}$</td>
+                    <td>$\sec u = \frac{1}{\cos u}$</td>
+                </tr>
+                <tr>
+                    <td>$\tan u = \frac{1}{\cot u}$</td>
+                    <td>$\cot u = \frac{1}{\cot u}$</td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <p><b>Pythagorean Identities</b></p>
+            <table>
+                <tr>
+                    <td>$\sin^2u + \cos^2u = 1$</td>
+                </tr>
+                <tr>
+                    <td>$\tan^2u + 1 = \sec^2u$</td>
+                </tr>
+                <tr>
+                    <td>$\cot^2u + 1 = \csc^2u$</td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <p><b>Cofunction Identities</b></p>
+            <table>
+                <tr>
+                    <td>$\sin\left(\frac{\pi}{2}-u\right)=\cos u$</td>
+                    <td>$\cos\left(\frac{\pi}{2}-u\right)=\sin u$</td>
+                </tr>
+                <tr>
+                    <td>$\tan\left(\frac{\pi}{2}-u\right) = \cot u$</td>
+                    <td>$\cot\left(\frac{\pi}{2}-u\right) = \tan u$</td>
+                </tr>
+                <tr>
+                    <td>$\sec\left(\frac{\pi}{2}-u\right) = \csc u$</td>
+                    <td>$\csc\left(\frac{\pi}{2}-u\right) = \sec u$</td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <p><b>Odd Identities</b></p>
+            <table>
+                <tr>
+                    <td>$\sin(-u)=-\sin u$</td>
+                    <td>$\cot(-u)=-\cot u$</td>
+                </tr>
+                <tr>
+                    <td>$\tan(-u)=-\tan u$</td>
+                    <td>$\csc(-u)=-\csc u$</td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <p><b>Even Identities</b></p>
+            <table>
+                <tr>
+                    <td>$\cos(-u)=\cos u$</td>
+                    <td>$\sec(-u)=\sec u$</td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <p><b>Sum/Difference Identities</b></p>
+            <table>
+                <tr>
+                    <td>$\sin(u \pm v) = \sin u \cos v \pm \cos u \sin v$</td>
+                </tr>
+                <tr>
+                    <td>$\cos(u \pm v) = \cos u \cos v \mp \sin u \sin v$</td>
+                </tr>
+                <tr>
+                    <td>$\tan(u \pm v) = \frac{\tan u \pm \tan v}{1 \mp \tan u \tan v}$</td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <p><b>Double-Angle Identities</b></p>
+            <table>
+                <tr>
+                    <td>$\sin(2u)=2\sin u\cos u$</td>
+                </tr>
+                <tr>
+                    <td>$\cos(2u)=\cos^2u - \sin^2u\\=2\cos^2u-1\\=1-2\sin^2u$</td>
+                </tr>
+                <tr>
+                    <td>$\tan(2u)=\frac{2\tan u}{1-\tan^2u}$</td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <p><b>Power-Reducing Identities</b></p>
+            <table>
+                <tr>
+                    <td>$\sin^2u = \frac{1-\cos(2u)}{2}$</td>
+                </tr>
+                <tr>
+                    <td>$\cos^2u = \frac{1+\cos(2u)}{2}$</td>
+                </tr>
+                <tr>
+                    <td>$\tan^2u = \frac{1-\cos(2u)}{1+\cos(2u)}$</td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <p><b>Product-to-Sum Identities</b></p>
+            <table>
+                <tr>
+                    <td>$\sin u \sin v = \frac{1}{2}[\cos(u-v)-\cos(u+v)]$</td>
+                </tr>
+                <tr>
+                    <td>$\cos u \sin v = \frac{1}{2}[\cos(u-v)+\cos(u+v)]$</td>
+                </tr>
+                <tr>
+                    <td>$\sin u \cos v = \frac{1}{2}[\sin(u+v)+\sin(u-v)]$</td>
+                </tr>
+                <tr>
+                    <td>$\cos u \sin v = \frac{1}{2}[\sin(u+v)-\sin(u-v)]$</td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <p><b>Sum-to-Product Identities</b></p>
+            <table>
+                <tr>
+                    <td>$\sin u + \sin v = 2\sin\left(\frac{u+v}{2}\right)\cos\left(\frac{u-v}{2}\right)$</td>
+                </tr>
+                <tr>
+                    <td>$\sin u - \sin v = 2\cos\left(\frac{u+v}{2}\right)\sin\left(\frac{u-v}{2}\right)$</td>
+                </tr>
+                <tr>
+                    <td>$\cos u + \cos v = 2\cos\left(\frac{u+v}{2}\right)\cos\left(\frac{u-v}{2}\right)$</td>
+                </tr>
+                <tr>
+                    <td>$\cos u - \cos v = 2\sin\left(\frac{u+v}{2}\right)\sin\left(\frac{u-v}{2}\right)$</td>
+                </tr>
+            </table>
+        </div>
+
+        <script>
+            const renderMath = () => {
+                renderMathInElement(document.body, {
+                    fleqn: true,
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ]
+                });
+            };
+        </script>
+
+    </body>
+</html>
