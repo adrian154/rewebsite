@@ -31,7 +31,16 @@
                             <p><img src="images/christmas-icon.png"></p>
                         </div>
                         <div>
-                            <p id="christmas-countdown">Christmas is coming soon... are you ready? Enable JavaScript to see a live countdown here.</p>
+                            <p id="christmas-countdown">[js-powered countdown goes here]</p>
+                        </div>
+                    </div>
+
+                    <div class="blurb" style="background-color: rgba(255, 208, 0, 10%); border-left: 2px solid #ffd000;">
+                        <div>
+                            <p><img src="images/telescope.png"></p>
+                        </div>
+                        <div>
+                            <p id="jwst-countdown">[js-powered countdown goes here]</p>
                         </div>
                     </div>
 
@@ -47,7 +56,7 @@
                         <li><b>Email:</b> azhangcc@gmail.com</li>
                         <li><b>GitHub:</b> <a href="https://github.com/adrian154">@adrian154</a></li>
                         <li><b>Flickr:</b> <a href="https://www.flickr.com/photos/192931620@N06/">@adrian.z</a></li>
-                        <li><b>NPM:</b> <a href="https://www.npmjs.com/~adrian154">adrian154</a></li>
+                        <li><b>StackExchange:</b></li>
                         <lI><b>PGP Key:</b> 00808F37AD07B10B3AC04D706833FD7CB77A9385 (<a href="pgp-key.txt">key</a>)</lI>
                     </ul>
                     <p>You can send me some bitcoins at <a href="bitcoin:BC1Q3HPYPQYHRFT6A67DHLRT22CL6SAW775KD2H298">bc1q3hpypqyhrft6a67dhlrt22cl6saw775kd2h298</a>, though personally I am a bigger advocate for <a href="https://nano.org/">Nano</a>. Please excuse the address reuse.</p>
@@ -91,13 +100,18 @@
             const format = (qty, unit) => qty > 0 ? `${qty} ${unit}${qty != 1 ? "s" : ""}` : "";
             const christmasDate = new Date(2021, 11, 25);
 
-            const countdown = () => {
-                let difference = christmasDate - Date.now();
+            const formatDiff = (date) => {
+                let difference = date - Date.now();
                 const days    = Math.floor(difference / DAY),
                       hours   = Math.floor((difference -= DAY * days) / HOUR),
                       minutes = Math.floor((difference -= HOUR * hours) / MINUTE),
                       seconds = Math.floor((difference -= MINUTE * minutes) / SECOND); 
-                document.getElementById("christmas-countdown").textContent = `It will be Christmas in ${[format(days, "day"), format(hours, "hour"), format(minutes, "minute"), format(seconds, "second")].filter(Boolean).join(", ")}`;
+                return [format(days, "day"), format(hours, "hour"), format(minutes, "minute"), format(seconds, "second")].filter(Boolean).join(", ");
+            };
+
+            const countdown = () => {
+                document.getElementById("christmas-countdown").textContent = `It will be Christmas in ${formatDiff(new Date(2021, 11, 25))}`;
+                document.getElementById("jwst-countdown").textContent = `The James Webb Space Telescope is due to launch in ${formatDiff(new Date(2021, 11, 18))}`;
             };
 
             setInterval(countdown, 1000);
