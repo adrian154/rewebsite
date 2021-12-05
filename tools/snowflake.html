@@ -7,28 +7,13 @@
         <meta property="og:description" content="Decode Discord IDs">
         <title>Discord Snowflake Decoder</title>
         <link rel="stylesheet" href="common.css">
-        <style>
-            table, td {
-                border-collapse: collapse;
-                margin: 1.0em 0;
-            }
-
-            td {
-                border: 1px solid #aaaaaa;
-                padding: 1.0em;
-            }
-
-            td:first-child {
-                font-weight: bold;
-            }
-        </style>
     </head>
     <body>
         <h1>Discord Snowflake Decoder</h1>
         <p><a href="index.html">&#11172; More Tools</a> &bull; <a href="#" onclick="onClickEmbedLink()">embed page</a></p>
         <script src="../scripts/embed.js"></script>
         <input id="input" placeholder="Discord ID..."> <button id="decode">Decode</button>
-        <table>
+        <table class="inline-table">
             <tr>
                 <td>Date</td>
                 <td id="date"></td>

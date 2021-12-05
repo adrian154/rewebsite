@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="CIDR Calculator">
+        <meta property="og:description" content="Get quick info about CIDR ranges">
+        <title>CIDR Calculator</title>
+        <link rel="stylesheet" href="common.css">
+        <style>
+            td:last-child {
+                font-family: monospace;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <h1>CIDR Calculator</h1>
+        <p><a href="index.html">&#11172; More Tools</a> &bull; <a href="#" onclick="onClickEmbedLink()">embed page</a></p>
+        <script src="../scripts/embed.js"></script>
+
+        <input type="text" id="range" placeholder="CIDR Range..."> <button onclick="calculate()">Calculate</button>
+
+        <table class="inline-table">
+            <tr>
+                <td>Number of IPs</td>
+                <td id="num-ips"></td>
+            </tr>
+            <tr>
+                <td>Minimum IP</td>
+                <td id="min-ip"></td>
+            </tr>
+            <tr>
+                <td>Maximum IP</td>
+                <td id="max-ip"></td>
+            </tr>
+            <tr>
+                <td>Subnet mask</td>
+                <td id="subnet-mask"></td>
+            </tr>
+            <tr>
+                <td>Wildcard mask</td>
+                <td id="wildcard-mask"></td>
+            </tr>
+        </table>
+
+        <script>
+
+            const numIPs = document.getElementById("num-ips"),
+                  minIP = document.getElementById("min-ip"),
+                  maxIP = document.getElementById("max-ip"),
+                  subnetMask = document.getElementById("subnet-mask"),
+                  wildcardMask = document.getElementById("wildcard-mask");
+
+            const intToIP = buf => new Uint8Array(new Uint32Array([buf]).buffer).reverse().join(".");
+
+            const calculate = () => {
+
+                const range = document.getElementById("range").value.split("/");
+                const ip = range[0], bits = Number(range[1]);
+
+                if(range.length != 2 || isNaN(bits)) return alert("Invalid range");
+
+                const parts = ip.split(".").map(Number).filter(x => x >= 0 && x <= 255 && x !== undefined);
+                if(parts.length != 4) return alert("Invalid IP");
+
+                const ipInteger = new Uint32Array(new Uint8Array(parts.reverse()).buffer)[0];
+                const netmask = (~0) >> bits << bits;
+
+                numIPs.textContent = 2 ** (32 - bits);
+                minIP.textContent = intToIP(ipInteger & netmask);
+                maxIP.textContent = intToIP(ipInteger | (netmask >>> bits));
+                subnetMask.textContent = intToIP(netmask);
+                wildcardMask.textContent = intToIP(~netmask);
+
+            };
+        </script>
+
+    </body>
+</html>

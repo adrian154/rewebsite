@@ -67,3 +67,17 @@ a:visited {
     padding: 1.0em;
     font-weight: bold;
 }
+
+.inline-table, .inline-table td {
+    border-collapse: collapse;
+    margin: 1.0em 0;
+}
+
+.inline-table td {
+    border: 1px solid #aaaaaa;
+    padding: 1.0em;
+}
+
+.inline-table td:first-child {
+    font-weight: bold;
+}
