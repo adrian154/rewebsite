@@ -1,11 +1,13 @@
 #background {
+
+    /* positioning and sizing */
     width: 100vw;
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    background-color: #fff;
     z-index: -1;
+
 }
 
 #vertical-container {
@@ -21,12 +23,10 @@
 
 .bubble {
     margin-bottom: 1.0em;
-    border-radius: 8px;
     padding: 1.5em;
     background-color: #ffffff;
     font-size: 11pt;
-    /*box-shadow: 0px 3px 6px rgba(0, 0, 0, 30%);*/
-    border: 1px solid #d0d7de;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     overflow-wrap: break-word;
 }
 
@@ -63,8 +63,6 @@ a:visited {
     margin: 2.0em auto;
 }
 
-
-/* bit cursed innit */
 .blurb {
     background-color: rgba(83, 207, 93, 10%);
     border-left: 2px solid #53cf5d;
@@ -86,20 +84,3 @@ a:visited {
     height: auto;
     margin: 0;
 }
-
-.demo {
-    color: #ff8d54;
-}
-
-.tool {
-    color: #54b5ff;
-}
-
-.game {
-    color: #b254ff;
-}
-
-.misc {
-    color: #c7c7c7;
-}
-
