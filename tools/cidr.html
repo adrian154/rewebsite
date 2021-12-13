@@ -8,6 +8,10 @@
         <title>CIDR Calculator</title>
         <link rel="stylesheet" href="common.css">
         <style>
+            td:first-child {
+                width: 10em;
+            }
+
             td:last-child {
                 font-family: monospace;
             }
@@ -19,6 +23,8 @@
         <p><a href="index.html">&#11172; More Tools</a> &bull; <a href="#" onclick="onClickEmbedLink()">embed page</a></p>
         <script src="../scripts/embed.js"></script>
 
+        <p>This tool displays a couple convenient statistics about a given <a href="https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing">CIDR range</a>.</p>
+
         <input type="text" id="range" placeholder="CIDR Range..."> <button onclick="calculate()">Calculate</button>
 
         <table class="inline-table">
@@ -27,12 +33,12 @@
                 <td id="num-ips"></td>
             </tr>
             <tr>
-                <td>Minimum IP</td>
-                <td id="min-ip"></td>
+                <td>First IP</td>
+                <td id="first-ip"></td>
             </tr>
             <tr>
-                <td>Maximum IP</td>
-                <td id="max-ip"></td>
+                <td>Last IP<br><span style="font-size: 0.9em; opacity: 90%; font-weight: normal;">This is also the broadcast address for the subnet.</span></td>
+                <td id="last-ip"></td>
             </tr>
             <tr>
                 <td>Subnet mask</td>
@@ -46,36 +52,48 @@
 
         <script>
 
+            // output fields
             const numIPs = document.getElementById("num-ips"),
-                  minIP = document.getElementById("min-ip"),
-                  maxIP = document.getElementById("max-ip"),
+                  firstIP = document.getElementById("first-ip"),
+                  lastIP = document.getElementById("last-ip"),
                   subnetMask = document.getElementById("subnet-mask"),
                   wildcardMask = document.getElementById("wildcard-mask");
 
             const intToIP = buf => new Uint8Array(new Uint32Array([buf]).buffer).reverse().join(".");
 
+            const readRange = () => {
+                
+                // validate gross syntax of range
+                const range = document.getElementById("range").value.match(/(\d+)\.(\d+)\.(\d+)\.(\d+)\/(\d+)/);
+                if(range == null) throw new Error(alert("Invalid range"));
+
+                // validate IP
+                const ipParts = [range[4], range[3], range[2], range[1]].map(Number);
+                if(ipParts.find(part => part > 255)) throw new Error(alert("Invalid IP"));
+
+                const prefixBits = Number(range[5]);
+                if(prefixBits == 0 || prefixBits > 32) throw new Error(alert("Invalid number of prefix bits"));
+                
+                return {ip: new Uint32Array(new Uint8Array(ipParts).buffer), prefixBits};
+
+            };
+
             const calculate = () => {
 
-                const range = document.getElementById("range").value.split("/");
-                const ip = range[0],
-                      bits = Number(range[1]);
+                const range = readRange();
+                const ipInteger = range.ip[0];
 
-                if(range.length != 2 || isNaN(bits)) return alert("Invalid range");
+                // the netmask is 1 for all the prefix bits
+                // we can accomplish this by discarding the host bits
+                const hostBits = 32 - range.prefixBits;
+                const netmask = (~0) >>> hostBits << hostBits;
+                const wildcardmask = ~netmask >>> 0;
 
-                const parts = ip.split(".").map(Number).filter(x => x >= 0 && x <= 255 && x !== undefined);
-                if(parts.length != 4) return alert("Invalid IP");
-
-                const ipInteger = new Uint32Array(new Uint8Array(parts.reverse()).buffer)[0];
-
-                // the netmask is 1 for all the reserved bits
-                const subnetBits = 32 - bits;
-                const netmask = (~0) >>> subnetBits << subnetBits;
-
-                numIPs.textContent = 2 ** (32 - bits);
-                minIP.textContent = intToIP(ipInteger & netmask);
-                maxIP.textContent = intToIP(ipInteger | (~0 >>> bits));
+                numIPs.textContent = 2 ** (32 - range.prefixBits);
+                firstIP.textContent = intToIP(ipInteger & netmask);
+                lastIP.textContent = intToIP(ipInteger | (~0 >>> range.prefixBits));
                 subnetMask.textContent = intToIP(netmask);
-                wildcardMask.textContent = intToIP(~netmask);
+                wildcardMask.textContent = intToIP(wildcardmask);
 
             };
         </script>

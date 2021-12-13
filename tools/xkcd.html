@@ -128,7 +128,7 @@
                 fetch(`https://apis.bithole.dev/cors-proxy?url=${encodeURIComponent(`https://xkcd.com/${num || ""}/info.0.json`)}`).then(resp => resp.json()).then(data => {
                     console.log(data);
                     image.onload = () => {
-                        title.textContent = `xkcd - ${data.title}`;
+                        title.textContent = `${data.title}`;
                         title.href = `https://xkcd.com/${data.num}`;
                         image.alt = data.alt;
                         image.title = data.alt;

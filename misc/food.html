@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>food</title>
+        <style>
+            body {
+                background-color: #000000;
+                overflow: hidden;
+            }
+
+            p {
+                font-family: Impact;
+                position: absolute;
+                margin: 0;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+
+            const minFontSize = 10;
+            const maxFontSize = 30;
+
+            const words = [
+                "food",
+                "food",
+                "food",
+                "food",
+                "food",
+                "food",
+                "food",
+                "food"
+            ];
+            
+            let opacity = 100;
+            const elements = words.map((word, i) => {
+                const elem = document.createElement("p");
+                elem.textContent = word;
+                elem.style.fontSize = minFontSize + (maxFontSize - minFontSize) * (words.length - i) + "px";
+                elem.style.zIndex = words.length - i;
+                opacity *= 0.99;
+                document.body.append(elem);
+                return elem;
+            });
+
+            let originX = 500, originY = 500;
+            let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+            let t = 0;
+            
+            const animate = () => {
+                for(const i in elements) {
+                    const element = elements[i];
+                    const factor = 3 / (words.length - i + 5);
+                    element.style.color = `hsl(${t + i * 20}, 100%, ${(words.length - i) * (40 / words.length) + 10}%)`;
+                    element.style.left = originX + factor * (mouseX - originX) - element.clientWidth / 2 + "px";
+                    element.style.top = originY + factor * (mouseY - originY) - element.clientHeight / 2 + "px";
+                }
+                originX = window.innerWidth / 2 + Math.cos(t / 50) * 400;
+                originY = window.innerHeight / 2 + Math.sin(t / 50) * 400;
+                t++;
+                requestAnimationFrame(animate);
+            };
+
+            animate();
+            window.addEventListener("mousemove", (event) => {
+                mouseX = event.pageX;
+                mouseY = event.pageY;
+            });
+
+        </script>
+    </body>
+</html>
