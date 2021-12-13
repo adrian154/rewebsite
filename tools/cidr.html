@@ -57,7 +57,8 @@
             const calculate = () => {
 
                 const range = document.getElementById("range").value.split("/");
-                const ip = range[0], bits = Number(range[1]);
+                const ip = range[0],
+                      bits = Number(range[1]);
 
                 if(range.length != 2 || isNaN(bits)) return alert("Invalid range");
 
@@ -65,11 +66,14 @@
                 if(parts.length != 4) return alert("Invalid IP");
 
                 const ipInteger = new Uint32Array(new Uint8Array(parts.reverse()).buffer)[0];
-                const netmask = (~0) >> bits << bits;
+
+                // the netmask is 1 for all the reserved bits
+                const subnetBits = 32 - bits;
+                const netmask = (~0) >>> subnetBits << subnetBits;
 
                 numIPs.textContent = 2 ** (32 - bits);
                 minIP.textContent = intToIP(ipInteger & netmask);
-                maxIP.textContent = intToIP(ipInteger | (netmask >>> bits));
+                maxIP.textContent = intToIP(ipInteger | (~0 >>> bits));
                 subnetMask.textContent = intToIP(netmask);
                 wildcardMask.textContent = intToIP(~netmask);
 
