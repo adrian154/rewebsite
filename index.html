@@ -26,15 +26,6 @@
                         </div>
                     </div>
 
-                    <div class="blurb" style="background-color: rgba(207, 83, 83, 10%); border-left: 2px solid #cf5353;">
-                        <div>
-                            <p><img src="images/christmas-icon.png"></p>
-                        </div>
-                        <div>
-                            <p id="christmas-countdown">[js-powered countdown goes here]</p>
-                        </div>
-                    </div>
-
                     <p>Hi, I'm Adrian. I am, among other things, a student and a programmer. This is my website, where I put random things I've made. You can contribute to its code on <a href="https://github.com/adrian154/rewebsite">GitHub</a>, or browse my <a href="projects.html">projects</a> and <a href="misc.html">miscellaneous tinkerings</a>.</p>
                     <p><i>Remember Aaron Swartz. <a href="https://custodians.online/">Stand behind Open Access</a>.</i></p>
                 
@@ -49,7 +40,6 @@
                         <li><b>Flickr:</b> <a href="https://www.flickr.com/photos/192931620@N06/">@adrian.z</a></li>
                         <lI><b>PGP Key:</b> 00808F37AD07B10B3AC04D706833FD7CB77A9385 (<a href="pgp-key.txt">key</a>)</lI>
                     </ul>
-                    <p>You can send me some bitcoins at <a href="bitcoin:BC1Q3HPYPQYHRFT6A67DHLRT22CL6SAW775KD2H298">bc1q3hpypqyhrft6a67dhlrt22cl6saw775kd2h298</a>, though personally I am a bigger advocate for <a href="https://nano.org/">Nano</a>. Please excuse the address reuse.</p>
                 </div>
 
                 <h1>other links</h1>
@@ -66,7 +56,7 @@
                     </ul>
                 </div>
 
-		<a href="https://www.abuseipdb.com/user/71735" title="AbuseIPDB is an IP address blacklist for webmasters and sysadmins to report IP addresses engaging in abusive behavior on their networks"><img src="https://www.abuseipdb.com/contributor/71735.svg" alt="AbuseIPDB Contributor Badge" style="display: none"></a>
+		        <a href="https://www.abuseipdb.com/user/71735" title="AbuseIPDB is an IP address blacklist for webmasters and sysadmins to report IP addresses engaging in abusive behavior on their networks"><img src="https://www.abuseipdb.com/contributor/71735.svg" alt="AbuseIPDB Contributor Badge" style="display: none"></a>
 
                 <p id="copyright">&copy; 2021 Adrian Zhang &bull; <a href="javascript:animate()">party mode</span></p>
                 
@@ -85,27 +75,6 @@
                 color += 2;
                 requestAnimationFrame(animate);
             };
-
-            /* christmas countdown */
-            const SECOND = 1000, MINUTE = 60 * SECOND, HOUR = 60 * MINUTE, DAY = 24 * HOUR;
-            const format = (qty, unit) => qty > 0 ? `${qty} ${unit}${qty != 1 ? "s" : ""}` : "";
-            const christmasDate = new Date(2021, 11, 25);
-
-            const formatDiff = (date) => {
-                let difference = date - Date.now();
-                const days    = Math.floor(difference / DAY),
-                      hours   = Math.floor((difference -= DAY * days) / HOUR),
-                      minutes = Math.floor((difference -= HOUR * hours) / MINUTE),
-                      seconds = Math.floor((difference -= MINUTE * minutes) / SECOND); 
-                return [format(days, "day"), format(hours, "hour"), format(minutes, "minute"), format(seconds, "second")].filter(Boolean).join(", ");
-            };
-
-            const countdown = () => {
-                document.getElementById("christmas-countdown").textContent = `It will be Christmas in ${formatDiff(new Date(2021, 11, 25))}`;
-            };
-
-            setInterval(countdown, 1000);
-            countdown();
 
         </script>
 

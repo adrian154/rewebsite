@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="JSON Prettifier">
+        <meta property="og:description" content="Format JSON for easier human consumption.">
+        <title>JSON Prettifier</title>
+        <link rel="stylesheet" href="common.css">
+        <style>
+            .center {
+                text-align: center;
+            }
+
+            .center button {
+                width: 8.0em;
+            }
+
+            input[type="number"] {
+                width: 5.0em;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <h1>JSON Prettifier</h1>
+        <p><a href="index.html">&#11172; More Tools</a> &bull; <a href="#" onclick="onClickEmbedLink()">embed page</a></p>
+        
+        <p>This tool formats JSON so that it's easier to read for humans.</p>
+        <textarea id="in" placeholder="Raw JSON..."></textarea>
+        <p class="center"><button onclick="prettify()">Prettify</button> <button onclick="condense()">Condense</button></p>
+        <p class="center">indentation: <input type="number" id="spaces" value="4"></p>
+        <textarea id="out" placeholder="Prettified JSON..."></textarea>
+
+        <script src="../scripts/embed.js"></script>
+        <script>
+            
+            const inArea = document.getElementById("in"),
+                  outArea = document.getElementById("out"),
+                  spaces = document.getElementById("spaces");
+
+            const operation = (src, dest, pretty) => {
+                const indent = Number(spaces.value) ?? 4;
+                try {
+                    const obj = JSON.parse(src.value);
+                    dest.value = JSON.stringify(obj, null, pretty ? indent : null);
+                } catch(error) {
+                    const parsed = error.message.match(/position (\d+)/);
+                    if(parsed) {
+                        src.focus();
+                        src.selectionStart = parsed[1];
+                    }
+                    alert(error.message);
+                }
+            };
+
+            const prettify = () => operation(inArea, outArea, true);
+            const condense = () => operation(outArea, inArea);
+
+        </script>
+
+    </body>
+</html>
