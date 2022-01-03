@@ -4,6 +4,7 @@
     width: 100vw;
     height: 100vh;
     position: fixed;
+    background-color: #f3f3f3;
     top: 0;
     left: 0;
     z-index: -1;
@@ -83,4 +84,11 @@ a:visited {
     width: 3.0em;
     height: auto;
     margin: 0;
+}
+
+#abuseipdb-badge {
+    position: absolute;
+    right: 5px; bottom: 5px;
+    opacity: 50%;
+    width: 160px;
 }

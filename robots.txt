@@ -1,3 +1,5 @@
-# i'm so lonely
 User-Agent: *
 Allow: /
+
+User-Agent: jayant
+Disallow: /
