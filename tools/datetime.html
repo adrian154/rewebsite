@@ -67,13 +67,13 @@
         <h1>Timestamp Tools</h1>
         <p><a href="index.html">&#11172; More Tools</a> &bull; <a href="#" onclick="onClickEmbedLink()">embed page</a></p>
         
+        <p><i>Please note that humanity's sheer incompetence with handling date and time have made a truly consistent calendar system impossible. This page will be subject to whatever quirks your browser enforces when it comes to date calculations.</i></p>
         <p>The current Unix epoch time is <span id="current-timestamp"></span></p>
         
         <h3>Timestamp</h3>
         <input type="number" id="timestamp" placeholder="Timestamp..."> <button id="set-timestamp-to-current">current</button> <button id="convert-timestamp">convert</button>
 
         <h3>Date and Time</h3>
-        <p>The inputted date is <span id="human-date"></span></p>
 
         <form id="date-form">
             <table>
@@ -101,13 +101,17 @@
                     <td>:</td>
                     <td><input type="number" id="second" min="0" max="59" required></td>
                     <td><select id="period"><option>AM</option><option>PM</option></select></td>
-                    <td><select id="timezone"><option value="utc">UTC</option><option value="local">Local timezone</option></select></td>
+                    <td><select id="timezone"><option value="local">Local timezone</option><option value="utc">UTC</option></select></td>
                     <td><button type="submit" id="convert-date">convert</button></td>
                 </tr>
             </table>
             <div>
                 <input type="checkbox" id="24-hour"><label for="24-hour">24-hour time</label>
             </div>
+
+            <h3>Human-readable</h3>
+            <p>The inputted date is <span id="human-date"></span></p>
+
         </form>
 
         <script>
@@ -171,10 +175,10 @@
 
                     if(timezone.value == "local") {
                         date.setFullYear(year.value, month.value - 1, dayOfMonth.value);
-                        date.setHours(actualHour, minute.value - 1, second.value);
+                        date.setHours(actualHour, minute.value, second.value);
                     } else if(timezone.value == "utc") {
                         date.setUTCFullYear(year.value, month.value - 1, dayOfMonth.value);
-                        date.setUTCHours(actualHour, minute.value - 1, second.value);
+                        date.setUTCHours(actualHour, minute.value, second.value);
                     }
 
                     updateHumanDate(date);
@@ -195,14 +199,14 @@
                     year.value = date.getFullYear();
                     month.value = date.getMonth() + 1;
                     dayOfMonth.value = date.getDate();
-                    hour.value = is24Hour.checked ? date.getHours() : convert12to24(date.getHours());
+                    hour.value = is24Hour.checked ? date.getHours() : convert24to21(date.getHours());
                     minute.value = date.getMinutes();
                     second.value = date.getSeconds(); 
                 } else if(timezone.value == "utc") {
                     year.value = date.getUTCFullYear();
                     month.value = date.getUTCMonth() + 1;
                     dayOfMonth.value = date.getUTCDate();
-                    hour.value = is24Hour.checked ? date.getUTCHours() : convert12to24(date.getUTCHours());
+                    hour.value = is24Hour.checked ? date.getUTCHours() : convert24to21(date.getUTCHours());
                     minute.value = date.getUTCMinutes();
                     second.value = date.getUTCSeconds(); 
                 }
