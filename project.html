@@ -1,0 +1,45 @@
+<!-- Shhh. -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>You just got rickrolled.</title>
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+                background-color: black;
+            }
+
+            video {
+                width: 100vw;
+                height: 100vh;
+            }
+
+            button {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 36pt;
+                border: none;
+                background-color: #ff0000;
+                color: #ffffff;
+                padding: 0.3em;
+            }
+        </style>
+    </head>
+    <body>
+        <button id="button">Please click this button to confirm that you are not a bot.</button>
+        <video id="rickroll" style="visibility: hidden">
+            <source src="https://2kwajxhn-personal-files.sfo3.digitaloceanspaces.com/rickroll.mp4" type="video/mp4">
+        </video>
+        <script>
+            document.getElementById("button").addEventListener("click", event => {
+                event.target.style.display = "none";
+                const video = document.getElementById("rickroll");
+                video.style.visibility = "visible";
+                video.play();
+            });
+        </script>
+    </body>
+</html>
