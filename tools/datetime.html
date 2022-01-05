@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Timestamp Tools">
+        <meta property="og:description" content="Even a broken clock is right twice a day.">
+        <title>Timestamp Tools</title>
+        <link rel="stylesheet" href="common.css">
+        <style>
+            .copyable {
+                cursor: pointer;
+            }
+
+            .copyable *:first-child {
+                font-weight: 500;
+            }
+
+            .copyable .tooltip {
+                visibility: hidden;
+                padding: 0 0.3em;
+                opacity: 50%;
+                font-size: 11pt;
+            }
+
+            .copyable:hover .tooltip {
+                visibility: visible;
+            }
+            
+            .fade {
+                animation-duration: 0.5s;
+                animation-name: fade;
+            }
+
+            @keyframes fade {
+                from { opacity: 100%; color: #ff0000 }
+                to { opacity: 50%; }
+            }
+
+            td {
+                padding: 0.2em;
+            }
+
+            #labels td {
+                font-weight: bold;
+                font-size: 10pt;
+            }
+
+            td input {
+                width: 3.0em;
+                margin: 0;
+                box-sizing: border-box;
+            }
+
+            td input, select {
+                font-size: 1.0em;
+                height: 1.5em;
+            }
+
+            table {
+                border-collapse: collapse;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <h1>Timestamp Tools</h1>
+        <p><a href="index.html">&#11172; More Tools</a> &bull; <a href="#" onclick="onClickEmbedLink()">embed page</a></p>
+        
+        <p>The current Unix epoch time is <span id="current-timestamp"></span></p>
+        
+        <h3>Timestamp</h3>
+        <input type="number" id="timestamp" placeholder="Timestamp..."> <button id="set-timestamp-to-current">current</button> <button id="convert-timestamp">convert</button>
+
+        <h3>Date and Time</h3>
+        <p>The inputted date is <span id="human-date"></span></p>
+
+        <form id="date-form">
+            <table>
+                <tr id="labels">
+                    <td>Month</td>
+                    <td></td>
+                    <td>Date</td>
+                    <td></td>
+                    <td>Year</td>
+                    <td>Hour</td>
+                    <td></td>
+                    <td>Minute</td>
+                    <td></td>
+                    <td>Second</td>
+                </tr>
+                <tr>
+                    <td><input type="number" id="month" min="1" max="12" required></td>
+                    <td>/</td>
+                    <td><input type="number" id="date" min="1" max="31" required></td>
+                    <td>/</td>
+                    <td><input type="number" id="year" style="width: 4.0em" min="1970" required></td>
+                    <td><input type="number" id="hour" min="0" max="24" required></td>
+                    <td>:</td>
+                    <td><input type="number" id="minute" min="0" max="59" required></td>
+                    <td>:</td>
+                    <td><input type="number" id="second" min="0" max="59" required></td>
+                    <td><select id="period"><option>AM</option><option>PM</option></select></td>
+                    <td><select id="timezone"><option value="utc">UTC</option><option value="local">Local timezone</option></select></td>
+                    <td><button type="submit" id="convert-date">convert</button></td>
+                </tr>
+            </table>
+            <div>
+                <input type="checkbox" id="24-hour"><label for="24-hour">24-hour time</label>
+            </div>
+        </form>
+
+        <script>
+            
+            const createCopyable = element => {
+                
+                const copyable = document.createElement("span");
+                copyable.classList.add("copyable");
+                
+                const text = document.createElement("span");
+                copyable.append(text);
+                
+                const tooltip = document.createElement("span"); 
+                tooltip.classList.add("tooltip");
+                tooltip.textContent = "click to copy";
+                copyable.append(tooltip);
+
+                copyable.addEventListener("click", (event) => {
+                    navigator.clipboard.writeText(event.target.textContent);
+                    tooltip.textContent = "copied!";
+                    tooltip.classList.add("fade");
+                });
+
+                tooltip.addEventListener("animationend", () => {
+                    tooltip.classList.remove("fade");
+                    tooltip.textContent = "click to copy";
+                });
+                element.append(copyable);
+                return text;
+
+            };
+
+            const currentTimestamp = createCopyable(document.getElementById("current-timestamp"));
+            const humanDate = createCopyable(document.getElementById("human-date"));
+            const timestamp = document.getElementById("timestamp");
+            const dateForm = document.getElementById("date-form");
+            const month = document.getElementById("month"),
+                  date = document.getElementById("date"),
+                  year = document.getElementById("year"),
+                  hour = document.getElementById("hour"),
+                  minute = document.getElementById("minute"),
+                  second = document.getElementById("second"),
+                  period = document.getElementById("period"),
+                  timezone = document.getElementById("timezone"); 
+            const is24Hour = document.getElementById("24-hour");
+
+            const convert12to24 = hour => hour === 12 ? (period.value === "AM" ? 0 : 12) : (period.value === "AM" ? hour : hour + 12);
+
+            document.getElementById("convert-date").addEventListener("click", (event) => {
+                event.preventDefault();
+                if(dateForm.reportValidity()) {
+                    
+                    let result = new Date(0);
+                    const actualHour = is24Hour.checked ? hour.value : convert12to24(Number(hour.value));
+
+                    if(timezone.value == "local") {
+                        result.setFullYear(year.value, month.value - 1, date.value);
+                        result.setHours(actualHour, minute.value - 1, second.value);
+                    } else if(timezone.value == "utc") {
+                        result.setUTCFullYear(year.value, month.value - 1, date.value);
+                        result.setUTCHours(actualHour, minute.value - 1, second.value);
+                    }
+
+                    updateHumanDate(result);
+                    updateTimestamp(result);
+                
+                }
+            });
+
+            document.getElementById("set-timestamp-to-current").addEventListener("click", () => timestamp.value = Math.floor(Date.now() / 1000));
+            document.getElementById("convert-timestamp").addEventListener("click", (event) => {
+                const date = new Date(timestamp.value * 1000);
+                updateHumanDate(date);
+                updateDateInput(date);
+            });
+
+            const updateDateInput = date => {
+
+            };
+
+            const updateTimestamp = date => {
+
+            };
+
+            const format = new Intl.DateTimeFormat([], {dateStyle: "full", timeStyle: "full"});
+            const updateHumanDate = date => humanDate.textContent = format.format(date);  
+
+            // create a wrapper because setInterval doesn't call the interval function immediately
+            const interval = (fn, interval) => fn() + setInterval(fn, interval);
+
+            interval(() => currentTimestamp.textContent = Math.floor(Date.now() / 1000), 1000);
+
+        </script>
+        <script src="../scripts/embed.js"></script>
+
+    </body>
+</html>
