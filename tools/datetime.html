@@ -145,7 +145,7 @@
             const timestamp = document.getElementById("timestamp");
             const dateForm = document.getElementById("date-form");
             const month = document.getElementById("month"),
-                  date = document.getElementById("date"),
+                  dayOfMonth = document.getElementById("date"),
                   year = document.getElementById("year"),
                   hour = document.getElementById("hour"),
                   minute = document.getElementById("minute"),
@@ -154,25 +154,31 @@
                   timezone = document.getElementById("timezone"); 
             const is24Hour = document.getElementById("24-hour");
 
+            is24Hour.addEventListener("change", () => {
+                if(is24Hour.checked) period.style.display = "none";
+                else period.style.display = "";
+            });
+
             const convert12to24 = hour => hour === 12 ? (period.value === "AM" ? 0 : 12) : (period.value === "AM" ? hour : hour + 12);
+            const convert24to21 = hour => hour > 12 ? hour % 12 : (hour == 0 ? 12 : hour);
 
             document.getElementById("convert-date").addEventListener("click", (event) => {
                 event.preventDefault();
                 if(dateForm.reportValidity()) {
                     
-                    let result = new Date(0);
+                    let date = new Date(0);
                     const actualHour = is24Hour.checked ? hour.value : convert12to24(Number(hour.value));
 
                     if(timezone.value == "local") {
-                        result.setFullYear(year.value, month.value - 1, date.value);
-                        result.setHours(actualHour, minute.value - 1, second.value);
+                        date.setFullYear(year.value, month.value - 1, dayOfMonth.value);
+                        date.setHours(actualHour, minute.value - 1, second.value);
                     } else if(timezone.value == "utc") {
-                        result.setUTCFullYear(year.value, month.value - 1, date.value);
-                        result.setUTCHours(actualHour, minute.value - 1, second.value);
+                        date.setUTCFullYear(year.value, month.value - 1, dayOfMonth.value);
+                        date.setUTCHours(actualHour, minute.value - 1, second.value);
                     }
 
-                    updateHumanDate(result);
-                    updateTimestamp(result);
+                    updateHumanDate(date);
+                    updateTimestamp(date);
                 
                 }
             });
@@ -185,7 +191,21 @@
             });
 
             const updateDateInput = date => {
-
+                if(timezone.value == "local") {
+                    year.value = date.getFullYear();
+                    month.value = date.getMonth() + 1;
+                    dayOfMonth.value = date.getDate();
+                    hour.value = is24Hour.checked ? date.getHours() : convert12to24(date.getHours());
+                    minute.value = date.getMinutes();
+                    second.value = date.getSeconds(); 
+                } else if(timezone.value == "utc") {
+                    year.value = date.getUTCFullYear();
+                    month.value = date.getUTCMonth() + 1;
+                    dayOfMonth.value = date.getUTCDate();
+                    hour.value = is24Hour.checked ? date.getUTCHours() : convert12to24(date.getUTCHours());
+                    minute.value = date.getUTCMinutes();
+                    second.value = date.getUTCSeconds(); 
+                }
             };
 
             const updateTimestamp = date => {
