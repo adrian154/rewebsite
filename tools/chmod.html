@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Chmod Calculator">
+        <meta property="og:description" content="A handy Linux permission calculator">
+        <title>Chmod Calculator</title>
+        <link rel="stylesheet" href="common.css">
+        <style>
+            table {
+                border-collapse: collapse;
+            }
+
+            td, th {
+                padding: 1.0em;
+            }
+
+            td input {
+                display: block;
+                margin: auto;
+                width: 1.0em;
+                height: 1.0em;
+            }
+
+            table tr:first-child td, th {
+                border-bottom: 1px solid #aaa;
+            }
+
+            input[type="text"] {
+                font-family: monospace;
+            }
+
+            input {
+                font-size: 12pt;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Chmod Calculator</h1>
+        <p><a href="index.html">&#11172; More Tools</a> &bull; <a href="#" onclick="onClickEmbedLink()">embed page</a></p>
+        <form id="form">
+            <input type="number" id="number" placeholder="777">
+            <input type="text" id="text" placeholder="rwxrwxrwx">
+            <input type="submit" style="display: none">
+        </form>
+        <table>
+            <tr>
+                <td></td>
+                <th>Owner (u)</th>
+                <th>Group (g)</th>
+                <th>Public (o)</th>
+            </tr>
+            <tr>
+                <td>Read</td>
+                <td><input type="checkbox" id="ur"></td>
+                <td><input type="checkbox" id="gr"></td>
+                <td><input type="checkbox" id="or"></td>
+            </tr>
+            <tr>
+                <td>Write</td>
+                <td><input type="checkbox" id="uw"></td>
+                <td><input type="checkbox" id="gw"></td>
+                <td><input type="checkbox" id="ow"></td>
+            </tr>
+            <tr>
+                <td>Execute</td>
+                <td><input type="checkbox" id="ux"></td>
+                <td><input type="checkbox" id="gx"></td>
+                <td><input type="checkbox" id="ox"></td>
+            </tr>
+        </table>
+        <script src="../scripts/embed.js"></script>
+        <script>
+            const permissions = {
+                u: {r: 0, w: 0, x: 0},
+                g: {r: 0, w: 0, x: 0},
+                o: {r: 0, w: 0, x: 0}
+            };
+
+            const number = document.getElementById("number"), text = document.getElementById("text");
+
+            const digit = permission => String(permission.r << 2 | permission.w << 1 | permission.x);
+            const triplet = permission => (permission.r ? "r" : "-") + (permission.w ? "w" : "-") + (permission.x ? "x" : "-");
+
+            const updateForm = () => {
+                number.value = digit(permissions.u) + digit(permissions.g) + digit(permissions.o);
+                text.value = triplet(permissions.u) + triplet(permissions.g) + triplet(permissions.o);
+            };
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.addEventListener("change", () => {
+                permissions[checkbox.id[0]][checkbox.id[1]] = checkbox.checked;
+                updateForm();
+            }));
+
+            document.getElementById("form").addEventListener("submit", (event) => {
+                event.preventDefault();
+                
+            });
+        </script>
+    </body>
+</html>

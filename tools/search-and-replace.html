@@ -7,16 +7,101 @@
         <meta property="og:description" content="Search for and replace specific phrases in a piece of text.">
         <title>Text Search and Replace</title>
         <link rel="stylesheet" href="common.css">
+        <style>
+            input[type="text"] {
+                box-sizing: border-box;
+                width: 100%;
+                height: 2.5em;
+                font-family: monospace;
+                font-size: inherit;
+                border: 1px solid #aaaaaa;
+                border-radius: 3px;
+                padding-left: 0.5em;
+            }
+
+            textarea {
+                white-space: pre;
+            }
+
+            .wrap {
+                white-space: normal;
+            }
+        </style>
     </head>
     <body>
         
         <h1>Text Search and Replace</h1>
         <p><a href="index.html">&#11172; More Tools</a> &bull; <a href="#" onclick="onClickEmbedLink()">embed page</a></p>
         
-        <textarea id="in" placeholder="Raw JSON..."></textarea>
-        <p id="center"><button onclick="prettify()">Prettify</button> <button onclick="condense()">Condense</button></p>
-        <textarea id="out" placeholder="Prettified JSON..."></textarea>
+        <div>
+            <label for="search-phrase">Search for...</label>
+            <input type="text" id="search-phrase">
+        </div>
+
+        <div>
+            <label for="replace-phrase">Replace with...</label>
+            <input type="text" id="replace-phrase">
+        </div>
+
+        <div>
+            <input type="checkbox" id="regex"><label for="regex">regex</label>
+            <input type="checkbox" id="case-sensitive"><label for="case-sensitive">case sensitive</label>
+            <input type="checkbox" id="linewrap"><label for="linewrap">line wrap</label>
+        </div>
+
+        <div style="margin: 0.5em 0;">
+            <button id="find-next">find next</button> <button id="replace-next">replace next</button> <button id="replace-all">replace all</button>
+        </div>
+
+        <textarea id="in" placeholder="Text goes here..."></textarea>
+
         <script src="../scripts/embed.js"></script>
+        <script>
+            const textarea = document.getElementById("in");
+            const searchPhrase = document.getElementById("search-phrase"), replacePhrase = document.getElementById("replace-phrase");
+            let regexEnabled = false, caseSensitive = false;
+
+            const regex = (global) => new RegExp(regexEnabled ? searchPhrase.value : searchPhrase.value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), (caseSensitive ? "" : "i") + (global ? "g" : ""));
+            const replacement = () => regexEnabled ? replacePhrase.value : replacePhrase.value.replace(/\$/g, "$$$$");
+
+            document.getElementById("find-next").addEventListener("click", (event) => {
+                
+                textarea.focus();
+
+                // check if there's already text highlighted
+                if(textarea.selectionStart != textarea.selectionEnd) {
+                    textarea.selectionStart = textarea.selectionEnd = Math.max(textarea.selectionStart, textarea.selectionEnd);
+                }
+
+                // reset selection if it's too far
+                if(textarea.selectionStart >= textarea.value.length) {
+                    textarea.selectionStart = textarea.selectionEnd = 0;
+                }
+
+                // match
+                const match = textarea.value.slice(textarea.selectionStart).match(regex(false));
+
+                if(match) {
+                    textarea.selectionStart += match.index;
+                    textarea.selectionEnd = textarea.selectionStart + match[0].length;
+                } else {
+                    textarea.selectionStart = textarea.selectionEnd = 0;
+                }
+
+            });
+
+            document.getElementById("replace-next").addEventListener("click", (event) => {
+                
+            });
+
+            document.getElementById("replace-all").addEventListener("click", (event) => {
+                textarea.value = textarea.value.replace(regex(), replacement());
+            });
+
+            document.getElementById("regex").addEventListener("change", event => regexEnabled = event.target.checked);
+            document.getElementById("case-sensitive").addEventListener("change", event => caseSensitive = event.target.checked);
+            document.getElementById("linewrap").addEventListener("change", event => event.target.checked ? textarea.classList.add("wrap") : textarea.classList.remove("wrap"));
+        </script>
 
     </body>
 </html>

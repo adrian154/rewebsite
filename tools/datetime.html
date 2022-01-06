@@ -213,7 +213,7 @@
             };
 
             const updateTimestamp = date => {
-
+                timestamp.value = Math.floor(date / 1000);
             };
 
             const format = new Intl.DateTimeFormat([], {dateStyle: "full", timeStyle: "full"});
