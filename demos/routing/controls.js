@@ -23,9 +23,11 @@ const handleNodeClick = (simulation) => {
         } else {
             connect(simulation.clickedNode, simulation.selectedNode);
         }
-    } else if(mode == MODE.TESTING) {
-
-    } else if (mode == MODE.VIEWING) {
+    } else if(simulation.mode == MODE.TESTING) {
+        const link = simulation.selectedNode.links.get(simulation.clickedNode);
+        send("test", link);
+        console.log("sent");
+    } else if (simulation.mode == MODE.VIEWING) {
 
     }
 };
@@ -106,7 +108,6 @@ window.addEventListener("mousemove", (event) => {
     mouse.x = event.offsetX;
     mouse.y = event.offsetY;
     if(mouse.dragging && simulation.selectedNode) {
-        simulation.selectedNode.x = event.offsetX;
-        simulation.selectedNode.y = event.offsetY;
+        moveNode(simulation.selectedNode, event.offsetX, event.offsetY);
     }
 });

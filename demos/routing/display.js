@@ -58,6 +58,27 @@ const drawGraph = (simulation) => {
 
 };
 
+const drawMessages = (simulation) => {
+
+    ctx.fillStyle = "#00ff00";
+    for(const node of simulation.nodes) {
+        for(const [neighbor, link] of node.links) {
+            if(link.messages.size > 0) {
+
+                // normal vector
+                const x = (neighbor.x - node.x) / link.distance;
+                const y = (neighbor.y - node.y) / link.distance;
+
+                for(const message of link.messages) {
+                    ctx.fillRect(node.x + x * message.position - 2, node.y + y * message.position - 2, 4, 4);
+                }
+
+            }
+        } 
+    }
+
+};
+
 const draw = () => {
 
     // background
@@ -76,7 +97,9 @@ const draw = () => {
     }
 
     drawGraph(simulation);
+    drawMessages(simulation);
     drawNodes(simulation);
+
     requestAnimationFrame(draw);
 
 };
