@@ -18,12 +18,10 @@ const getNode = (simulation, x, y) => {
 const handleNodeClick = (simulation) => {
     console.log("other node clicked");
     if(simulation.mode == MODE.BUILDING) {
-        if(simulation.clickedNode.neighbors.has(simulation.selectedNode)) {
-            simulation.selectedNode.neighbors.delete(simulation.clickedNode);
-            simulation.clickedNode.neighbors.delete(simulation.selectedNode);
+        if(simulation.clickedNode.links.has(simulation.selectedNode)) {
+            disconnect(simulation.clickedNode, simulation.selectedNode);
         } else {
-            simulation.selectedNode.neighbors.add(simulation.clickedNode);
-            simulation.clickedNode.neighbors.add(simulation.selectedNode);
+            connect(simulation.clickedNode, simulation.selectedNode);
         }
     } else if(mode == MODE.TESTING) {
 
@@ -35,11 +33,7 @@ const handleNodeClick = (simulation) => {
 const handleSpaceClick = (simulation, x, y) => {
     console.log("empty space clicked");
     if(MODES[simulation.modeIndex] == MODE.BUILDING && !simulation.selectedNode) {
-        simulation.nodes.add({
-            x, y,
-            id: simulation.nextID++,
-            neighbors: new Set()
-        });   
+        simulation.nodes.add(newNode(x, y));   
     }
 };
 
@@ -49,7 +43,7 @@ window.addEventListener("keydown", (event) => {
         simulation.mode = MODES[simulation.modeIndex];
         updateModeText();
     } else if(event.key === "Delete" && simulation.selectedNode) {
-        simulation.nodes.delete(simulation.selectedNode);
+        deleteNode(simulation, simulation.selectedNode);
         simulation.selectedNode = null;
     } else if(event.key === "Control") {
         ctrlDown = true;
@@ -80,7 +74,6 @@ canvas.addEventListener("mousedown", (event) => {
 
     // save clicked node
     simulation.clickedNode = clickedNode;
-    draw();
 
 });
 
@@ -107,8 +100,6 @@ canvas.addEventListener("mouseup", (event) => {
         
     }
 
-    draw();
-
 });
 
 window.addEventListener("mousemove", (event) => {
@@ -118,5 +109,4 @@ window.addEventListener("mousemove", (event) => {
         simulation.selectedNode.x = event.offsetX;
         simulation.selectedNode.y = event.offsetY;
     }
-    draw();
 });

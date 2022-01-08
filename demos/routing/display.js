@@ -43,7 +43,7 @@ const drawGraph = (simulation) => {
     ctx.strokeStyle = "#fff";
 
     for(const node of simulation.nodes) {
-        for(const neighbor of node.neighbors) {
+        for(const neighbor of node.links.keys()) {
             if(neighbor.id > node.id) {
                 ctx.beginPath();
                 ctx.moveTo(node.x, node.y);
@@ -77,6 +77,7 @@ const draw = () => {
 
     drawGraph(simulation);
     drawNodes(simulation);
+    requestAnimationFrame(draw);
 
 };
 
