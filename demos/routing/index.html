@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Link-State Routing Demo</title>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            }
+
+            #canvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+            }
+
+            #info-box {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 1;
+                padding: 1.0em;
+                margin: 1.0em;
+                width: 16em;
+                background-color: rgba(255, 255, 255, 75%);
+            }
+
+            #middle {
+                display: flex;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 2;
+            }
+
+            #mode {
+                font-size: 1.5em;
+                color: #fff;
+                opacity: 50%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="middle">
+            <div style="margin: auto">
+                <span id="mode"></span>
+            </div>
+        </div>
+        <div id="info-box">
+            <p>This is a demonstration of link-state routing. Press G to cycle through the modes.</p>
+            <p><b>Building Mode</b>: Click an empty spot to create a node. Click another node to add a connection, or to delete the existing connection.</p>
+            <p><b>Testing Mode</b>: Select two nodes to send messages between them.</p>
+            <p><b>Viewing Mode</b>: Select any node to view its routing table.</p>
+        </div>
+        <canvas id="canvas"></canvas>
+        <script src="simulation.js"></script>
+        <script src="controls.js"></script>
+        <script src="display.js"></script>
+    </body>
+</html>
