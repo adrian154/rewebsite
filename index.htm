@@ -1,0 +1,51 @@
+<!-- Shhh. -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>bithole.dev</title>
+        <style>
+            body {
+                width: 100vw;
+                height: 100vh;
+                margin: 0;
+                overflow: hidden;
+                display: flex;
+            }
+
+            video {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+            }
+
+            div {
+                margin: auto;
+            }
+        </style>
+        <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+    </head>
+    <body>
+        <div id="recaptcha">
+        </div>
+        <video id="rickroll" style="visibility: hidden">
+            <source src="https://2kwajxhn-personal-files.sfo3.digitaloceanspaces.com/rickroll.mp4" type="video/mp4">
+        </video>
+        <script>
+            const recaptcha = document.getElementById("recaptcha");
+            var onloadCallback = () => {
+                grecaptcha.render(recaptcha, {
+                    sitekey: "6LeR_AEeAAAAADTf_oXtZuK_cDDaEcrP0cAtrkhu",
+                    callback: () => {
+                        recaptcha.style.display = "none";
+                        const video = document.getElementById("rickroll");
+                        video.style.visibility = "visible";
+                        video.play();
+                        document.title = "You just got rickrolled.";
+                    }
+                });
+            };
+        </script>
+    </body>
+</html>
