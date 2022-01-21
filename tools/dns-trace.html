@@ -98,7 +98,6 @@
             };
 
             const MINUTE = 60, HOUR = 60 * MINUTE, DAY = 24 * HOUR;
-            //const add = (current, n, unit) => n > 0 ? current + " " + n + " " + (n == 1 ? unit : unit + "s") + " " : current; 
             const add = (current, n, unit) => n > 0 ? `${current} ${n} ${n == 1 ? unit : unit + "s"}` : current;
             const formatTTL = seconds => {
                 
@@ -117,7 +116,7 @@
                 result = add(result, minutes, "minute");
 
                 result = add(result, seconds, "second");
-                return result;
+                return result.trim();
 
             };
 
