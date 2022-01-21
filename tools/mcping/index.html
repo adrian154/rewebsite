@@ -12,15 +12,10 @@
     </head>
     <body>
         <h1>Minecraft Server Pinger</h1>
-        <p><a href="../index.html">&#11172; More Tools</a> &bull; <a href="#" onclick="onClickEmbedLink()">embed page</a></p>
-        <script src="../../scripts/embed.js"></script>
-        <div style="display: flex; flex-direction: row;">
-            <div style="flex-basis: 100%;">
-                <input type="text" onkeyup="if(event.key === 'Enter') pingClicked()" id="host" placeholder="Server IP or domain goes here...">
-            </div>
-            <div>
-                <button id="ping-button" onclick="pingClicked()">Ping</button>
-            </div>
+        <p><a href="../index.html">&#11172; More Tools</a></p>
+        <div class="flex-row search">
+            <input type="text" onkeyup="if(event.key === 'Enter') pingClicked()" id="host" placeholder="Server IP or domain goes here...">
+            <button id="ping-button" onclick="pingClicked()">Ping</button>
         </div>
         <template id="server-info-template">
             <div class="box">

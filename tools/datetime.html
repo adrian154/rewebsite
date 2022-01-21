@@ -65,7 +65,7 @@
     <body>
         
         <h1>Timestamp Tools</h1>
-        <p><a href="index.html">&#11172; More Tools</a> &bull; <a href="#" onclick="onClickEmbedLink()">embed page</a></p>
+        <p><a href="index.html">&#11172; More Tools</a></p>
         
         <p><i>Please note that humanity's sheer incompetence with handling date and time have made a truly consistent calendar system impossible. This page will be subject to whatever quirks your browser enforces when it comes to date calculations.</i></p>
         <p>The current Unix epoch time is <span id="current-timestamp"></span></p>
@@ -114,35 +114,8 @@
 
         </form>
 
+        <script src="scripts/copyable.js"></script>
         <script>
-            
-            const createCopyable = element => {
-                
-                const copyable = document.createElement("span");
-                copyable.classList.add("copyable");
-                
-                const text = document.createElement("span");
-                copyable.append(text);
-                
-                const tooltip = document.createElement("span"); 
-                tooltip.classList.add("tooltip");
-                tooltip.textContent = "click to copy";
-                copyable.append(tooltip);
-
-                copyable.addEventListener("click", (event) => {
-                    navigator.clipboard.writeText(event.target.textContent);
-                    tooltip.textContent = "copied!";
-                    tooltip.classList.add("fade");
-                });
-
-                tooltip.addEventListener("animationend", () => {
-                    tooltip.classList.remove("fade");
-                    tooltip.textContent = "click to copy";
-                });
-                element.append(copyable);
-                return text;
-
-            };
 
             const currentTimestamp = createCopyable(document.getElementById("current-timestamp"));
             const humanDate = createCopyable(document.getElementById("human-date"));
@@ -202,6 +175,7 @@
                     hour.value = is24Hour.checked ? date.getHours() : convert24to21(date.getHours());
                     minute.value = date.getMinutes();
                     second.value = date.getSeconds(); 
+                    period.value = date.getHours() >= 12 ? "PM" : "AM";
                 } else if(timezone.value == "utc") {
                     year.value = date.getUTCFullYear();
                     month.value = date.getUTCMonth() + 1;
@@ -225,7 +199,6 @@
             interval(() => currentTimestamp.textContent = Math.floor(Date.now() / 1000), 1000);
 
         </script>
-        <script src="../scripts/embed.js"></script>
 
     </body>
 </html>

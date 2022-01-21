@@ -8,11 +8,9 @@
         <link rel="stylesheet" href="common.css">
         <style>
             #raster-canvas {
-                max-width: 100%;
-                object-fit: contain;
-                margin-top: 1.0em;
-                border: 1px solid #ccc;
                 visibility: hidden;
+                border: 1px solid #ccc;
+                margin-top: 1.0em;
             }
 
             #raster-image {
@@ -27,9 +25,8 @@
     <body>
         
         <h1>SVG Converter</h1>
-        <p><a href="index.html">&#11172; More Tools</a> &bull; <a href="#" onclick="onClickEmbedLink()">embed page</a></p>
-        <script src="../scripts/embed.js"></script>
-        
+        <p><a href="index.html">&#11172; More Tools</a></p>
+
         <p>Upload an SVG image or paste a link.</p>
         <input type="file" id="file-upload" accept="image/svg+xml"><br>
         <input type="number" id="width" placeholder="Width... (optional)"><br>
@@ -38,7 +35,7 @@
         
         <img id="raster-image"><br>
         <canvas id="raster-canvas"></canvas>
-        
+
         <script>
             const input = document.getElementById("file-upload");
             const widthField = document.getElementById("width"), heightField = document.getElementById("height");
@@ -65,13 +62,12 @@
 
                 image.onload = () => {
                 
-                    // resize canvas
-                    canvas.width = widthField.value || (heightField.value ? (image.width / image.height * heightField.value) : image.width);
-                    canvas.height = heightField.value || (widthField.value ? (image.height / image.width * widthField.value) : image.height);
+                    canvas.width = widthField.value || image.width;
+                    canvas.height = heightField.value || image.height;
 
                     // rasterize
                     canvas.style.visibility = "visible";
-                    ctx.drawImage(image, 0, 0);
+                    ctx.drawImage(image, 0, 0, widthField.value || image.width, heightField.value || image.height);
 
                     // download image
                     const link = document.createElement("a");

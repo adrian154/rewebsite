@@ -1,3 +1,4 @@
+/* -------- PAGE ELEMENTS -------- */
 body {
     max-width: 45em;
     margin: auto;
@@ -19,6 +20,36 @@ h1 {
     margin-bottom: 0.3em;
 }
 
+a {
+    color: #2bc2ff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #a3a3a3;
+}
+
+textarea {
+    width: 100%;
+    height: 20em;
+    overflow: scroll;
+}
+
+/* -------- UTILITY CLASSES -------- */
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
 .button1 {
     width: 15em;
     border: none;
@@ -35,19 +66,6 @@ h1 {
 
 .button1:hover {
     color: #dddddd;
-}
-
-a {
-    color: #2bc2ff;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-a:visited {
-    color: #a3a3a3;
 }
 
 .box {
@@ -73,17 +91,30 @@ a:visited {
     margin: 1.0em 0;
 }
 
-.inline-table td {
+.inline-table th, .inline-table td {
     border: 1px solid #aaaaaa;
-    padding: 1.0em;
+    padding: 0.5em;
 }
 
 .inline-table td:first-child {
     font-weight: bold;
 }
 
-textarea {
+.search > * {
+    height: 2.5em;
+    margin-right: 0.5em;
+}
+
+.search > *:last-child {
+    margin-right: 0;
+}
+
+.search input[type="text"] {
+    box-sizing: border-box;
     width: 100%;
-    height: 20em;
-    overflow: scroll;
+    font-family: monospace;
+    font-size: inherit;
+    border: 1px solid #aaaaaa;
+    border-radius: 3px;
+    padding-left: 0.5em;
 }

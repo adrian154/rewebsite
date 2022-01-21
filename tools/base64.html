@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Base64/Hex/UTF-8 Converter">
+        <meta property="og:description" content="Base64/Hex/UTF-8 Converter">
+        <title>Base64/Hex/UTF-8 Converter</title>
+        <link rel="stylesheet" href="common.css">
+        <style>
+            textarea {
+                height: 10em;
+                margin: 1.0em 0;
+            }
+
+            .error {
+                display: none;
+                color: #ff0000;
+            }
+
+            .shown {
+                display: initial;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Base64/Hex/UTF-8 Converter</h1>
+        <p><a href="index.html">&#11172; More Tools</a></p>
+        <p class="error" id="base64-error">The entered Base64 is invalid.</p>
+        <p class="error" id="hex-error">The entered hex is invalid.</p>
+        <textarea id="text" placeholder="Text goes here..."></textarea>
+        <textarea id="base64" placeholder="Base64 goes here...""></textarea>
+        <textarea id="hex" placeholder="Hex goes here..."></textarea>
+        <script>
+            const text = document.getElementById("text"),
+                  base64 = document.getElementById("base64"),
+                  hex = document.getElementById("hex");
+
+            const base64Err = document.getElementById("base64-error"), hexErr = document.getElementById("hex-error");
+
+            const encoder = new TextEncoder(), decoder = new TextDecoder();
+            let data;
+
+            const updateText = () => {
+                text.value = decoder.decode(data);
+            };
+
+            const updateHex = () => {
+                hex.value = "";
+                for(const value of data) {
+                    hex.value += value.toString(16).padStart(2, '0') + " ";
+                }
+            };
+
+            const updateBase64 = () => {
+                let str = "";
+                for(const value of data) {
+                    str += String.fromCharCode(value);
+                }
+                base64.value = btoa(str);
+            };
+
+            text.addEventListener("input", () => {
+                data = encoder.encode(text.value);
+                updateHex();
+                updateBase64();
+            });
+
+            base64.addEventListener("input", () => {
+                try {
+                    data = Uint8Array.from(atob(base64.value).split("").map(char => char.charCodeAt(0)));
+                    updateHex();
+                    updateText();
+                    base64Err.classList.remove("shown");
+                } catch(error) {
+                    base64Err.classList.add("shown");
+                }
+            });
+
+            hex.addEventListener("input", () => {
+                try {
+                    data = Uint8Array.from(hex.value.trim().split(/\s+/g).map(part => {
+                        const prefixIdx = part.indexOf("0x");
+                        if(prefixIdx >= 0) part = part.slice(prefixIdx);
+                        const result = parseInt(part, 16);
+                        if(isNaN(result)) {
+                            throw new Error();
+                        }
+                        return result;
+                    }));
+                    updateText();
+                    updateBase64();
+                    hexErr.classList.remove("shown");
+                } catch(error) {
+                    hexErr.classList.add("shown");
+                }
+            });
+        </script>
+    </body>
+</html>

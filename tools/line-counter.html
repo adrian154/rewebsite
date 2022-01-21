@@ -15,14 +15,13 @@
     </head>
     <body>
         <h1>Line Counter</h1>
-        <p><a href="index.html">&#11172; More Tools</a> &bull; <a href="#" onclick="onClickEmbedLink()">embed page</a></p>
+        <p><a href="index.html">&#11172; More Tools</a></p>
         
         <p>This tool counts the number of lines in a piece of text.</p>
         <p id="output">&nbsp;</p>
         <textarea id="text" placeholder="Your text goes here..."></textarea>
         <p><input type="checkbox" id="exclude-blank-lines"><label for="exclude-blank-lines">Exclude blank lines</label></p>
 
-        <script src="../scripts/embed.js"></script>
         <script>
             const textarea = document.getElementById("text"),
                   output = document.getElementById("output"),

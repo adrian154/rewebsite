@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="DNS Trace">
+        <meta property="og:description" content="View all the steps of a DNS resolution">
+        <title>DNS Trace</title>
+        <link rel="stylesheet" href="common.css">
+        <style>
+            .info, .warning, .error {
+                font-family: monospace;
+                margin: 0;
+                white-space: pre-wrap;
+            }
+
+            .info { color: #000000; }
+            .warning { color: #ff8000; }
+            .error { color: #ff0000; }
+            
+            #title {
+                font-weight: 400;
+            }
+            
+            td {
+                font-family: monospace;
+                white-space: pre;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>DNS Trace</h1>
+        <p><a href="index.html">&#11172; More Tools</a></p>
+
+        <form id="form">
+            <div class="flex-row search">
+                <input type="text" id="hostname" placeholder="Hostname...">
+                <select id="record">
+                    <option>A</option>
+                    <option>AAAA</option>
+                    <option>CAA</option>
+                    <option>CNAME</option>
+                    <option>MX</option>
+                    <option>NS</option>
+                    <option>PTR</option>
+                    <option>SOA</option>
+                    <option>SRV</option>
+                    <option>TXT</option>
+                </select>
+                <input type="submit" value="Trace" id="submit"></input>
+            </div>
+        </form>
+
+        <div id="results-box">
+            <h1 id="title"></h1>
+            <p id="description"></p>
+            <div style="overflow: auto">
+                <table id="records" class="inline-table"></table>
+            </div>
+        </div>
+
+        <div class="box" id="log-box" style="display: none"></div>
+
+        <script>
+            
+            // constants
+            const RECORD_TYPE = {
+                A: 1,
+                AAAA: 28,
+                CAA: 257,
+                CNAME: 5,
+                MX: 15,
+                NS: 2,
+                PTR: 12,
+                SOA: 6,
+                SRV: 33,
+                TXT: 16
+            };
+
+            // the big guys
+            const hostname = document.getElementById("hostname"),
+                  recordType = document.getElementById("record"),
+                  submit = document.getElementById("submit"),
+                  resultsBox = document.getElementById("results-box"),
+                  logBox = document.getElementById("log-box"),
+                  output = document.getElementById("output");
+
+            // results box elements
+            const title = document.getElementById("title"),
+                  description = document.getElementById("description"),
+                  recordsTable = document.getElementById("records");
+
+            const createLogMessage = message => {
+                const line = document.createElement("p");
+                line.textContent = message.message;
+                line.classList.add(message.type);
+                return line;
+            };
+
+            const MINUTE = 60, HOUR = 60 * MINUTE, DAY = 24 * HOUR;
+            //const add = (current, n, unit) => n > 0 ? current + " " + n + " " + (n == 1 ? unit : unit + "s") + " " : current; 
+            const add = (current, n, unit) => n > 0 ? `${current} ${n} ${n == 1 ? unit : unit + "s"}` : current;
+            const formatTTL = seconds => {
+                
+                let result = "";
+                
+                const days = Math.floor(seconds / DAY);
+                seconds -= days * DAY;
+                result = add(result, days, "day");
+
+                const hours = Math.floor(seconds / HOUR);
+                seconds -= hours * HOUR;
+                result = add(result, hours, "hour");
+
+                const minutes = Math.floor(seconds / MINUTE);
+                seconds -= minutes * MINUTE;
+                result = add(result, minutes, "minute");
+
+                result = add(result, seconds, "second");
+                return result;
+
+            };
+
+            const splitRDATA = (type, rdata) => {
+                switch(type) {
+                    case RECORD_TYPE.A:
+                    case RECORD_TYPE.AAAA:
+                    case RECORD_TYPE.NS:
+                    case RECORD_TYPE.CNAME:
+                    case RECORD_TYPE.PTR:
+                        return [rdata];
+                    case RECORD_TYPE.MX:
+                        return [rdata.exchange, rdata.preference];
+                    case RECORD_TYPE.SOA:
+                        return [rdata.mname, rdata.rname, rdata.serial, formatTTL(rdata.refresh), formatTTL(rdata.retry), formatTTL(rdata.expire), formatTTL(rdata.minimum)];
+                    case RECORD_TYPE.TXT:
+                        return [rdata.join(" ")];
+                    case RECORD_TYPE.CAA:
+                        return [rdata.tag, rdata.value, rdata.flags];
+                    case RECORD_TYPE.SRV:
+                        return [rdata.target, rdata.port, rdata.priority, rdata.weight];
+                    default:
+                        throw new Error("Um. what?");
+                }
+            };
+
+            const setupTable = records => {
+                
+                recordsTable.innerHTML = "";
+
+                const headers = ["Domain", "TTL"];
+                switch(recordType.value) {
+                    case "A":
+                    case "AAAA":
+                        headers.push("IP");
+                        break;
+                    case "NS":
+                        headers.push("Nameserver");
+                        break;
+                    case "CNAME":
+                        headers.push("Canonical Name");
+                        break;
+                    case "PTR":
+                        headers.push("Domain Name");
+                        break;
+                    case "MX":
+                        headers.push("Exchange", "Preference");
+                        break;
+                    case "SOA":
+                        headers.push("Master Nameserver", "Admin", "Serial", "Refresh", "Retry", "Expire", "Minimum TTL");
+                        break;
+                    case "TXT":
+                        headers.push("Text");
+                        break;
+                    case "CAA":
+                        headers.push("Tag", "Value", "Flags");
+                        break;
+                    case "SRV":
+                        headers.push("Target", "Port", "Priority", "Weight");
+                }
+
+                // add headers
+                const headersRow = document.createElement("tr");
+                for(const header of headers) {
+                    const th = document.createElement("th");
+                    th.textContent = header;
+                    headersRow.append(th);
+                }
+                recordsTable.append(headersRow);
+
+                const rows = records.map(record => [record.domain, formatTTL(record.ttl), ...splitRDATA(record.type, record.rdata)]);
+                console.log(records);
+                for(const record of rows) {
+                    const row = document.createElement("tr");
+                    for(const col of record) {
+                        const cell = document.createElement("td");
+                        cell.textContent = col;
+                        row.append(cell);
+                    }
+                    recordsTable.append(row);
+                }
+
+            };
+
+            document.getElementById("form").addEventListener("submit", async (event) => {
+            
+                // freeze UI
+                event.preventDefault();
+                logBox.display = "none";
+                logBox.innerHTML = "";
+                hostname.disabled = true;
+                record.disabled = true;
+                submit.disabled = true;
+                
+                let dns;
+                try {
+                    const resp = await fetch(`https://apis.bithole.dev/dns-trace?hostname=${encodeURIComponent(hostname.value)}&record=${encodeURIComponent(recordType.value)}`);
+                    dns = await resp.json();
+                } catch(error) {
+                    alert(error);
+                }
+
+                title.textContent = `${recordType.value} records for ${hostname.value}`;
+                description.textContent = `Retrieved ${dns.answers.length} authoritative ${recordType.value} record(s) for the domain "${hostname.value}".`;
+                setupTable(dns.answers);
+                
+                // add log messages
+                for(const message of dns.logs) {
+                    logBox.append(createLogMessage(message));
+                }
+            
+                // restore UI
+                resultsBox.style.display = "";
+                logBox.style.display = "";
+                hostname.disabled = false;
+                record.disabled = false;
+                submit.disabled = false;
+
+            });
+
+        </script>
+    </body>
+</html>
