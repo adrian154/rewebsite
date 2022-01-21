@@ -146,8 +146,6 @@
 
             const setupTable = records => {
                 
-                recordsTable.innerHTML = "";
-
                 const headers = ["Domain", "TTL"];
                 switch(recordType.value) {
                     case "A":
@@ -208,6 +206,7 @@
                 event.preventDefault();
                 logBox.display = "none";
                 logBox.innerHTML = "";
+                recordsTable.innerHTML = "";
                 hostname.disabled = true;
                 record.disabled = true;
                 submit.disabled = true;
@@ -221,9 +220,13 @@
                 }
 
                 title.textContent = `${recordType.value} records for ${hostname.value}`;
-                description.textContent = `Retrieved ${dns.answers.length} authoritative ${recordType.value} record(s) for the domain "${hostname.value}".`;
-                setupTable(dns.answers);
-                
+                if(dns.answers) {
+                    description.textContent = `Retrieved ${dns.answers.length} authoritative ${recordType.value} record(s) for the domain "${hostname.value}".`;
+                    setupTable(dns.answers);
+                } else {
+                    description.textContent = `Your query couldn't be answered. Check the log for more details.`;
+                }
+
                 // add log messages
                 for(const message of dns.logs) {
                     logBox.append(createLogMessage(message));
