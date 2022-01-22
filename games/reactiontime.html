@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ReactionTime</title>
+        <style>
+            body {
+                margin: 0;
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+            }
+
+            canvas {
+                margin: auto;
+            }
+
+            #rickroll {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+        <meta property="og:title" content="ReactionTime">
+    </head>
+    <body>
+        <video id="rickroll" style="visibility: hidden">
+            <source src="https://2kwajxhn-personal-files.sfo3.digitaloceanspaces.com/rickroll.mp4" type="video/mp4">
+        </video>
+        <canvas width="512" height="512" id="canvas"></canvas>
+        <script>
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+            const max = 4 + Math.random() * 3;
+            let x, y, steps = 0;
+
+
+            const SIZE = 6, WIDTH = canvas.width / SIZE;
+            const step = () => {
+                steps++;
+                if(steps > max) {
+                    const video = document.getElementById("rickroll");
+                    video.style.visibility = "visible";
+                    video.play();
+                    return;
+                }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                x = Math.floor(Math.random() * SIZE),
+                y = Math.floor(Math.random() * SIZE);
+                ctx.fillStyle = "#ff0000";
+                ctx.fillRect(x * WIDTH, y * WIDTH, WIDTH, WIDTH);
+                ctx.textAlign = "center";
+                ctx.fillStyle = "#ffff00";
+                ctx.font = "bold 20px Arial";
+                ctx.fillText("click me", (x + 0.5) * WIDTH, (y + 0.56) * WIDTH);
+            };
+
+            canvas.addEventListener("click", (event) => {
+                if(Math.floor(event.offsetX / WIDTH) == x && Math.floor(event.offsetY / WIDTH) == y) {
+                    step();
+                }
+                event.preventDefault();
+            });
+            
+            step();
+        </script>
+    </body>
+</html>
