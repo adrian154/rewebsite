@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="DNS Trace">
+        <meta property="og:description" content="Run an iterative DNS query">
+        <title>DNS Trace</title>
+        <link rel="stylesheet" href="../common.css">
+        <style>
+            #title {
+                font-weight: 400;
+            }
+            
+            table {
+                border-collapse: collapse;
+            }
+
+            td {
+                font-family: monospace;
+                white-space: pre;
+                padding: 1.0em;
+                text-align: center;
+            }
+
+            th {
+                padding: 1.0em;
+                padding-bottom: 0.5em;
+                font-weight: 500;
+            }
+
+            tr:not(:last-child) td {
+                border-bottom: 1px solid #ccc;
+            }
+
+            th {
+                border-bottom: 1px solid #000000;
+            }
+
+            .query {
+                box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+                padding: 1.0em;
+                margin: 1.0em 0;
+            }
+
+            .query h1, h2, h3, b {
+                font-weight: 500;
+            }
+
+            .query h1, h2, h3 {
+                margin-bottom: 0;
+            }
+
+            .query h1 {
+                margin-top: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>DNS Tool</h1>
+        <p><a href="../index.html">&#11172; More Tools</a></p>
+
+        <form id="form">
+            <div class="flex-row search">
+                <input type="text" id="hostname" placeholder="Hostname...">
+                <input type="text" id="nameserver" placeholder="Nameserver..." value="1.1.1.1" style="flex-basis: 40%">
+                <select id="record">
+                    <option>A</option>
+                    <option>AAAA</option>
+                    <option>CAA</option>
+                    <option>CNAME</option>
+                    <option>MX</option>
+                    <option>NS</option>
+                    <option>PTR</option>
+                    <option>SOA</option>
+                    <option>SRV</option>
+                    <option>TXT</option>
+                </select>
+                <input type="submit" value="Query" id="submit"></input>
+            </div>
+            <div>
+                <input type="checkbox" id="iterative">
+                <label for="iterative">iteratively query from root</label>
+            </div>
+        </form>
+
+        <p id="status"></p>
+        <div id="results-box"></div>
+        <div id="queries"></div>
+
+        <!-- model for queries -->
+        <template id="query">
+            <div class="query">
+                <h1>Query to <code class="query-nameserver"></code></h1>
+                <p>A response was received in <span class="query-latency"></span>ms.</p>
+                <ul>
+                    <li><b>Status:</b> <span class="query-status"></span></li>
+                    <li><b>Authoritative:</b> <span class="query-authoritative"></span></li>
+                    <li><b>Number of records:</b> <span class="query-num-records"></span></li>
+                </ul>
+                <div class="query-records"></div>
+            </div>
+        </template>
+        <script src="dns.js"></script>
+
+    </body>
+</html>
