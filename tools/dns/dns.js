@@ -169,7 +169,7 @@ const createQueryResult = (nameserver, response) => {
     
     const authoritative = element.querySelector(".query-authoritative");
     authoritative.textContent = response.flags.authoritative ? "Yes" : "No";
-    authoritative.style.color = response.authoritative ? "#ff8000" : "#e06060";
+    authoritative.style.color = response.flags.authoritative ? "#60e060" : "#e06060";
 
     element.querySelector(".query-num-records").textContent = response.records.length;
     
@@ -227,7 +227,7 @@ const queryIteratively = async () => {
             // query
             const response = await query(hostname.value, nameserver, RECORD_TYPE[recordType.value]);
             if(response.flags.authoritative) {
-                return response;
+                return handleResponse(response);
             }
 
             // save referrals
@@ -236,13 +236,59 @@ const queryIteratively = async () => {
 
         } while(nameservers.length > 0);
 
+        if(nameservers.length == 0) {
+            throw new Error("Didn't receive authoritative response or referral from any of the nameservers that were contacted.");
+        }
+
     }
 
+    throw new Error("The query limit was reached.");
 
 };
 
 const queryDirectly = async () => {
-    await query(hostname.value, nameserver.value, RECORD_TYPE[recordType.value], true);
+    return handleResponse(await query(hostname.value, nameserver.value, RECORD_TYPE[recordType.value], true));
+};
+
+// match 
+const filterRecords = (records, domain, type) => {
+    if(domain[domain.length - 1] != '.') domain += '.'; // turn domain into fqdn if necessary
+    return records.filter(record => record.domain === domain && record.type === type && record.class === 1);
+}
+
+const handleResponse = (response) => {
+
+    // check for valid answers, handle CNAME logic
+    let name = hostname.value, pastNames = [];
+    let answers;
+
+    // check for cnames
+    while(true) {
+        
+        // get cname records
+        const cnames = filterRecords(response.records, name, RECORD_TYPE.CNAME);
+        if(cnames.length == 0) break;
+        if(cnames.length > 1) throw new Error(`Received duplicate cnames for domain "${name}"`);
+        
+        // make sure there are no circular redirects
+        pastNames.push(name);
+        name = cnames[0].rdata;    
+        if(pastNames.includes(name)) throw new Error(`Circular CNAME chain detected: ${pastNames.join(", ")}, ${name}`);
+        
+    }
+
+    // if there are records answering the request, we're done
+    answers = filterRecords(response.records, name, RECORD_TYPE[recordType.value]);
+    if(answers.length > 0) {
+        return answers;
+    }
+
+    if(pastNames.length > 0) {
+        return {cname: name};
+    }
+
+    return [];
+
 };
 
 const fillForm = (inHostname, inRecordType) => {
@@ -263,14 +309,32 @@ const lookup = async () => {
     resultsBox.innerHTML = "";
     queries.innerHTML = "";
     status.innerHTML = "";
+    status.style.color = "#000000";
 
+    // retrieve answers
+    let answers;
     try {
-        await (iterative.checked ? queryIteratively() : queryDirectly());
+        answers = await (iterative.checked ? queryIteratively() : queryDirectly());
     } catch(error) {
         status.textContent = error.message;
+        status.style.color = "#e06060";
     }
 
-    status.textContent = "Query finished.";
+    if(answers.cname) {
+        const link = document.createElement("a");
+        link.textContent = answers.cname;
+        link.addEventListener("click", () => {
+            fillForm(answers.cname, recordType.value);
+            lookup();
+        });
+        status.textContent = "Received a CNAME redirect to ";
+        status.append(link);
+    } else {
+        status.textContent = `Received ${answers.length} ${recordType.value} record(s) for ${hostname.value}.`;
+        if(answers.length > 0) {
+            resultsBox.append(createRecordsTable(answers, answers[0].type));
+        }
+    }
 
     // restore UI
     nameserver.disabled = nameserverStatus;
