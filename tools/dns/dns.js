@@ -33,39 +33,64 @@ const formatTTL = seconds => {
 };
 
 // i can't help but feel that i'm overengineering this
-const SELF = x => x;
-const FIELD = name => obj => obj[name];
-const TTL = name => obj => formatTTL(obj[name]);
+const TEXT = field => rdata => rdata[field];
+const TTL = field => rdata => formatTTL(rdata[field]);
+const DOMAIN = field => rdata => {
+    const link = document.createElement("a");
+    const domain = field ? rdata[field] : rdata;
+    link.textContent = domain;
+    link.addEventListener("click", () => {
+        fillForm(domain, "A");
+        lookup();
+    });
+    return link;
+};
 
 const RECORD_FORMAT = {
-    [RECORD_TYPE.A]: {"IPv4 Address": SELF},
-    [RECORD_TYPE.AAAA]: {"IPv6 Address": SELF},
+    [RECORD_TYPE.A]: {"IPv4 Address": ip => {
+        const link = document.createElement("a");
+        link.textContent = ip;
+        link.addEventListener("click", () => {
+            fillForm(ip.split(".").reverse().join(".") + ".in-addr.arpa", "PTR");
+            lookup();
+        });
+        return link;
+    }},
+    [RECORD_TYPE.AAAA]: {"IPv6 Address": ip => {
+        const link = document.createElement("a");
+        link.textContent = ip;
+        link.addEventListener("click", () => {
+            fillForm(ip.split(":").join("").split("").reverse().join(".") + ".ip6.arpa", "PTR");
+            lookup();
+        });
+        return link;
+    }},
     [RECORD_TYPE.CAA]: {
-        "Tag": FIELD("tag"),
-        "Value": FIELD("value"),
-        "Flags": FIELD("flags")
+        "Tag": TEXT("tag"),
+        "Value": TEXT("value"),
+        "Flags": TEXT("flags")
     },
-    [RECORD_TYPE.CNAME]: {"Canonical Name": SELF},
+    [RECORD_TYPE.CNAME]: {"Canonical Name": DOMAIN()},
     [RECORD_TYPE.MX]: {
-        "Exchange": FIELD("exchange"),
-        "Preference": FIELD("preference")
+        "Exchange": DOMAIN("exchange"),
+        "Preference": TEXT("preference")
     },
-    [RECORD_TYPE.NS]: {"Nameserver": SELF},
-    [RECORD_TYPE.PTR]: {"Domain Name": SELF},
+    [RECORD_TYPE.NS]: {"Nameserver": DOMAIN()},
+    [RECORD_TYPE.PTR]: {"Domain Name": DOMAIN()},
     [RECORD_TYPE.SOA]: {
-        "Master Nameserver": FIELD("mname"),
-        "Admin Contact": FIELD("rname"),
-        "Serial": FIELD("serial"),
+        "Master Nameserver": DOMAIN("mname"),
+        "Admin Contact": TEXT("rname"),
+        "Serial": TEXT("serial"),
         "Refresh": TTL("refresh"),
         "Retry": TTL("retry"),
         "Expire": TTL("expire"),
         "Minimum TTL": TTL("minimum")
     },
     [RECORD_TYPE.SRV]: {
-        "Target": FIELD("target"),
-        "Port": FIELD("port"),
-        "Priority": FIELD("priority"),
-        "Weight": FIELD("weight")
+        "Target": DOMAIN("target"),
+        "Port": TEXT("port"),
+        "Priority": TEXT("priority"),
+        "Weight": TEXT("weight")
     },
     [RECORD_TYPE.TXT]: {"Value": rdata => rdata.join(" ")},
 };
@@ -89,9 +114,9 @@ const queries = document.getElementById("queries"),
 iterative.addEventListener("input", () => nameserver.disabled = iterative.checked);
 
 // create table for records of same type
-const ELEMENT = (type, text) => {
+const ELEMENT = (type, ...contents) => {
     const element = document.createElement(type);
-    element.textContent = text;
+    element.append(...contents);
     return element;
 };
 
@@ -164,35 +189,70 @@ const createQueryResult = (nameserver, response) => {
 };
 
 const query = async (hostname, nameserver, type, recursive) => {
-    try {
-        const resp = await fetch(`https://apis.bithole.dev/dns-query?hostname=${hostname}&nameserver=${nameserver}&type=${type}&recursive=${recursive || ""}`);
-        if(resp.ok) {
-            const value = await resp.json();
-            value.records = [...value.authorityRecords, ...value.answerRecords, ...value.additionalRecords];
-            queries.append(createQueryResult(nameserver, value));
-            return value;
-        }
-    } catch(err) {
-        console.error(err);
-        return;
-    }
+    status.textContent = "Waiting for response from " + nameserver;
+    const resp = await fetch(`https://apis.bithole.dev/dns-query?hostname=${hostname}&nameserver=${nameserver}&type=${type}&recursive=${recursive || ""}`);
+    const value = await resp.json();
+    value.records = [...value.authorityRecords, ...value.answerRecords, ...value.additionalRecords];
+    queries.prepend(createQueryResult(nameserver, value));
+    return value;
 };
 
-const resolve = async (iterative) => {
+const queryIteratively = async () => {
 
-    
+    let nameservers = [
+        "a.root-servers.net.",
+        "b.root-servers.net.",
+        "c.root-servers.net.",
+        "d.root-servers.net.",
+        "e.root-servers.net.",
+        "f.root-servers.net.",
+        "g.root-servers.net.",
+        "h.root-servers.net.",
+        "i.root-servers.net.",
+        "j.root-servers.net.",
+        "k.root-servers.net.",
+        "l.root-servers.net.",
+        "m.root-servers.net."
+    ];
+
+    for(let i = 0; i < 32; i++) {
+
+        // iterate through `nameservers` in random order
+        do {
+
+            // pick nameserver
+            const index = Math.floor(Math.random() * nameservers.length);
+            const nameserver = nameservers.splice(index)[0];
+
+            // query
+            const response = await query(hostname.value, nameserver, RECORD_TYPE[recordType.value]);
+            if(response.flags.authoritative) {
+                return response;
+            }
+
+            // save referrals
+            nameservers = response.authorityRecords.filter(record => record.type == RECORD_TYPE.NS && record.class == 1).map(record => record.rdata);
+            break;
+
+        } while(nameservers.length > 0);
+
+    }
+
 
 };
 
 const queryDirectly = async () => {
-    const response = await query(hostname.value, nameserver.value, RECORD_TYPE[recordType.value], true);
-    return [];
+    await query(hostname.value, nameserver.value, RECORD_TYPE[recordType.value], true);
 };
 
-document.getElementById("form").addEventListener("submit", async (event) => {
+const fillForm = (inHostname, inRecordType) => {
+    hostname.value = inHostname;
+    recordType.value = inRecordType;
+};
+
+const lookup = async () => {
 
     // freeze UI
-    event.preventDefault();
     hostname.disabled = true;
     const nameserverStatus = nameserver.disabled;
     nameserver.disabled = true;
@@ -204,15 +264,13 @@ document.getElementById("form").addEventListener("submit", async (event) => {
     queries.innerHTML = "";
     status.innerHTML = "";
 
-    const answers = await (iterative.checked ? queryIteratively() : queryDirectly());
-    
-    // update status and answers
-    if(answers?.length > 0) {
-        status.textContent = `Retrieved ${answers.length} authoritative ${recordType.value} record(s) for the domain "${hostname.value}".`;
-        resultsBox.append(createRecordsTable(answers, answers[0].type));
-    } else {
-        status.textContent = `Your query couldn't be answered.`;
+    try {
+        await (iterative.checked ? queryIteratively() : queryDirectly());
+    } catch(error) {
+        status.textContent = error.message;
     }
+
+    status.textContent = "Query finished.";
 
     // restore UI
     nameserver.disabled = nameserverStatus;
@@ -220,4 +278,9 @@ document.getElementById("form").addEventListener("submit", async (event) => {
     record.disabled = false;
     submit.disabled = false;
 
+};
+
+document.getElementById("form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    lookup();
 });

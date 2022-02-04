@@ -21,7 +21,9 @@ const newNode = (x, y) => ({
     x, y,
     id: simulation.nextID++,
     links: new Map(), // links to neighbors
-    queuedMessages: [] // messages to be processed next update
+    queuedMessages: [], // messages to be processed next update
+    sequenceNumbers: new Map(),
+    sequenceNUmber: 0
 });
 
 const deleteNode = (simulation, node) => {
@@ -59,14 +61,8 @@ const updateNode = (node) => {
     
     // consume messages
     while(node.queuedMessages.length > 0) {
-
         const message = node.queuedMessages.pop();
-
-        // for now, just retransmit to an arbitrary neighbor
-        const links = [...node.links.values()];
-        const link = links[Math.floor(Math.random() * links.length)];
-        send(message.payload, link);
-
+        processMessage(node, message.payload);
     }
 
 };
