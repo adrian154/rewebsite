@@ -79,7 +79,7 @@ const hostname = document.getElementById("hostname"),
 
 // outputs
 const status = document.getElementById("status"),
-      resultsBox = document.getElementById("results-box"),
+      resultsBox = document.getElementById("results-box");
 
 // queries
 const queries = document.getElementById("queries"),
@@ -163,21 +163,30 @@ const createQueryResult = (nameserver, response) => {
     return element;
 };
 
-const query = async (hostname, nameserver, type) => {
+const query = async (hostname, nameserver, type, recursive) => {
     try {
-        const resp = await fetch(`https://apis.bithole.dev/dns-query?hostname=${hostname}&nameserver=${nameserver}&type=${type}`);
-        if(resp.ok) return await resp.json();
+        const resp = await fetch(`https://apis.bithole.dev/dns-query?hostname=${hostname}&nameserver=${nameserver}&type=${type}&recursive=${recursive || ""}`);
+        if(resp.ok) {
+            const value = await resp.json();
+            value.records = [...value.authorityRecords, ...value.answerRecords, ...value.additionalRecords];
+            queries.append(createQueryResult(nameserver, value));
+            return value;
+        }
     } catch(err) {
+        console.error(err);
         return;
     }
 };
 
-const queryIteratively = () => {
+const resolve = async (iterative) => {
+
+    
 
 };
 
 const queryDirectly = async () => {
-    
+    const response = await query(hostname.value, nameserver.value, RECORD_TYPE[recordType.value], true);
+    return [];
 };
 
 document.getElementById("form").addEventListener("submit", async (event) => {
@@ -195,19 +204,14 @@ document.getElementById("form").addEventListener("submit", async (event) => {
     queries.innerHTML = "";
     status.innerHTML = "";
 
-    const answers = iterative.checked ? queryIteratively() : queryDirectly;
-
+    const answers = await (iterative.checked ? queryIteratively() : queryDirectly());
+    
     // update status and answers
-    if(answers.length > 0) {
+    if(answers?.length > 0) {
         status.textContent = `Retrieved ${answers.length} authoritative ${recordType.value} record(s) for the domain "${hostname.value}".`;
         resultsBox.append(createRecordsTable(answers, answers[0].type));
     } else {
         status.textContent = `Your query couldn't be answered.`;
-    }
-
-    // add log messages
-    for(const message of dns.logs) {
-        logBox.append(createLogMessage(message));
     }
 
     // restore UI
