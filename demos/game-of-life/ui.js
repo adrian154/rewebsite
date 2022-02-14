@@ -19,7 +19,7 @@ const rulesDialog = document.getElementById("rules-dialog"),
 
 // shares dialog
 const shareDialog = document.getElementById("share-dialog"),
-      link = document.getElementById("link");
+      shareLink = document.getElementById("share-link");
       
 let currentDialog;
 
@@ -80,6 +80,15 @@ document.getElementById("submit-init-dialog").addEventListener("click", () => {
     reset();
 });
 
+document.getElementById("copy-button").addEventListener("click", async () => {
+	try {
+		await navigator.clipboard.writeText(shareLink.value);
+	} catch(err) {
+		alert("Failed to copy to clipboard automatically");
+	}
+	closeDialog();
+});
+
 const resetAll = () => location.href = window.location.pathname;
 
 // little bit of ui logic
@@ -116,12 +125,13 @@ const updateURL = () => {
 	}
 	
 	window.history.replaceState(null, null, url.href);
-	document.getElementById("share-link").value = url.href;
+	shareLink.value = url.href;
 
 };
 
 // start simulation
 loadSettingsFromURL();
+updateURL();
 reset();
 changeRunState(true);
 run();
