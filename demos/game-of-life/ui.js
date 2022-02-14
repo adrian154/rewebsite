@@ -21,7 +21,9 @@ const rulesDialog = document.getElementById("rules-dialog"),
 const shareDialog = document.getElementById("share-dialog"),
       shareLink = document.getElementById("share-link");
 
-const settingsDialog = document.getElementById("settings-dialog");
+const settingsDialog = document.getElementById("settings-dialog"),
+      shouldWrap = document.getElementById("should-wrap"),
+	  speed = document.getElementById("speed");
       
 let currentDialog;
 
@@ -52,8 +54,8 @@ const closeDialog = () => {
 };
 
 document.getElementById("submit-rules-dialog").addEventListener("click", () => {
-	born = birthRules.value.split("").map(Number);
-	survive = surviveRules.value.split("").map(Number);
+	game.rules.born = birthRules.value.split("").map(Number);
+	game.rules.survive = surviveRules.value.split("").map(Number);
 	closeDialog();
 	updateURL();
 });
@@ -91,8 +93,8 @@ document.getElementById("copy-button").addEventListener("click", async () => {
 	closeDialog();
 });
 
-document.getElementById("should-wrap").addEventListener("click", event => game.wrap = event.target.checked);
-document.getElementById("speed").addEventListener("input", event => game.speed = Math.floor(60 / event.target.value));
+shouldWrap.addEventListener("click", event => { game.wrap = shouldWrap.checked; updateURL() });
+speed.addEventListener("input", event => { game.speed = Math.floor(60 / speed.value); updateURL() });
 
 const resetAll = () => location.href = window.location.pathname;
 
@@ -119,14 +121,17 @@ window.addEventListener("keydown", (event) => {
 const updateURL = () => {
 	
 	const url = new URL(window.location);
-	url.searchParams.set("r", `b${game.rules.born.join("")}s${game.rules.survive.join("")}`);
+	const params = url.searchParams;
+	params.set("r", `b${game.rules.born.join("")}s${game.rules.survive.join("")}`);
+	params.set("w", Number(game.wrap));
+	params.set("s", game.speed);
 
 	if(game.initial.density) {
-		url.searchParams.set("d", game.initial.density);
-		url.searchParams.delete("p");
+		params.set("d", game.initial.density);
+		params.delete("p");
 	} else {
-		url.searchParams.set("p", game.initial.pattern);
-		url.searchParams.delete("d");
+		params.set("p", game.initial.pattern);
+		params.delete("d");
 	}
 	
 	window.history.replaceState(null, null, url.href);

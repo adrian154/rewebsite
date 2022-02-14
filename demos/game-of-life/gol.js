@@ -25,6 +25,7 @@ const game = {
 	},
 	frame: 0,
 	speed: 1,
+	wrap: true,
 	curBoard: makeBoard(),
 	nextBoard: makeBoard(),
 	running: false
@@ -33,10 +34,15 @@ const game = {
 const loadSettingsFromURL = () => {
 	
 	const params = new URL(window.location.href).searchParams;
+	if(params.has("s")) game.speed = Number(params.get("s"));
+	if(params.has("w")) game.wrap = Number(params.get("w"));
+
 	if(params.has("d")) {
 		game.initial = {density: Number(params.get("d"))};
+		densitySlider.value = game.initial.density * 100;
 	} else if(params.has("p")) {
 		game.initial = {pattern: params.get("p")};
+		patternTextbox.value = game.initial.pattern;
 	}
 	
 	const parsedRule = params.get("r")?.match(/b(\d+)s(\d+)/);
@@ -44,6 +50,12 @@ const loadSettingsFromURL = () => {
 		game.rules.born = parsedRule[1].split("").map(Number);
 		game.rules.survive = parsedRule[2].split("").map(Number);
 	}
+
+	// update UI
+	shouldWrap.checked = game.wrap;
+	speed.value = 60 / game.speed;
+	birthRules.value = game.rules.born.join("");
+	surviveRules.value = game.rules.survive.join("");
 
 };
 
