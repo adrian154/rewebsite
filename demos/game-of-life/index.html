@@ -6,79 +6,7 @@
 		<meta property="og:title" content="Game of Life">
 		<meta property="og:description" content="A tiny implementation of Conway's Game of Life cellular automaton.">
 		<title>Game of Life</title>
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-		<style>
-			body {
-				display: flex;
-				margin: 0;
-				width: 100vw;
-				height: 100vh;
-				font-family: 'Open Sans', sans-serif;
-			}
-
-			#content {
-				width: 512px;
-				margin: auto;
-			}
-
-			#modals {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background-color: rgba(0, 0, 0, 0.3);	
-				z-index: 1;
-			}
-			
-			.modal-box {
-				display: none;
-				font-family: 'Open Sans';
-				position: fixed;
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-				background-color: #ffffff;
-				border-radius: 5px;
-				padding: 1.0em;
-			}
-
-			.modal-box textarea {
-				border: 1px solid #aaaaaa;
-			}
-
-			input[type="range"] {
-				vertical-align: middle;
-			}
-
-			input[type="text"] {
-				margin: 0.4em;
-				padding: 0.3em;
-			}
-
-			#settings button {
-				border: none;
-				background: none;
-				padding: 0.7em;
-			}
-
-			#settings button:hover {
-				text-decoration: underline;
-				cursor: pointer;
-			}
-
-			#controls button {
-				border: none;
-				border-radius: 5px;
-				color: #111;
-				background-color: #ddd;
-				font-weight: bold;
-				margin: 0.5em;
-				padding: 0.5em;
-				width: 5em;
-			}
-		</style>
+		<link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
 
@@ -87,13 +15,12 @@
 			<div id="settings">
 				<button onclick="showDialog(rulesDialog)">rules</button>
 				<button onclick="showDialog(initDialog)">initial conditions</button>
-				<button onclick="showDialog(colorSchemeDialog)">color scheme</button>
-				<button onclick="location.href = window.location.pathname;">clear</button>
+				<button onclick="location.href = window.location.pathname;">reset all</button>
 				<button onclick="showDialog(shareDialog)">share</button>
 			</div>
 
 			<canvas id="output"></canvas><br>
-			<noscript>If you're reading this message, you've either disabled JavaScript or your browser does not support it. Either way, this demo cannot run without JS. Sorry.</noscript>
+			<noscript>If you're reading this message, JavaScript is not available. Unfortunately, it's required to run this demo. Sorry.</noscript>
 		
 			<div id="controls" style="display: flex; justify-content: center;">
 				<button id="toggle" onclick="toggle()">pause</button>
@@ -105,17 +32,8 @@
 
 		<div id="modals" style="display: none;">
 
-			<div class="modal-box" id="init-dialog">
-				<p><b>change initial conditions</b></p>
-				<div><input type="radio" id="init-pattern" name="init-type"><label for="init-pattern">start with pattern</label></div>
-				<div><input type="radio" id="init-random" name="init-type"><label for="init-random">start with random field</label></div><br>
-				<div id="density-control" style="display: none;"><label for="range">density: </label><input type="range" id="init-density"></div>
-				<div id="pattern-control" style="display: none;"><textarea id="pattern" rows="10" cols="60" placeholder="Pattern..."></textarea><br></div>
-				<button onclick="updateStartConds()">save and reset</button>
-				<button onclick="hideDialog(currentDialog)">cancel</button>
-			</div>
-			
-			<div class="modal-box" id="rules-dialog">
+			<div class="dialog" id="rules-dialog" style="display: none">
+				<button class="close-button">&times;</button>
 				<p><b>change rules</b></p>
 				<table>
 					<tr>
@@ -126,34 +44,29 @@
 						<td><label for="death-rules">Survival conditions</label></td>
 						<td><input type="text" id="survive-rules" placeholder="Neighbor counts..." value="23"></td>
 				</table>
-				<button onclick="updateRules()">save</button>
-				<button onclick="hideDialog(currentDialog)">cancel</button>
+				<button id="submit-rules-dialog">save</button>
 			</div>
 
-			<div class="modal-box" id="colorscheme-dialog">
-				<p><b>color scheme</b></p>
-				<table>
-					<tr>
-						<td><label for="alive-color">Alive color</label></td>
-						<td><input type="color" id="alive-color" value="#ffffff"></td>
-					</tr>
-					<tr>
-						<td><label for="dead-color">Dead color</label></td>
-						<td><input type="color" id="dead-color" value="#000000"></td>
-					</tr>
-				</table>
-				<button onclick="hideDialog(currentDialog)">exit</button>
+			<div class="dialog" id="init-dialog" style="display: none">
+				<button class="close-button">&times;</button>
+				<p><b>change initial conditions</b></p>
+				<div><input type="radio" id="init-pattern" name="init-type"><label for="init-pattern">start with pattern</label></div>
+				<div><input type="radio" id="init-random" name="init-type"><label for="init-random">start with random field</label></div><br>
+				<div id="density-control" style="display: none;"><label for="range">density: </label><input type="range" id="init-density"></div>
+				<div id="pattern-control" style="display: none;"><textarea id="pattern" rows="10" cols="60" placeholder="Pattern..."></textarea><br></div>
+				<button id="submit-init-dialog">save and reset</button>
 			</div>
 
-			<div class="modal-box" id="share-dialog">
+			<div class="dialog" id="share-dialog" style="display: none">
+				<button class="close-button">&times;</button>
 				<p><b>share</b></p>
 				<p>Use this link to share the current game of life.</p>
 				<input id="share-link" readonly>
-				<button onclick="hideDialog(currentDialog)">exit</button>
 			</div>
 			
 		</div>
 
 		<script src="gol.js"></script>
+		<script src="ui.js"></script>
 	</body>
 </html>

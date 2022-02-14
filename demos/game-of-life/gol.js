@@ -1,211 +1,62 @@
-const canvas = document.getElementById("output");
-const ctx = canvas.getContext("2d");
-const patternField = document.getElementById("pattern");
-const link = document.getElementById("link");
-
-// Automata rules
-let born = [3];
-let survive = [2, 3];
-
-// Parse URL
-const url = new URL(window.location.href);
-const rule = url.searchParams.get("rule")?.match(/b(\d+)s(\d+)/);
-
-if(rule) {
-	born = rule[1].split("").map(str => parseInt(str));
-	survive = rule[2].split("").map(str => parseInt(str));
-}
-
-// set up initial conds based on url 
-let initialType = url.searchParams.get("initialType") || "random";
-let density = url.searchParams.get("density") || 0.5;
-let pattern = url.searchParams.get("pattern");
-let aliveColor = url.searchParams.get("aliveColor") || "#ffffff", deadColor = url.searchParams.get("deadColor") || "#000000";
-
-
-// other simulation state
-let running = true;
-
-// Other constants
+// constants 
 const CELL_SIZE = 2;
 const WIDTH = 256;
 const HEIGHT = 256;
+const ALIVE_COLOR = "#ffffff";
+const DEAD_COLOR = "#000000";
 
+// set up canvas
+const canvas = document.getElementById("output");
+const ctx = canvas.getContext("2d");
 canvas.width = WIDTH * CELL_SIZE;
 canvas.height = HEIGHT * CELL_SIZE;
-const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
-const make2DArr = (xSize, ySize) => Array.from({length: xSize}, () => new Array(ySize).fill(0));
+// helpers
+const makeBoard = () => Array.from({length: WIDTH}, () => new Array(HEIGHT).fill(0));
 
-// Double-buffer board 
-const board = [make2DArr(WIDTH, HEIGHT), make2DArr(WIDTH, HEIGHT)];
-let which;
-
-const clear = () => {
-	for(let x = 0; x < WIDTH; x++) {
-		for(let y = 0; y < HEIGHT; y++) {
-			board[which][x][y] = 0;
-		}
-	}
+// game state
+const game = {
+	rules: {
+		born: [3],
+		survive: [2,3]
+	},
+	initial: {
+		density: 0.5
+	},
+	curBoard: makeBoard(),
+	nextBoard: makeBoard(),
+	running: false
 };
 
-const init = function() {
-	which = 0;
-	if(initialType === "random") {
-		for(let x = 0; x < WIDTH; x++) {
-			for(let y = 0; y < HEIGHT; y++) {
-				board[which][x][y] = Math.random() < density ? 1 : 0;
-			}
-		}
-	} else if(initialType === "pattern") {
-		loadPattern(pattern);
+const loadSettingsFromURL = () => {
+	
+	const params = new URL(window.location.href).searchParams;
+	
+	game.initialType = params.get("i");
+	if(game.initialType == "random") {
+		game.initial.density = Number(params.get("d"));
 	} else {
-		alert("Couldn't initialize: unknown initial type");
-	}
-};
-
-const step = function() {
-
-	let next = 1 - which;
-	
-	// parse colors
-	const alive = parseInt(aliveColor.slice(1), 16), dead = parseInt(deadColor.slice(1), 16);
-	const aliveR = alive >> 16, aliveG = (alive >> 8) & 0xFF, aliveB = alive & 0xFF;
-	const deadR = dead >> 16, deadG = (dead >> 8) & 0xFF, deadB = dead & 0xFF;
-
-	for(let x = 0; x < WIDTH; x++) {
-		for(let y = 0; y < HEIGHT; y++) {
-		
-			if(running) {
-
-				let neighbors = 0;
-				for(let dx = -1; dx <= 1; dx++) {
-					for(let dy = -1; dy <= 1; dy++) {
-						if(dx == 0 && dy == 0) continue;
-						neighbors += board[which][(x + dx + WIDTH) % WIDTH][(y + dy + HEIGHT) % HEIGHT];
-					}	
-				}
-
-				const nextVal = born.includes(neighbors) ? 1 : (survive.includes(neighbors) ? board[which][x][y] : 0);
-				board[next][x][y] = nextVal;
-			}
-
-            // Draw
-			const value = board[which][x][y];
-			for(let px = 0; px < CELL_SIZE; px++) {
-                for(let py = 0; py < CELL_SIZE; py++) {
-                    const idx = ((x * CELL_SIZE + px) * canvas.height + (y * CELL_SIZE + py)) * 4;
-                    imgData.data[idx] = value ? aliveR : deadR;
-                    imgData.data[idx + 1] = value ? aliveG : deadG;
-                    imgData.data[idx + 2] = value ? aliveB : deadB;
-                    imgData.data[idx + 3] = 255;
-                }
-            }
-			
-		}
-	}
-
-	if(running) {
-		which = next;
-	}
-
-    ctx.putImageData(imgData, 0, 0);
-
-};
-
-const run = () => {
-	step();
-	setTimeout(run, 30);
-};
-
-const updateURL = () => {
-	
-	const url = new URL(window.location);
-	url.searchParams.set("rule", `b${born.join("")}s${survive.join("")}`);
-	url.searchParams.set("initialType", initialType);
-	url.searchParams.set("aliveColor", aliveColor);
-	url.searchParams.set("deadColor", deadColor);
-
-	if(initialType === "random") {
-		url.searchParams.set("density", density);
-		url.searchParams.delete("pattern");
-	} else if(initialType === "pattern") {
-		url.searchParams.set("pattern", pattern);
-		url.searchParams.delete("density");
+		game.initial.pattern = params.get("p");
 	}
 	
-	window.history.replaceState(null, null, url.href);
-	document.getElementById("share-link").value = url.href;
-
-};
-
-// --- control funcs
-
-// elements
-const modalLayer = document.getElementById("modals");
-const initDialog = document.getElementById("init-dialog");
-const patternButton = document.getElementById("init-pattern");
-const randomButton = document.getElementById("init-random");
-const densityControl = document.getElementById("density-control");
-const patternControl = document.getElementById("pattern-control");
-const densitySlider = document.getElementById("init-density");
-const patternTextbox = document.getElementById("pattern");
-const rulesDialog = document.getElementById("rules-dialog");
-const birthRules = document.getElementById("birth-rules");
-const surviveRules = document.getElementById("survive-rules");
-const colorSchemeDialog = document.getElementById("colorscheme-dialog");
-const shareDialog = document.getElementById("share-dialog");
-const toggleButton = document.getElementById("toggle");
-
-let currentDialog;
-
-const toggle = () => {
-	running = !running;
-	updateButton();
-};
-
-const updateButton = () => {
-	if(running) {
-		toggleButton.style.background = "#f24949";
-		toggleButton.textContent = "pause";
-	} else {
-		toggleButton.style.background = "#5dcf5d";
-		toggleButton.textContent = "go";
+	const parsedRule = params.get("r").match(/b(\d+)s(\d+)/);
+	if(parsedRule) {
+		game.rules.born = parsedRule[1].split("").map(Number);
+		game.rules.survive = parsedRule[2].split("").map(Number);
 	}
-};
 
-const setDialogVisibility = (dialog, visible) => {
-	modalLayer.style.display = visible ? "block" : "none";
-	dialog.style.display = visible ? "block" : "none";
-	if(visible) currentDialog = dialog;
-};
-
-const showDialog = (dialog) => setDialogVisibility(dialog, true);
-const hideDialog = (dialog) => setDialogVisibility(dialog, false);
-
-const updateRules = () => {
-	born = birthRules.value.split("").map(Number);
-	survive = surviveRules.value.split("").map(Number);
-	hideDialog(rulesDialog);
-	updateURL();
-};
-
-const updateStartConds = () => {
-	if(!patternButton.checked && !randomButton.checked) return alert("You haven't selected an initial condition.");
-	initialType = patternButton.checked ? "pattern" : "random";
-	density = densitySlider.value / 100;
-	pattern = patternTextbox.value;
-	init();
-	hideDialog(initDialog);
-	updateURL();
 };
 
 const loadPattern = (pattern) => {
 	
 	// clear
-	clear();
+	for(let x = 0; x < WIDTH; x++) {
+		for(let y = 0; y < HEIGHT; y++) {
+			game.nextBoard[x][y] = 0;
+		}
+	}
 
-	const lines = pattern.split("\n");
+	const lines = game.initial.pattern.split("\n");
 	
 	// find longest line for width
 	let width = 0;
@@ -219,44 +70,64 @@ const loadPattern = (pattern) => {
 
 	for(let x = 0; x < width; x++) {
 		for(let y = 0; y < height; y++) {
-			board[which][y + yMargin][x + xMargin] = (lines[y][x] && lines[y][x] != '.') ? 1 : 0;
+			game.nextBoard[y + yMargin][x + xMargin] = (lines[y][x] && lines[y][x] != '.') ? 1 : 0;
 		}
 	}
 	
 }
 
-const onInitTypeChange = () => {
-	if(patternButton.checked) {
-		densityControl.style.display = "none";
-		patternControl.style.display = "block";
-	} else if(randomButton.checked) {
-		densityControl.style.display = "block";
-		patternControl.style.display = "none";
+const reset = () => {
+	if(game.initial.density) {
+		for(let x = 0; x < WIDTH; x++) {
+			for(let y = 0; y < HEIGHT; y++) {
+				game.nextBoard[x][y] = Math.random() < game.initial.density ? 1 : 0;
+			}
+		}
+	} else {
+		loadPattern(pattern);
 	}
+	step(true);
 };
 
-patternButton.addEventListener("input", onInitTypeChange);
-randomButton.addEventListener("input", onInitTypeChange);
+const step = (redraw) => {
 
-document.getElementById("alive-color").addEventListener("input", (event) => {
-	if(event.target.value) {
-		aliveColor = event.target.value;
-		updateURL();
+	for(let x = 0; x < WIDTH; x++) {
+		for(let y = 0; y < HEIGHT; y++) {
+
+			const cur = game.curBoard[x][y];
+			if(!redraw) {
+
+				// count up neighbors
+				let neighbors = 0;
+				for(let dx = -1; dx <= 1; dx++) {
+					for(let dy = -1; dy <= 1; dy++) {
+						if(dx == 0 && dy == 0) continue;
+						neighbors += game.curBoard[(x + dx + WIDTH) % WIDTH][(y + dy + HEIGHT) % HEIGHT];
+					}	
+				}
+
+				game.nextBoard[x][y] = game.rules.born.includes(neighbors) ? 1 : (game.rules.survive.includes(neighbors) ? cur : 0);
+			
+			}
+
+			// if something actually changed, redraw
+			const next = game.nextBoard[x][y];
+            if(cur != next || redraw) {
+				ctx.fillStyle = next ? ALIVE_COLOR : DEAD_COLOR;
+				ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+			}
+			
+		}
 	}
-});
 
-document.getElementById("dead-color").addEventListener("input", (event) => {
-	if(event.target.value) {
-		deadColor = event.target.value;
-		updateURL();
+	// switch buffers
+	[game.curBoard, game.nextBoard] = [game.nextBoard, game.curBoard];
+
+};
+
+const run = () => {
+	if(game.running) {
+		step();
 	}
-});
-
-init();
-run();
-updateButton();
-updateURL();
-
-window.addEventListener("keydown", (event) => {
-	if(event.key === "Escape" && currentDialog) hideDialog(currentDialog); 
-});
+	requestAnimationFrame(run);
+};

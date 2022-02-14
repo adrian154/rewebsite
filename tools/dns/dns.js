@@ -103,7 +103,7 @@ const hostname = document.getElementById("hostname"),
       submit = document.getElementById("submit");
 
 // outputs
-const status = document.getElementById("status"),
+const resultsText = document.getElementById("result"),
       resultsBox = document.getElementById("results-box");
 
 // queries
@@ -172,7 +172,8 @@ const createQueryResult = (nameserver, response) => {
     authoritative.style.color = response.flags.authoritative ? "#60e060" : "#e06060";
 
     element.querySelector(".query-num-records").textContent = response.records.length;
-    
+    element.querySelector(".query-additional-info").textContent = response.comment || "none";
+
     // bin records by type
     const buckets = response.records.reduce((buckets, record) => {
         (buckets[record.type] || (buckets[record.type] = [])).push(record);
@@ -189,12 +190,29 @@ const createQueryResult = (nameserver, response) => {
 };
 
 const query = async (hostname, nameserver, type, recursive) => {
+
+    // indicate beginning of request
+    const status = document.createElement("p");
+    status.style.fontWeight = "bold";
     status.textContent = "Waiting for response from " + nameserver;
-    const resp = await fetch(`https://apis.bithole.dev/dns-query?hostname=${hostname}&nameserver=${nameserver}&type=${type}&recursive=${recursive || ""}`);
-    const value = await resp.json();
-    value.records = [...value.authorityRecords, ...value.answerRecords, ...value.additionalRecords];
-    queries.prepend(createQueryResult(nameserver, value));
-    return value;
+    queries.prepend(status);
+    
+    // actually do the request
+    try {
+    
+        const resp = await fetch(`https://apis.bithole.dev/dns-query?hostname=${hostname}&nameserver=${nameserver}&type=${type}&recursive=${recursive || ""}`);
+        const value = await resp.json();
+        if(!resp.ok || value.error) throw new Error(value.error);
+        value.records = [...value.authorityRecords, ...value.answerRecords, ...value.additionalRecords];
+        status.remove();
+        queries.prepend(createQueryResult(nameserver, value));
+        return value;
+        
+    } catch(error) {
+        status.textContent = `Request to ${nameserver} failed: ` + error.message;
+        throw error;
+    }
+
 };
 
 const queryIteratively = async () => {
@@ -225,14 +243,20 @@ const queryIteratively = async () => {
             const nameserver = nameservers.splice(index)[0];
 
             // query
-            const response = await query(hostname.value, nameserver, RECORD_TYPE[recordType.value]);
-            if(response.flags.authoritative) {
-                return handleResponse(response);
-            }
+            try {
 
-            // save referrals
-            nameservers = response.authorityRecords.filter(record => record.type == RECORD_TYPE.NS && record.class == 1).map(record => record.rdata);
-            break;
+                const response = await query(hostname.value, nameserver, RECORD_TYPE[recordType.value]);
+                if(response.flags.authoritative) {
+                    return handleResponse(response);
+                }
+
+                // save referrals
+                nameservers = response.authorityRecords.filter(record => record.type == RECORD_TYPE.NS && record.class == 1).map(record => record.rdata);
+                break;
+
+            } catch(error) {
+                continue;
+            }
 
         } while(nameservers.length > 0);
 
@@ -296,6 +320,36 @@ const fillForm = (inHostname, inRecordType) => {
     recordType.value = inRecordType;
 };
 
+const lookupInternal = async () => {
+
+    // retrieve answers
+    let answers;
+    try {
+        answers = await (iterative.checked ? queryIteratively() : queryDirectly());
+    } catch(error) {
+        resultsText.textContent = error.message;
+        resultsText.classList.add("error-color");
+        return;
+    }
+
+    if(answers.cname) {
+        const link = document.createElement("a");
+        link.textContent = answers.cname;
+        link.addEventListener("click", () => {
+            fillForm(answers.cname, recordType.value);
+            lookup();
+        });
+        resultsText.textContent = "Received a CNAME redirect to ";
+        resultsText.append(link);
+    } else {
+        resultsText.textContent = `Received ${answers.length} ${recordType.value} record(s) for ${hostname.value}.`;
+        if(answers.length > 0) {
+            resultsBox.append(createRecordsTable(answers, answers[0].type));
+        }
+    }
+
+};
+
 const lookup = async () => {
 
     // freeze UI
@@ -308,33 +362,10 @@ const lookup = async () => {
     // reset stuff
     resultsBox.innerHTML = "";
     queries.innerHTML = "";
-    status.innerHTML = "";
-    status.style.color = "#000000";
+    resultsText.innerHTML = "";
+    resultsText.classList.remove("error-color");
 
-    // retrieve answers
-    let answers;
-    try {
-        answers = await (iterative.checked ? queryIteratively() : queryDirectly());
-    } catch(error) {
-        status.textContent = error.message;
-        status.style.color = "#e06060";
-    }
-
-    if(answers.cname) {
-        const link = document.createElement("a");
-        link.textContent = answers.cname;
-        link.addEventListener("click", () => {
-            fillForm(answers.cname, recordType.value);
-            lookup();
-        });
-        status.textContent = "Received a CNAME redirect to ";
-        status.append(link);
-    } else {
-        status.textContent = `Received ${answers.length} ${recordType.value} record(s) for ${hostname.value}.`;
-        if(answers.length > 0) {
-            resultsBox.append(createRecordsTable(answers, answers[0].type));
-        }
-    }
+    lookupInternal();
 
     // restore UI
     nameserver.disabled = nameserverStatus;
