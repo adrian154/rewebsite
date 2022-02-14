@@ -23,6 +23,8 @@ const game = {
 	initial: {
 		density: 0.5
 	},
+	frame: 0,
+	speed: 1,
 	curBoard: makeBoard(),
 	nextBoard: makeBoard(),
 	running: false
@@ -31,15 +33,13 @@ const game = {
 const loadSettingsFromURL = () => {
 	
 	const params = new URL(window.location.href).searchParams;
-	
-	game.initialType = params.get("i");
-	if(game.initialType == "random") {
-		game.initial.density = Number(params.get("d"));
-	} else {
-		game.initial.pattern = params.get("p");
+	if(params.has("d")) {
+		game.initial = {density: Number(params.get("d"))};
+	} else if(params.has("p")) {
+		game.initial = {pattern: params.get("p")};
 	}
 	
-	const parsedRule = params.get("r").match(/b(\d+)s(\d+)/);
+	const parsedRule = params.get("r")?.match(/b(\d+)s(\d+)/);
 	if(parsedRule) {
 		game.rules.born = parsedRule[1].split("").map(Number);
 		game.rules.survive = parsedRule[2].split("").map(Number);
@@ -126,8 +126,9 @@ const step = (redraw) => {
 };
 
 const run = () => {
-	if(game.running) {
+	if(game.running && game.frame % game.speed == 0) {
 		step();
 	}
+	game.frame++;
 	requestAnimationFrame(run);
 };

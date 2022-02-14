@@ -9,6 +9,7 @@ const initDialog = document.getElementById("init-dialog"),
       densityControl = document.getElementById("density-control"),
       densitySlider = document.getElementById("init-density"),
       patternControl = document.getElementById("pattern-control"),
+	  patternPreset = document.getElementById("pattern-preset"),
       patternTextbox = document.getElementById("pattern");
 
 // rules dialog
@@ -55,6 +56,17 @@ document.getElementById("submit-rules-dialog").addEventListener("click", () => {
 	updateURL();
 });
 
+// update patterns dropdown
+for(const patternName in PATTERNS) {
+	const option = document.createElement("option");
+	option.textContent = patternName;
+	patternPreset.append(option);
+}
+
+document.getElementById("load-preset-button").addEventListener("click", () => {
+	patternTextbox.value = PATTERNS[patternPreset.value];
+});
+
 document.getElementById("submit-init-dialog").addEventListener("click", () => {
 	if(!patternButton.checked && !randomButton.checked) return alert("You haven't selected an initial condition.");
     if(patternButton.checked) {
@@ -67,6 +79,8 @@ document.getElementById("submit-init-dialog").addEventListener("click", () => {
     changeRunState(false);
     reset();
 });
+
+const resetAll = () => location.href = window.location.pathname;
 
 // little bit of ui logic
 const onInitTypeChange = () => {
@@ -107,6 +121,7 @@ const updateURL = () => {
 };
 
 // start simulation
+loadSettingsFromURL();
 reset();
 changeRunState(true);
 run();

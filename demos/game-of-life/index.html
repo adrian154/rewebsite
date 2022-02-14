@@ -15,7 +15,7 @@
 			<div id="settings">
 				<button onclick="showDialog(rulesDialog)">rules</button>
 				<button onclick="showDialog(initDialog)">initial conditions</button>
-				<button onclick="location.href = window.location.pathname;">reset all</button>
+				<button onclick="resetAll()">reset all</button>
 				<button onclick="showDialog(shareDialog)">share</button>
 			</div>
 
@@ -25,7 +25,7 @@
 			<div id="controls" style="display: flex; justify-content: center;">
 				<button id="toggle" onclick="toggle()">pause</button>
 				<button onclick="step()">step</button>
-				<button onclick="init()">reset</button>
+				<button onclick="reset()">reset</button>
 			</div>
 
 		</div>
@@ -53,7 +53,10 @@
 				<div><input type="radio" id="init-pattern" name="init-type"><label for="init-pattern">start with pattern</label></div>
 				<div><input type="radio" id="init-random" name="init-type"><label for="init-random">start with random field</label></div><br>
 				<div id="density-control" style="display: none;"><label for="range">density: </label><input type="range" id="init-density"></div>
-				<div id="pattern-control" style="display: none;"><textarea id="pattern" rows="10" cols="60" placeholder="Pattern..."></textarea><br></div>
+				<div id="pattern-control" style="display: none;">
+					<label for="pattern-preset">preset:</label> <select id="pattern-preset"></select> <button id="load-preset-button">load</button> <br>
+					<textarea id="pattern" rows="10" cols="60" placeholder="Pattern..."></textarea><br>
+				</div>
 				<button id="submit-init-dialog">save and reset</button>
 			</div>
 
@@ -66,7 +69,10 @@
 			
 		</div>
 
+		<!-- todo: adjustable speed and boundary behavior, built-in patterns -->
+		<script src="patterns.js"></script>
 		<script src="gol.js"></script>
 		<script src="ui.js"></script>
+
 	</body>
 </html>
