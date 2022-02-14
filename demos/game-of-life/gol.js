@@ -102,6 +102,7 @@ const step = (redraw) => {
 				for(let dx = -1; dx <= 1; dx++) {
 					for(let dy = -1; dy <= 1; dy++) {
 						if(dx == 0 && dy == 0) continue;
+						if(!game.wrap && (x + dx >= WIDTH || x + dx < 0 || y + dy >= HEIGHT || y + dy < 0)) continue;
 						neighbors += game.curBoard[(x + dx + WIDTH) % WIDTH][(y + dy + HEIGHT) % HEIGHT];
 					}	
 				}

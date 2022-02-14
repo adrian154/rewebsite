@@ -20,6 +20,8 @@ const rulesDialog = document.getElementById("rules-dialog"),
 // shares dialog
 const shareDialog = document.getElementById("share-dialog"),
       shareLink = document.getElementById("share-link");
+
+const settingsDialog = document.getElementById("settings-dialog");
       
 let currentDialog;
 
@@ -88,6 +90,9 @@ document.getElementById("copy-button").addEventListener("click", async () => {
 	}
 	closeDialog();
 });
+
+document.getElementById("should-wrap").addEventListener("click", event => game.wrap = event.target.checked);
+document.getElementById("speed").addEventListener("input", event => game.speed = Math.floor(60 / event.target.value));
 
 const resetAll = () => location.href = window.location.pathname;
 

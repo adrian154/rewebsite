@@ -13,6 +13,7 @@
 		<div id="content">
 			
 			<div id="settings">
+				<button onclick="showDialog(settingsDialog)">settings</button>
 				<button onclick="showDialog(rulesDialog)">rules</button>
 				<button onclick="showDialog(initDialog)">initial conditions</button>
 				<button onclick="resetAll()">reset all</button>
@@ -31,6 +32,13 @@
 		</div>
 
 		<div id="modals" style="display: none;">
+
+			<div class="dialog" id="settings-dialog" style="display: none">
+				<button class="close-button">&times;</button>
+				<p><b>settings</b></p>
+				<input type="checkbox" id="should-wrap" checked><label for="should-wrap">Borders wrap around</label><br>
+				<label for="speed">steps per second: </label> <input type="range" id="speed" min="1" max="60" value="30">
+			</div>
 
 			<div class="dialog" id="rules-dialog" style="display: none">
 				<button class="close-button">&times;</button>
@@ -52,7 +60,7 @@
 				<p><b>change initial conditions</b></p>
 				<div><input type="radio" id="init-pattern" name="init-type"><label for="init-pattern">start with pattern</label></div>
 				<div><input type="radio" id="init-random" name="init-type"><label for="init-random">start with random field</label></div><br>
-				<div id="density-control" style="display: none;"><label for="range">density: </label><input type="range" id="init-density"></div>
+				<div id="density-control" style="display: none;"><label for="init-density">density: </label><input type="range" id="init-density"></div>
 				<div id="pattern-control" style="display: none;">
 					<label for="pattern-preset">preset:</label> <select id="pattern-preset"></select> <button id="load-preset-button">load</button> <br>
 					<textarea id="pattern" rows="10" cols="60" placeholder="Pattern..."></textarea><br>
@@ -66,7 +74,7 @@
 				<p>Use this link to share the current game of life.</p>
 				<input id="share-link" readonly> <button id="copy-button">copy</button>
 			</div>
-			
+
 		</div>
 
 		<!-- todo: adjustable speed and boundary behavior, built-in patterns -->
