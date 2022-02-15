@@ -1,5 +1,5 @@
 // constants 
-const CELL_SIZE = 2;
+const CELL_SIZE = 1;
 const WIDTH = 256;
 const HEIGHT = 256;
 const ALIVE_COLOR = "#ffffff";
@@ -28,8 +28,14 @@ const game = {
 	wrap: true,
 	curBoard: makeBoard(),
 	nextBoard: makeBoard(),
+	bitmap: ctx.createImageData(WIDTH, HEIGHT),
 	running: false
 };
+
+// make canvas imagedata opaque
+for(let i = 3; i < game.bitmap.data.length; i += 4) {
+	game.bitmap.data[i] = 255;
+}
 
 const loadSettingsFromURL = () => {
 	
@@ -126,8 +132,11 @@ const step = (redraw) => {
 			// if something actually changed, redraw
 			const next = game.nextBoard[x][y];
             if(cur != next || redraw) {
-				ctx.fillStyle = next ? ALIVE_COLOR : DEAD_COLOR;
-				ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+				const idx = (y * WIDTH + x) * 4;
+				const color = next ? 255 : 0;
+				game.bitmap.data[idx] = color;
+				game.bitmap.data[idx + 1] = color;
+				game.bitmap.data[idx + 2] = color;
 			}
 			
 		}
@@ -135,6 +144,7 @@ const step = (redraw) => {
 
 	// switch buffers
 	[game.curBoard, game.nextBoard] = [game.nextBoard, game.curBoard];
+	ctx.putImageData(game.bitmap, 0, 0);
 
 };
 
