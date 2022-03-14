@@ -6,7 +6,7 @@ const MODE = {
 };
 
 const MODES = [MODE.BUILDING, MODE.TESTING, MODE.VIEWING];
-const MESSAGE_SPEED = 10;
+const MESSAGE_SPEED = 1;
 
 // --- state
 const simulation = {
@@ -16,15 +16,6 @@ const simulation = {
     selectedNode: null,
     nextID: 0
 };
-
-const newNode = (x, y) => ({
-    x, y,
-    id: simulation.nextID++,
-    links: new Map(), // links to neighbors
-    queuedMessages: [], // messages to be processed next update
-    sequenceNumbers: new Map(),
-    sequenceNUmber: 0
-});
 
 const deleteNode = (simulation, node) => {
     node.links.forEach((_, neighbor) => neighbor.links.delete(node));
@@ -62,7 +53,7 @@ const updateNode = (node) => {
     // consume messages
     while(node.queuedMessages.length > 0) {
         const message = node.queuedMessages.pop();
-        processMessage(node, message.payload);
+        processMessage(node, message.link, message.payload);
     }
 
 };
@@ -72,6 +63,7 @@ const updateMessages = (node) => {
         for(const message of link.messages) {
             message.position += MESSAGE_SPEED;
             if(message.position > link.distance) {
+                message.link = link;
                 neighbor.queuedMessages.push(message);
                 link.messages.delete(message);
             }

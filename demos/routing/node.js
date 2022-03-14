@@ -1,24 +1,37 @@
 // node logic
 
+const newNode = (x, y) => ({
+    x, y,
+    id: simulation.nextID++,
+    links: new Map(), // links to neighbors
+    queuedMessages: [], // messages to be processed next update
+    sequenceNumbers: new Map(),
+    sequenceNumber: 0
+});
+
+
+// routing update
 const consumeLinks = (node, links) => {
 
     
 
 };
 
-const processMessage = (node, message) => {
+const processMessage = (node, link, message) => {
 
-    if(message.type === "link-state-advertisement") {
+    if(message.type === "link state advertisement") {
         
         // ignore messages with a lower 'sequence number'
-        if(node.sequenceNumbers.get(message.source.id) < message.sequenceNumber) {
+        if(!node.sequenceNumbers.has(message.source) || node.sequenceNumbers.get(message.source) < message.sequenceNumber) {
             
             // save increased seq. number
-            node.sequenceNumbers.set(message.source.id, message.sequenceNumber);
+            node.sequenceNumbers.set(message.source, message.sequenceNumber);
 
-            // broadcast to peers
-            for(const link of node.links.values()) {
-                send(message, link);
+            // broadcast to peers, but don't send the advertisement back to its originator or whoever just relayed it to us
+            for(const [peer, link] of node.links) {
+                if(peer.id != message.source && peer) {
+                    send(message, link);
+                }
             }
 
             // update routing
@@ -39,7 +52,13 @@ const advertiseLinkStates = (node) => {
     }
 
     // send
-    const message = {source: node, links};
+    const message = {
+        type: "link state advertisement",
+        source: node.id,
+        sequenceNumber: node.sequenceNumber++,
+        links
+    };
+
     for(const link of node.links.values()) {
         send(message, link);
     }

@@ -25,8 +25,10 @@ const handleNodeClick = (simulation) => {
         }
     } else if(simulation.mode == MODE.TESTING) {
         const link = simulation.selectedNode.links.get(simulation.clickedNode);
-        send("test", link);
-        console.log("sent");
+        if(link) {
+            send("test", link);
+            console.log("sent");
+        }
     } else if (simulation.mode == MODE.VIEWING) {
 
     }

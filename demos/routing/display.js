@@ -60,7 +60,6 @@ const drawGraph = (simulation) => {
 
 const drawMessages = (simulation) => {
 
-    ctx.fillStyle = "#00ff00";
     for(const node of simulation.nodes) {
         for(const [neighbor, link] of node.links) {
             if(link.messages.size > 0) {
@@ -70,6 +69,7 @@ const drawMessages = (simulation) => {
                 const y = (neighbor.y - node.y) / link.distance;
 
                 for(const message of link.messages) {
+                    ctx.fillStyle = message.payload.type === "link state advertisement" ? "#fcba03": "#00ff00";
                     ctx.fillRect(node.x + x * message.position - 2, node.y + y * message.position - 2, 4, 4);
                 }
 
