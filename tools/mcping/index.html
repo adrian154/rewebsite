@@ -13,10 +13,10 @@
     <body>
         <h1>Minecraft Server Pinger</h1>
         <p><a href="../index.html">&#11172; More Tools</a></p>
-        <div class="flex-row search">
-            <input type="text" onkeyup="if(event.key === 'Enter') pingClicked()" id="host" placeholder="Server IP or domain goes here...">
-            <button id="ping-button" onclick="pingClicked()">Ping</button>
-        </div>
+        <form class="flex-row search">
+            <input type="text" id="host" placeholder="Server IP or domain goes here...">
+            <button id="ping-button" type="submit">Ping</button>
+        </form>
         <template id="server-info-template">
             <div class="box">
                 <div style="display: flex; flex-direction: row; align-items: center;">
