@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>hilbert curve</title>
+        <meta property="og:title" content="Hilbert Curve Demo">
+    </head>
+    <body>
+        <canvas id="canvas" width="800" height="800"></canvas>
+        <div>
+            <label for="iterations" id="label">Iterations</label>
+            <input type="range" id="iterations" min="1" max="8" step="1">
+            <button id="draw">Draw</button>
+        </div>
+        <script>
+            // this is fucking horrible idk what i was thinking wheni made this
+
+            const pass = (fn, value) => {
+                fn(value);
+                return value;
+            };
+
+            const UP = (point, fn) => pass(fn, [point[0], point[1] + 1]),
+                DOWN = (point, fn) => pass(fn, [point[0], point[1] - 1]),
+                LEFT = (point, fn) => pass(fn, [point[0] - 1, point[1]]),
+                RIGHT = (point, fn) => pass(fn, [point[0] + 1, point[1]]);
+
+            const A = (p, fn, n) => n == 0 ? p : 
+                B(DOWN(A(RIGHT(A(UP(D(p, fn, n - 1), fn), fn, n - 1), fn), fn, n - 1), fn), fn, n - 1);
+
+            const B = (p, fn, n) => n == 0 ? p : 
+                A(RIGHT(B(DOWN(B(LEFT(C(p, fn, n - 1), fn), fn, n - 1), fn), fn, n - 1), fn), fn, n - 1);
+
+            const C = (p, fn, n) => n == 0 ? p : 
+                D(UP(C(LEFT(C(DOWN(B(p, fn, n - 1), fn), fn, n - 1), fn), fn, n - 1), fn), fn, n - 1);
+
+            const D = (p, fn, n) => n == 0 ? p : 
+                C(LEFT(D(UP(D(RIGHT(A(p, fn, n - 1), fn), fn, n - 1), fn), fn, n - 1), fn), fn, n - 1);
+        </script>
+        <script>
+
+            const slider = document.getElementById("iterations");
+            slider.addEventListener("input", event => document.getElementById("label").textContent = `Iterations (${slider.value})`);
+
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#000000";
+
+            document.getElementById("draw").addEventListener("click", event => {
+
+                // gather up the points
+                const list = [];
+                const N = Number(slider.value);
+                A([0, 0], point => list.push(point), N);
+
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const scale = (canvas.width - 10) / 2**N;
+
+                const fn = () => {
+                    
+                    for(let i = 0; i < N; i++) {
+                        const cur = list.pop(), next = list[list.length - 1];
+                        ctx.beginPath();
+                        ctx.moveTo(cur[0] * scale + 10, cur[1] * scale + 10)
+                        ctx.lineTo(next[0] * scale + 10, next[1] * scale + 10);
+                        ctx.closePath();
+                        ctx.strokeStyle = `hsl(${list.length / (2**(N * 2)) * 360}, 100%, 50%)`;
+                        ctx.stroke();
+                        if(list.length == 1) {
+                            event.target.disabled = false;
+                            return;
+                        }
+                    }
+
+                    requestAnimationFrame(fn);
+
+                };
+                
+                fn();
+
+            });
+        </script>
+    </body>
+</html>

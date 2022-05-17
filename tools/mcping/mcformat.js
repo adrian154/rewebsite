@@ -19,20 +19,21 @@ const StyleMap = Object.freeze({
 
 const formatMC = (text) => {
 
-    let spans = 0;
+    const root = document.createElement("span");
+    let curSpan = root;
 
-    text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;"); // no xss for you ;)
-    text = text.replace(/\n/g, "<br>");
-    text = text.replace(/§(.)/g, (match, group) => {
-        spans++;
-        return `<span class="f${group}">`;
-    });
-    
-    text += "</span>".repeat(spans);
-    
-    const template = document.createElement("template");
-    template.innerHTML = text;
-    return template.content;
+    for(const fragment of text.split(/(§.)/)) {
+        if(fragment[0] === "§") {
+            const span = document.createElement("span");
+            span.classList.add("f" + fragment[1]);
+            curSpan.append(span);
+            curSpan = span;
+        } else {
+            curSpan.append(document.createTextNode(fragment));
+        }
+    }
+
+    return root;
 
 };
 

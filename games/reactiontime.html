@@ -10,11 +10,11 @@
                 display: flex;
             }
 
-            canvas {
+            .center {
                 margin: auto;
             }
 
-            #rickroll {
+            #win {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -22,14 +22,20 @@
                 height: 100%;
             }
         </style>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
         <meta property="og:title" content="ReactionTime">
+	<meta property="og:description" content="How fast are you?">
     </head>
     <body>
-        <video id="rickroll" style="visibility: hidden">
-            <source src="https://2kwajxhn-personal-files.sfo3.digitaloceanspaces.com/rickroll.mp4" type="video/mp4">
+        <video id="win" style="visibility: hidden">
+            <source src="/win.mp4" type="video/mp4">
         </video>
-        <canvas width="512" height="512" id="canvas"></canvas>
-        <script>
+        <div class="center">
+		<h1>ReactionTime</h1>
+		<p>An open-source reaction time game</p>
+		<canvas width="512" height="512" id="canvas"></canvas>
+        </div>
+	<script>
             const canvas = document.getElementById("canvas");
             const ctx = canvas.getContext("2d");
             const max = 4 + Math.random() * 3;
@@ -40,7 +46,7 @@
             const step = () => {
                 steps++;
                 if(steps > max) {
-                    const video = document.getElementById("rickroll");
+                    const video = document.getElementById("win");
                     video.style.visibility = "visible";
                     video.play();
                     return;

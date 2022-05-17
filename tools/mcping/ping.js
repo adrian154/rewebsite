@@ -1,6 +1,7 @@
 // IF YOU ARE READING THIS TO FIGURE OUT HOW TO PING A MINECRAFT SERVER:
 // I made node-mc-api to ping Minecraft servers.
 // Check it out: https://www.npmjs.com/package/node-mc-api
+// You can also use the public api at https://apis.bithole.dev/!
 
 // templates
 const infoTemplate = document.getElementById("server-info-template");
@@ -10,7 +11,7 @@ const failureTemplate = document.getElementById("ping-failure-template");
 const textbox = document.getElementById("host");
 const button = document.getElementById("ping-button");
 
-const pingClicked = async () => {
+const submit = async () => {
     
     // remove existing
     const info = document.querySelector(".box");
@@ -36,7 +37,8 @@ const pingClicked = async () => {
 const ping = async (host) => {
     
     // ping
-    const url = "https://apis.bithole.dev/mc/ping-server?host=" + encodeURIComponent(host);
+    const [hostname, port] = host.split(":");
+    const url = `https://apis.bithole.dev/mc/ping-server?host=${encodeURIComponent(host)}&port=${port || 25565}`;
     const resp = await fetch(url);
     const result = await resp.json();
 
@@ -81,5 +83,10 @@ const ping = async (host) => {
 const searchParamsHost = (new URL(window.location)).searchParams.get("host");
 if(searchParamsHost) {
     textbox.value = searchParamsHost;
-    pingClicked();
+    submit();
 }
+
+document.querySelector("form").addEventListener("submit", event => {
+    submit();
+    event.preventDefault();
+});
