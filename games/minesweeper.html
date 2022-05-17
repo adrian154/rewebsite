@@ -274,7 +274,7 @@ canvas.addEventListener("mousedown", (event) => {
         const y = Math.floor(event.offsetY / game.fullTileSize);
         const tile = game.board[x][y];
 
-        if(event.button == 0) {
+        if(event.button == 0 && !tile.flagged) {
             clear(x, y);
         } else if(event.button == 2 && !tile.cleared) {
             if(tile.flagged = !tile.flagged)
