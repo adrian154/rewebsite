@@ -1,12 +1,28 @@
+<!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
+        <meta property="og:title" content="Minesweeper">
         <title>Minesweeper</title>
         <style>
+            html {
+                height: 100%;
+            }
+
             body {
-                width: 512px;
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+            }
+
+            main {
                 margin: auto;
-                margin-top: 4.0em;
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            }
+
+            span {
+                font-size: 18pt;
             }
 
             p {
@@ -20,147 +36,209 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <canvas id="output" width="512" height="536"></canvas>
-        
-        <p>mine density:</p>
-        <input type="range" id="density" min="0" max="100" value="10"></input><br>
-        <button onclick="reset()">reset</button>
+        <main>
+            <span id="timer"></span><span style="float: right" id="flagcount"></span><br>
+            <canvas id="output" tabindex="0"></canvas><br>
+            <select id="select-difficulty"></select>
+            <button onclick="reset()">reset</button>
+        </main>
 
         <script>
-// this code is REALLY bad
-// i'm normally a pretty shitty coder but this is especially terrible
+const canvas = document.getElementById("output");
+const ctx = canvas.getContext("2d");
 
-const SIZE = 16;
+const INITIAL = 0, 
+      PLAY = 1,
+      LOSE = 2,
+      WIN = 3;
 
-let canvas = document.getElementById("output");
-let ctx = canvas.getContext("2d");
-
-const TILE_WIDTH = canvas.width / SIZE - 4;
-
-let board = new Array(SIZE);
-
-let inBounds = function(x, y) {
-    return x >= 0 && y >= 0 && x < SIZE && y < SIZE;
+const DIFFICULTIES = {
+    "easy": {name: "easy", width: 9, height: 9, mines: 10},
+    "medium": {name: "medium", width: 16, height: 16, mines: 40},
+    "expert": {name: "expert", width: 30, height: 16, mines: 99}
 };
 
-let gameOver, gameWin, firstClick;
-let frames;
+const difficultyPicker = document.getElementById("select-difficulty");
+for(const difficulty in DIFFICULTIES) {
+    const option = document.createElement("option");
+    option.textContent = difficulty;
+    difficultyPicker.append(option);
+}
 
-let reset = function() {
+const createGame = (difficulty, tileSize, spacing) => {
     
-    gameOver = false;
-    gameWin = false;
-    firstClick = true;
-    frames = 0;
-    let density = document.getElementById("density").value / 100;
+    const fullTileSize = tileSize + spacing;
+    canvas.width = fullTileSize * difficulty.width;
+    canvas.height = fullTileSize * difficulty.height;
 
-    for(let i = 0; i < board.length; i++) {
-        board[i] = new Array(SIZE);
-        for(let j = 0; j < board[i].length; j++) {
-            board[i][j] = {
-                mine: Math.random() < density ? true : false,
-                cleared: false
+    // generate the board
+    const board = Array.from({length: difficulty.width}, () => Array.from({length: difficulty.height}, () => ({
+        isMine: false
+    })));
+
+    // add mines
+    for(let i = 0; i < difficulty.mines; i++) {
+        while(true) {
+            const x = Math.floor(Math.random() * difficulty.width);
+            const y = Math.floor(Math.random() * difficulty.height);
+            if(!board[x][y].isMine) {
+                board[x][y].isMine = true;
+                break;
             }
         }
     }
 
+    return {
+        board,
+        difficulty: difficulty.name,
+        inBounds: (x, y) => x >= 0 && y >= 0 && x < difficulty.width && y < difficulty.height,
+        state: INITIAL,
+        frames: 0,
+        flagCount: difficulty.mines,
+        tileSize, 
+        spacing,
+        fullTileSize
+    };
+    
 };
 
-reset();
+let game = null;
 
-let clear = function(x, y) {
+const clear = (x, y) => {
     
-    if(!inBounds(x, y))
+    if(!game.inBounds(x, y))
         return;
 
-    if(firstClick) {
-        board[x][y].mine = false;
-        firstClick = false;
+    const tile= game.board[x][y];
+
+    // if the player clicks a mine on their first click, clear it
+    if(game.state == INITIAL) {
+        tile.isMine = false;
+        game.state = PLAY;
     }
 
-    gameOver = gameOver || board[x][y].mine;
-
-    if(board[x][y].cleared || board[x][y].mine)
+    // if the player clicked a mine, game over
+    if(tile.isMine) {
+        game.state = LOSE;
         return;
+    } 
 
-    // count neighbor mines
+    // count number of adjacent mines
     let mines = 0;
-    for(let i = -1; i <= 1; i++) {
-        for(let j = -1; j <= 1; j++) {
-            if(i == 0 && j == 0) continue;
-            if(!inBounds(x + i, y + j)) continue;
-            mines += board[x + i][y + j].mine ? 1 : 0;
+    for(const dx of [-1, 0, 1]) {
+        for(const dy of [-1, 0, 1]) {
+            if(dx == 0 && dy == 0 || !game.inBounds(x + dx, y + dy)) continue;
+            mines += game.board[x + dx][y + dy].isMine ? 1 : 0;
         }
     }
 
-    board[x][y].cleared = true;
+    tile.cleared = true;
+    if(tile.flagged) {
+        tile.flagged = false;
+        game.flagCount++;
+    }
 
+    // if none of the cell's neighbors are mines, recurse
     if(mines == 0) {
-        // Recurse
-        for(let i = -1; i <= 1; i++) {
-            for(let j = -1; j <= 1; j++) {
-                if(i == 0 && j== 0) continue;
-                setTimeout(f => {clear(x + i, y + j)}, 20);
+        for(const dx of [-1, 0, 1]) {
+            for(const dy of [-1, 0, 1]) {
+                if(dx == 0 && dy == 0 || !game.inBounds(x + dx, y + dy)) continue;
+                if(!game.board[x + dx][y + dy].cleared) {
+                    clear(x + dx, y + dy);
+                }
             }
         }
-
     } else {
-        board[x][y].count = mines;
+        tile.count = mines;
     }
 
 };
 
-let formatTime = function(frames) {
-    let seconds = Math.floor(frames / 60);
-    return `${Math.floor(seconds / 60)}:${(seconds % 60 > 9 ? "" : "0") + seconds % 60}`;
+const formatTime = frames => {
+    const seconds = Math.floor(frames / 60); 
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 };
 
-let draw = function() {
+const step = () => {
+    if(game.state == PLAY) {
+        game.frames++;
+    }
+    document.getElementById("timer").textContent = formatTime(game.frames);
+    requestAnimationFrame(step);
+};
 
+const draw = function() {
+
+    // draw white background
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    let numUncleared = 0;
-
-    if(!firstClick && !gameWin && !gameOver) {
-        frames++;
-    }
-
-    for(let i = 0; i < board.length; i++) {
-        for(let j = 0; j < board[i].length; j++) {
+    for(let x = 0; x < game.board.length; x++) {
+        for(let y = 0; y < game.board[x].length; y++) {
             
-            let tile = board[i][j];
-            let x = i * (TILE_WIDTH + 4);
-            let y = j * (TILE_WIDTH + 4);
+            const tile = game.board[x][y];
+            const screenX = x * game.fullTileSize,
+                  screenY = y * game.fullTileSize;
+
             if(tile.cleared) {
                 ctx.fillStyle = "#eeeeee";
+            } else if(game.state == LOSE && tile.isMine) {
+                ctx.fillStyle = "#ff0000";
             } else {
                 ctx.fillStyle = "#888888";
             }
 
-            numUncleared += (!tile.cleared && !tile.mine) ? 1 : 0;
+            ctx.fillRect(screenX, screenY, game.tileSize, game.tileSize);
 
-            if(gameOver && tile.mine) {
+            // draw flag
+            if(tile.flagged) {
+            
+                ctx.translate(screenX, screenY);
+                ctx.scale(game.tileSize / 16, game.tileSize / 16);
+                
+                // draw stem
+                ctx.fillStyle = "#3f3f3f";
+                ctx.beginPath();
+                ctx.moveTo(2, 12);
+                ctx.lineTo(7, 12);
+                ctx.lineTo(7, 5);
+                ctx.lineTo(9, 5);
+                ctx.lineTo(9, 12);
+                ctx.lineTo(14, 12);
+                ctx.lineTo(14, 14);
+                ctx.lineTo(2, 14);
+                ctx.closePath();
+                ctx.fill();
+
+                // draw flag
                 ctx.fillStyle = "#ff0000";
+                ctx.beginPath();
+                ctx.moveTo(9, 2);
+                ctx.lineTo(2, 5);
+                ctx.lineTo(9, 8);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.resetTransform();
+            
             }
 
-            ctx.fillRect(x, y, TILE_WIDTH, TILE_WIDTH);
-
-            if(tile.cleared && tile.count > 0) {
+            // draw mine number
+            if(tile.count) {
+            
+                // change color based on # of neighbors (TODO)
                 ctx.fillStyle = "#000000";
-                ctx.font = "24px Arial";
+            
+                ctx.font = "20px Arial";
                 ctx.textAlign = "center";
-                ctx.fillText(tile.count, x + TILE_WIDTH / 2, y + TILE_WIDTH / 2 + 10);
+                ctx.fillText(tile.count, screenX + game.tileSize / 2, screenY + game.tileSize / 2 + 8);
+            
             }
 
         }
     }
 
-    if(numUncleared == 0) {
-        gameWin = true;
-    }
-    
-    if(gameWin || gameOver) {
+    if(game.state == WIN || game.state == LOSE) {
         ctx.globalAlpha = 0.5;
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, canvas.width, canvas.width);
@@ -169,40 +247,86 @@ let draw = function() {
         ctx.fillStyle = "#ffffff";
         ctx.font = "60px Arial";
         ctx.textAlign = "center";
-        ctx.fillText(`you ${gameWin ? "win" : "lose"}`, canvas.width / 2, canvas.height / 2);
+        ctx.fillText(game.state == WIN ? "you win" : "you lose", canvas.width / 2, canvas.height / 2);
 
+        // only draw time if the player won
         ctx.font = "24px Arial";
-        ctx.fillText(`your time: ${formatTime(frames)}`, canvas.width / 2, canvas.height / 2 + 30);
+        if(game.state == WIN) {
+            ctx.fillText(`your time: ${formatTime(game.frames)}`, canvas.width / 2, canvas.height / 2 + 30);
+        }
 
-    } else {
-        ctx.textAlign = "left";
-        ctx.font = "24px Arial";
-        ctx.fillStyle = "#ff0000";
-        ctx.fillText(formatTime(frames), 2, canvas.height - 2);
-    }
+        // draw best time
+        const bestTime = localStorage.getItem(game.difficulty);
+        ctx.fillText(`best time: ${bestTime ? formatTime(bestTime) : "\u2014"}`, canvas.width / 2, canvas.height / 2 + 60);
 
-    requestAnimationFrame(draw);
+    } 
+
+    document.getElementById("flagcount").textContent = game.flagCount;
 
 };
 
-canvas.addEventListener("click", function(event) {
+canvas.addEventListener("mousedown", (event) => {
 
-    if(!gameOver && !gameWin) {
-        let box = canvas.getBoundingClientRect();
-        let cx = event.clientX - box.left;
-        let cy = event.clientY - box.top;
+    if(game.state == PLAY || game.state == INITIAL) {
 
-        let x = Math.floor(cx / (TILE_WIDTH + 4));
-        let y = Math.floor(cy / (TILE_WIDTH + 4));
+        // determine which tile was clicked
+        const x = Math.floor(event.offsetX / game.fullTileSize);
+        const y = Math.floor(event.offsetY / game.fullTileSize);
+        const tile = game.board[x][y];
 
-        console.log(x, y);
+        if(event.button == 0 && !tile.flagged) {
+            clear(x, y);
+        } else if(event.button == 2 && !tile.cleared) {
+            if(tile.flagged = !tile.flagged)
+                game.flagCount--;
+            else
+                game.flagCount++;
+        }
 
-        clear(x, y);
+        // if every tile was cleared, win
+        let numUncleared = 0;
+        for(const col of game.board) {
+            for(const tile of col) {
+                if(!tile.isMine && !tile.cleared) {
+                    numUncleared++;
+                }
+            }
+        }
+
+        if(numUncleared == 0) {
+            
+            game.state = WIN;
+            
+            // check if this is a best time
+            const bestTime = localStorage.getItem(game.difficulty);
+            if(bestTime == null || bestTime > game.frames) {
+                localStorage.setItem(game.difficulty, game.frames);
+            }
+
+        }
+
+        // redraw
+        draw();
+
     }
+
+    event.preventDefault();
+    return false;
 
 });
 
-draw();
+canvas.addEventListener("contextmenu", event => {
+    event.preventDefault();
+});
+
+const reset = () => {
+    game = createGame(DIFFICULTIES[difficultyPicker.value], 28, 2);
+    draw();
+};
+
+reset();
+step();
+
         </script>
     </body>
 </html>
