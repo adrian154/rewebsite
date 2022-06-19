@@ -10,11 +10,12 @@
             @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap');
 
             body {
-                max-width: 42em;
+                max-width: 43em;
                 margin: 2.0em auto;
                 font-family: "Source Serif Pro", serif;
                 font-size: 14pt;
                 line-height: 1.5em;
+                padding: 1rem;
             }
 
             #table {
@@ -33,6 +34,16 @@
                 padding: 2rem;
                 text-align: center;
                 cursor: pointer;
+            }
+
+            @media (max-width: 600px) {
+                .row {
+                    flex-direction: column;
+                }
+
+                .punctuation-mark {
+                    padding: 0;
+                }
             }
 
             .punctuation-mark:hover {
