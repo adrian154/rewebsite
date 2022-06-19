@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Punctuation Palette</title>
+        <meta property="og:title" content="Punctuation Palette">
+        <meta property="og:description" content="Copy and paste commonly used punctuation marks, with tips for when to use each.">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap');
+
+            body {
+                max-width: 42em;
+                margin: 2.0em auto;
+                font-family: "Source Serif Pro", serif;
+                font-size: 14pt;
+                line-height: 1.5em;
+            }
+
+            #table {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .row {
+                display: flex;
+                flex-direction: row;
+            }
+
+            .punctuation-mark {
+                flex-basis: 5rem;
+                font-size: 50pt;
+                padding: 2rem;
+                text-align: center;
+                cursor: pointer;
+            }
+
+            .punctuation-mark:hover {
+                opacity: 50%;
+            }
+
+            .row div:last-child {
+                padding: 1rem 0.5rem;
+                flex-grow: 1;
+                flex-basis: 0;
+            }
+
+            h1 {
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid rgba(0, 0, 0, 25%);
+                font-weight: 600;
+            }
+
+            #punctuation-grid {
+                display: grid;
+                gap: 1rem;
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+
+            #punctuation-grid div {
+                display: flex;
+                flex-direction: column;
+                aspect-ratio: 1;
+            }
+
+            #punctuation-grid span {
+                text-align: center;
+                line-height: 100%;
+            }
+
+            #punctuation-grid span:first-child {
+                font-size: 30pt;
+                flex-basis: 40%;
+            }
+
+            #punctuation-grid span:first-child:hover {
+                opacity: 50%;
+                cursor: pointer;
+            }
+
+            #punctuation-grid span:last-child {
+                font-variant: small-caps;
+                font-size: 15pt;
+                flex-basis: 60%;
+            } 
+        </style>
+    </head>
+    <body>
+        <h1>Punctuation Palette</h1>
+        <p>When writing, one often encounters situations which call for a punctuation mark that cannot be readily typed on a standard computer keyboard. This page serves to document these characters and their uses. Click any of the large punctuation marks and it will be copied to your clipboard.</p>
+        <div id="table">
+            <div class="row">
+                <div class="punctuation-mark">&ndash;</div>
+                <div>
+                    <p>The <b>en dash</b> is used for ranges of numbers, relationships/connections, and complex-compound adjectives.</p>
+                    <b>Examples</b>
+                    <ul>
+                        <li>The store is open every day of the week, 9 a.m.&ndash;5 p.m.</li>
+                        <li>In 1980, the U.S. Olympic hockey team beat the Soviets 3&ndash;4 in what was later dubbed the &ldquo;Miracle on Ice&rdquo;.</li>
+                        <li>The Mason&ndash;Dixon line is often taken to demarcate the border between the North and South in the U.S.</li>
+                        <li>Atmospheric levels of carbon dioxide have risen above pre&ndash;Industrial Revolution levels by as much as 50%.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="punctuation-mark">&mdash;</div>
+                <div>
+                    <p>The <b>em dash</b> is used to show an abrupt change in thought. Em dashes can often be used in place of parentheses, commas, or colons. In dialogues, em dashes can also be used to depict interruption of a speaker. They are also used to attribute quotes.</p>
+                    <b>Examples</b>
+                    <ul>
+                        <li>The hikers&mdash;none of which had prepared for the hot weather&mdash;quickly succumbed to the elements.</li>
+                        <li>War, famine, and pestilence&mdash;these scourges have long plagued humanity.</li>
+                        <li>
+                            &ldquo;A brazier for a man&mdash;a Manzier!&rdquo;<br>
+                            &mdash; Frank Costanza, <i>Seinfeld</i>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="punctuation-mark">&minus;</div>
+                <div>
+                    <p>The <b>minus sign</b> is used to show subtraction or negative numbers.</p>
+                    <b>Examples</b>
+                    <ul>
+                        <li>&minus;40&deg;C is equal to &minus;40&deg;F.</li>
+                        <li>5 &minus; 2 = 3</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="punctuation-mark">&hellip;</div>
+                <div>
+                    <p>The <b>ellipsis</b> is used to indicate an omission, especially in quoted material. It can also show hesitation in informal writing.</p>
+                    <b>Examples</b>
+                    <ul>
+                        <li>Immanuel Kant once remarked that &ldquo;all thought must &hellip; relate ultimately to intuitions.&rdquo;</li>
+                        <li>
+                            &ldquo;Chicken salad, on rye, untoasted&hellip; with a side of potato salad&hellip; and a cup of tea!&rdquo;
+                            &mdash; George Costanza, <i>Seinfeld</i>
+                        </li>
+                    </ul>
+                    <p>Some prefer to represent ellipses using multiple periods instead of one character. Arguments in favor of this style are outlined in <a href="https://creativepro.com/dot-dot-dot/">Dot Dot Dot . . .</a> by Jim Felici.</p>
+                </div>
+            </div>
+        </div>
+
+        <p>Here are some more useful symbols and punctuation marks with more specialized purposes.</p>
+        <div id="punctuation-grid">
+            <div><span>&times;</span><span>multiplication sign</span></div>
+            <div><span>&div;</span><span>division sign</span></div>
+            <div><span>&pm;</span><span>plus or minus symbol</span></div>
+            <div><span>&asymp;</span><span>approximate equality</span></div>
+            <div><span>&leq;</span><span>less than or equal to</span></div>
+            <div><span>&geq;</span><span>greater than or equal to</span></div>
+            <div><span>&mu;</span><span>micro</span></div>
+            <div><span>&there4;</span><span>therefore symbol</span></div>
+            <div><span>&ne;</span><span>inequality</span></div>
+            <div><span>&#8253;</span><span>interrobang</span></div>
+            <div><span>&iexcl;</span><span>inverted exclamation mark</span></div>
+            <div><span>&iquest;</span><span>inverted question mark</span></div>
+            <div><span>&ldquo;</span><span>left quote</span></div>
+            <div><span>&rdquo;</span><span>right quote</span></div>
+            <div><span>&sect;</span><span>section symbol</span></div>
+            <div><span>&para;</span><span>paragraph symbol</span></div>
+            <div><span>&deg;</span><span>degree symbol</span></div>
+            <div><span>&reg;</span><span>registered trademark</span></div>
+            <div><span>&copy;</span><span>copyright symbol</span></div>
+            <div><span>&trade;</span><span>trademark symbol</span></div>
+            <div><span>&dagger;</span><span>single dagger</span></div>
+            <div><span>&Dagger;</span><span>double dagger</span></div>
+            <div><span>&cent;</span><span>cent sign</span></div>
+            <div><span>&pound;</span><span>british pound</span></div>
+            <div><span>&euro;</span><span>euro</span></div>
+        </div>
+        <!-- multiplication, division, interrobang, inverted exclamation mark, smart quotes, section symbol, paragraph symbol, degree symbol, trademark, copyright, pound, cent, plus/minus, single/double dagger, prime, double prime, euro, approx equal, not equal, less/greater than or equal to -->
+        
+        <p>If there are characters missing from this guide, or you believe that you have found an error in the descriptions, please don't hesitate to contact me at <a href="mailto:azhangcc@gmail.com">azhangcc@gmail.com</a>.</p>
+        <p>Also check out <a href="https://www.thepunctuationguide.com/en-dash.html">The Punctuation Guide</a>; this website wouldn't be possible without it.</p>
+        
+        <script>
+            document.querySelectorAll(".punctuation-mark, #punctuation-grid span:first-child").forEach(node => node.addEventListener("click", () => navigator.clipboard.writeText(node.textContent)));
+        </script>
+    
+</body>
+</html>
