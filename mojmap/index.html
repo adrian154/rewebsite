@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Mojang Mappings Lookup">
+        <title>Mojang Mappings Lookup</title>
+    </head>
+    <body>
+        <form id="form">
+            <input type="text" id="search" placeholder="Class, field, or method"> <button type="submit">Submit</button>
+        </form>
+        <script>
+            fetch("dictionary.json").then(resp => resp.json()).then(entries => {
+
+                const map = new Map();
+                for(const entry of entries) {
+                    map.put(entry[0], entry[1]);
+                }
+
+                const form = document.getElementById("form");
+                form.addEventListener("submit", event => {
+                    event.preventDefault();
+                    const query = document.getElementById("search").value;
+                    console.log(map.get(query));
+                })
+
+            });
+        </script>
+    </body>
+</html>
