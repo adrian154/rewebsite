@@ -14,9 +14,9 @@
             fetch("dictionary.json").then(resp => resp.json()).then(dict => {
 
                 const map = new Map();
-                const items = dict.things;
+                const objects = dict.objects;
                 for(const listing of dict.dictionary) {
-                    map.set(listing[0], listing[1].map(idx => items[idx]));
+                    map.set(listing[0], listing[1].map(idx => objects[idx]));
                 }
 
                 const form = document.getElementById("form");
