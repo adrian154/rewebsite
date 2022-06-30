@@ -7,17 +7,22 @@
         <title>Mojang Mappings Lookup</title>
     </head>
     <body>
-        <form id="form" style="display: none">
-            <input type="text" id="search" placeholder="Class, field, or method"> <button type="submit">Submit</button>
-        </form>
+        <p id="loading-status">Loading...</p>
+        <input type="text" id="search" placeholder="Class, field, or method">
         <script>
+            const search = (list, query) => list.filter(elem => elem.name.includes(query));
+
             fetch("dictionary.json").then(resp => resp.json()).then(dict => {
 
-                const map = new Map();
-                const objects = dict.objects;
-                for(const listing of dict.dictionary) {
-                    map.set(listing[0], listing[1].map(idx => objects[idx]));
-                }
+                document.getElementById("loading-status").textContent = "Loaded!";
+                document.getElementById("search").addEventListener("input", event => {
+                    const str = event.target.value;
+                    console.log(
+                        search(dict.classes, str),
+                        search(dict.methods, str),
+                        search(dict.fields, str)
+                    );
+                });
 
                 const form = document.getElementById("form");
                 form.style.display = "";

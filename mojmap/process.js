@@ -2,17 +2,14 @@
 const fs = require("fs"),
       mappingsText = fs.readFileSync("evil_nonfree/client.txt", "utf-8");
 
-const dict = new Map();
-const addEntry = (str, thing) => {
-    const list = dict.get(str);
-    if(list)
-        list.push(thing);
-    else
-        dict.set(str, [thing]);
+const objects = {
+    classes: [],
+    fields: [],
+    methods: []
 };
 
 // parser state
-let curClassName, curFQCN;
+let curClassName, curObfuscatedClass, curFQCN;
 
 console.log("building dictionary...");
 for(const rawLine of mappingsText.split('\n')) {
@@ -29,72 +26,39 @@ for(const rawLine of mappingsText.split('\n')) {
     if(classMatch) {
         const {package, className, obfuscated} = classMatch.groups;
         const fqcn = package + "." + className;
+        curObfuscatedClass = obfuscated;
         curClassName = className;
         curFQCN = fqcn;
-        const entry = {type: "class", fqcn, obfuscated};
-        addEntry(fqcn, entry);
-        addEntry(className, entry);
+        objects.classes.push({type: "class", name: fqcn, obfuscated});
         continue;
     }
 
     const methodMatch = line.match(/(?<startLine>\d+):(?<endLine>\d+):(?<retType>.+) (?<methodName>.+)\((?<signature>.*)\) -> (?<obfuscated>.+)/);
     if(methodMatch) {
         const {startLine, endLine, retType, methodName, signature, obfuscated} = methodMatch.groups;
-
-        // further parse the method name
-        const params = signature.split(',').map(param => param.trim());
-        
-        // method descriptor TODO
-        const entry = {
+        objects.methods.push({
             type: "method",
-            params,
-            class: curFQCN,
+            params: signature.split(',').map(param => param.trim()),
             retType,
             startLine,
             endLine,
-            name: methodName,
+            name: curFQCN + methodName,
             obfuscated
-        };
-
-        addEntry(methodName, entry);
-        addEntry(curClassName + "." + methodName, entry);
-        addEntry(curFQCN + "." + methodName, entry);
+        });
         continue;
     }
 
     const fieldMatch = line.match(/(?<type>.+) (?<fieldName>.+) -> (?<obfuscated>.+)/);
     if(fieldMatch) {
         const {type, fieldName, obfuscated} = fieldMatch.groups;
-        const entry = {
+        objects.fields.push({
             type: "field",
-            name: fieldName,
+            name: curFQCN + fieldName,
             fieldtype: type,
-            obfuscated
-        };
-        addEntry(fieldName, entry);
-        addEntry(curClassName + "." + fieldName, entry);
-        addEntry(curFQCN + "." + fieldName, entry);
+            obfuscated: curObfuscatedClass + fieldName
+        });
     }
 
 }
 
-// if we naiively JSONify the dictionary it will be absolutely huge because of all the duplicate values
-// we can achieve pretty good space reduction by reducing the redundancy
-console.log("condensing dictionary..");
-const objects = [], flattenedDict = [];
-
-for(const [term, entries] of dict) {
-    flattenedDict.push([term, entries.map(entry => {
-        const index = objects.indexOf(entry);
-        if(index < 0) {
-            objects.push(entry);
-            return objects.length - 1;
-        }
-        return index;
-    })]);
-}
-
-fs.writeFileSync("dictionary.json", JSON.stringify({
-    dictionary: flattenedDict,
-    objects
-}));
+fs.writeFileSync("dictionary.json", JSON.stringify(objects));
