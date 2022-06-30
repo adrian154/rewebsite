@@ -11,18 +11,19 @@
             <input type="text" id="search" placeholder="Class, field, or method"> <button type="submit">Submit</button>
         </form>
         <script>
-            fetch("dictionary.json").then(resp => resp.json()).then(entries => {
+            fetch("dictionary.json").then(resp => resp.json()).then(dict => {
 
                 const map = new Map();
-                for(const entry of entries) {
-                    map.set(entry[0], entry[1]);
+                const items = dict.things;
+                for(const listing of dict.dictionary) {
+                    map.set(entry[0], entry[1].map(idx => items[idx]));
                 }
 
                 const form = document.getElementById("form");
                 form.addEventListener("submit", event => {
                     const query = document.getElementById("search").value;
                     console.log(map.get(query));
-                    return false;
+                    event.preventDefault();
                 })
 
             });

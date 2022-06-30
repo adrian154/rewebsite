@@ -18,6 +18,7 @@ const addEntry = (str, thing) => {
 // parser state
 let curClassName, curFQCN;
 
+console.log("building dictionary..");
 for(const rawLine of mappingsText.split('\n')) {
     
     const line = rawLine.trim();
@@ -80,4 +81,25 @@ for(const rawLine of mappingsText.split('\n')) {
 
 }
 
-fs.writeFileSync("dictionary.json", JSON.stringify(Array.from(dict), null, 2));
+// if we naiively JSONify the dictionary it will be absolutely huge because of all the duplicate values
+// we can achieve pretty good space reduction by reducing the redundancy
+
+console.log("condensing dictionary..");
+const things = [], flatDict = [];
+
+for(const [term, entries] of dict) {
+    const updated = entries.map(entry => {
+        const index = things.indexOf(entry);
+        if(index >= 0) {
+            return index;
+        }
+        things.push(entry);
+        return things.length - 1;
+    });
+    flatDict.push([term, updated]);
+}
+
+fs.writeFileSync("dictionary.json", JSON.stringify({
+    dictionary: flatDict,
+    things
+}));
