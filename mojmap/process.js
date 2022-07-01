@@ -42,7 +42,7 @@ for(const rawLine of mappingsText.split('\n')) {
             retType,
             startLine,
             endLine,
-            name: curFQCN + methodName,
+            name: curFQCN + "." + methodName,
             obfuscated
         });
         continue;
@@ -55,7 +55,7 @@ for(const rawLine of mappingsText.split('\n')) {
             type: "field",
             name: curFQCN + fieldName,
             fieldtype: type,
-            obfuscated: curObfuscatedClass + fieldName
+            obfuscated: curObfuscatedClass + "." + fieldName
         });
     }
 
