@@ -5,24 +5,173 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta property="og:title" content="Mojang Mappings Lookup">
         <title>Mojang Mappings Lookup</title>
+        <style>
+            body {
+                max-width: 65em;
+                margin: 4em auto;
+                font-family: sans-serif;
+            }
+
+            h1 {
+                text-align: center;
+            }
+
+            #form {
+                display: flex;
+                flex-direction: row;
+            }
+
+            #inputs {
+                max-width: 40em;
+                margin: auto;
+            }
+
+            input[type="text"] {
+                width: 100%;
+                font-size: 1em;
+                padding: 0.75em;
+                box-sizing: border-box;
+                font-family: monospace;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+            }
+
+            #loading-status {
+                text-align: center;
+                opacity: 50%;
+            }
+
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin: 2.0em 0;
+            }
+
+            th, td {
+                padding: 0.5em;
+            }
+
+            th {
+                text-align: left;
+                border-bottom: 1px solid #000;
+            }
+
+            td {
+                border-bottom: 1px solid #ccc;
+                font-family: monospace;
+            }
+        </style>
     </head>
     <body>
-        <p id="loading-status">Loading...</p>
-        <input type="text" id="search" placeholder="Class, field, or method">
-        <script>
-            const search = (list, query) => list.filter(elem => elem.name.includes(query));
+        <h1>Mojang Mappings Search</h1>
+        <p id="loading-status"><i>Loading mappings...</i></p>
+        
+        <div id="inputs">
+            <input type="text" id="search" placeholder="Class, field, or method">
+            <input type="checkbox" id="obfuscated"> <label for="obfuscated">obfuscated</label>
+        </div>
 
-            fetch("dictionary.json").then(resp => resp.json()).then(dict => {
+
+        <div id="results">
+            <table>
+                <thead>
+                    <tr><th>Class</th><th>Field</th><th>Type</th><th>Obfuscated</th></tr>
+                </thead>
+                <tbody id="fields-table"></tbody>
+            </table>
+            <table>
+                <thead>
+                    <tr><th>Class</th><th>Method</th><th>Return Type</th><th>Obfuscated</th></tr>
+                </thead>
+                <tbody id="methods-table"></tbody>
+            </table>
+            <table>
+                <thead>
+                    <tr><th>Class</th><th>Obfuscated</th></tr>
+                </thead>
+                <tbody id="classes-table"></tbody>
+            </table>
+        </div>
+
+        <script>
+            const obfuscatedCheckbox = document.getElementById("obfuscated");
+            const search = (list, query) => {
+                const lowercase = query.toLowerCase();
+                if(obfuscatedCheckbox.checked)
+                    return list.filter(elem => elem.obfuscated.toLowerCase().includes(query));
+                return list.filter(elem => elem.name.toLowerCase().includes(query));
+            };
+
+            const fieldsTable = document.getElementById("fields-table"),
+                  methodsTable = document.getElementById("methods-table"),
+                  classesTable = document.getElementById("classes-table");
+            let classes, methods, fields;
+
+            const cell = text => {
+                const td = document.createElement("td");
+                td.textContent = text;
+                return td;
+            };
+
+            const unqualify = str => str.split(".").pop();
+
+            fetch("outputs/dictionary.json").then(resp => resp.json()).then(dict => {
 
                 document.getElementById("loading-status").textContent = "Loaded!";
-                document.getElementById("search").addEventListener("input", event => {
-                    const str = event.target.value;
-                    console.log(
-                        search(dict.classes, str),
-                        search(dict.methods, str),
-                        search(dict.fields, str)
-                    );
-                });
+                const searchBar = document.getElementById("search");
+
+                const update = () => {
+                    
+                    const str = searchBar.value;
+                    classes = search(dict.classes, str);
+                    methods = search(dict.methods, str);
+                    fields = search(dict.fields, str);
+                    
+                    classesTable.replaceChildren();
+                    methodsTable.replaceChildren();
+                    fieldsTable.replaceChildren();
+
+                    for(let i = 0; i < 10; i++) {
+                        if(classes[i]) {
+                            const row = document.createElement("tr");
+                            row.append(cell(classes[i].name), cell(classes[i].obfuscated));
+                            classesTable.append(row);
+                        }
+                    }
+
+                    for(let i = 0; i < 10; i++) {
+                        if(methods[i]) {
+                            const row = document.createElement("tr");
+                            const parts = methods[i].name.split("."); 
+                            row.append(
+                                cell(parts[parts.length - 2]),
+                                cell(parts.pop() + "(" + methods[i].params.map(unqualify).join(", ") + ")"), 
+                                cell(unqualify(methods[i].retType)),
+                                cell(methods[i].obfuscated)
+                            );
+                            methodsTable.append(row);
+                        }
+                    }
+
+                    for(let i = 0; i < 10; i++) {
+                        if(fields[i]) {
+                            console.log(fields[i]);
+                            const row = document.createElement("tr");
+                            const parts = fields[i].name.split(".");
+                            row.append(
+                                cell(parts[parts.length - 2]),
+                                cell(parts.pop()),
+                                cell(fields[i].type),
+                                cell(fields[i].obfuscated)
+                            );
+                            fieldsTable.append(row);
+                        }
+                    }
+
+                };
+
+                searchBar.addEventListener("input", update);
+                obfuscatedCheckbox.addEventListener("input", update);
 
             });
         </script>

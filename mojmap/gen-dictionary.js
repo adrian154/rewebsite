@@ -1,6 +1,6 @@
 // Process the mappings and generate an easily searchable dictionary
 const fs = require("fs"),
-      mappingsText = fs.readFileSync("evil_nonfree/client.txt", "utf-8");
+      mappingsText = fs.readFileSync("inputs/client.txt", "utf-8");
 
 const objects = {
     classes: [],
@@ -9,7 +9,7 @@ const objects = {
 };
 
 // parser state
-let curClassName, curObfuscatedClass, curFQCN;
+let curObfuscatedClass, curFQCN;
 
 console.log("building dictionary...");
 for(const rawLine of mappingsText.split('\n')) {
@@ -27,23 +27,19 @@ for(const rawLine of mappingsText.split('\n')) {
         const {package, className, obfuscated} = classMatch.groups;
         const fqcn = package + "." + className;
         curObfuscatedClass = obfuscated;
-        curClassName = className;
         curFQCN = fqcn;
         objects.classes.push({type: "class", name: fqcn, obfuscated});
         continue;
     }
 
-    const methodMatch = line.match(/(?<startLine>\d+):(?<endLine>\d+):(?<retType>.+) (?<methodName>.+)\((?<signature>.*)\) -> (?<obfuscated>.+)/);
+    const methodMatch = line.match(/(\d+:\d+:)?(?<retType>.+) (?<methodName>.+)\((?<signature>.*)\) -> (?<obfuscated>.+)/);
     if(methodMatch) {
-        const {startLine, endLine, retType, methodName, signature, obfuscated} = methodMatch.groups;
+        const {retType, methodName, signature, obfuscated} = methodMatch.groups;
         objects.methods.push({
-            type: "method",
             params: signature.split(',').map(param => param.trim()),
             retType,
-            startLine,
-            endLine,
             name: curFQCN + "." + methodName,
-            obfuscated
+            obfuscated: curObfuscatedClass + "." + obfuscated
         });
         continue;
     }
@@ -52,13 +48,12 @@ for(const rawLine of mappingsText.split('\n')) {
     if(fieldMatch) {
         const {type, fieldName, obfuscated} = fieldMatch.groups;
         objects.fields.push({
-            type: "field",
-            name: curFQCN + fieldName,
-            fieldtype: type,
-            obfuscated: curObfuscatedClass + "." + fieldName
+            name: curFQCN + "." + fieldName,
+            type: type,
+            obfuscated: curObfuscatedClass + "." + obfuscated
         });
     }
 
 }
 
-fs.writeFileSync("dictionary.json", JSON.stringify(objects));
+fs.writeFileSync("outputs/dictionary.json", JSON.stringify(objects));
