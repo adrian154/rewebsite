@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>JWST vs Hubble Comparison</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Hubble vs JWST Comparison">
+        <meta property="og:description" content="See how the James Webb Space Telescope's first official photo compares to the Hubble Space Telescope's view of the same target.">
+        <style>
+            body {
+                background-color: #1a1a1a;
+            }
+
+            img {
+                position: fixed;
+                width: 100vw;
+                height: 100vh;
+                top: 0;
+                left: 0;
+                object-fit: contain;
+            }
+
+            #controls {
+                color: #ffffff;
+                background-color: rgba(0, 0, 0, 50%);
+                position: absolute;
+                top: 1em;
+                left: 1em;
+                padding: 1em;
+                max-width: 20em;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            }
+
+            input[type="radio"] {
+                display: none;
+            }
+
+            span {
+                background-color: #666666;
+                padding: 0.3rem 0.5rem;
+                font-weight: bold;
+                transition: 0.2s;
+                cursor: pointer;
+            }
+
+            span:hover {
+                color: #cccccc;
+            }
+
+            input[type="radio"]:checked + span {
+                background-color: #00aeff;
+                color: #ffffff;
+            }
+
+            img {
+                opacity: 0;
+                z-index: -1;
+            }
+
+            input[type="radio"]:checked + span + img {
+                opacity: 1;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="controls">
+            <p>Today, the first full-color images from the James Webb Space Telescope were released. Here's a comparison of the imaged target, a galaxy cluster known as SMACS 0723, to the Hubble Space Telescope's view of the same target.</p>
+            <p><i>This work is based on observations taken by the RELICS Treasury Program (GO 14096) with the NASA/ESA HST, which is operated by the Association of Universities for Research in Astronomy, Inc., under NASA contract NAS5-26555.</i></p>
+            <label id="hubble">
+                <input type="radio" name="telescope">
+                <span>HST</span>
+                <img src="SMACS_0723_Hubble.jpg">
+            </label>
+            <label id="jwst">
+                <input type="radio" name="telescope" checked>
+                <span>JWST</span>
+                <img src="SMACS_0723_JWST.jpg">
+            </label>
+        </div>
+    </body>
+</html>
