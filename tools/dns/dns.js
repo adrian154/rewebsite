@@ -195,7 +195,7 @@ const query = async (hostname, nameserver, type, recursive) => {
     const status = document.createElement("p");
     status.style.fontWeight = "bold";
     status.textContent = "Waiting for response from " + nameserver;
-    queries.prepend(status);
+    queries.append(status);
     
     // actually do the request
     try {
@@ -205,7 +205,7 @@ const query = async (hostname, nameserver, type, recursive) => {
         if(!resp.ok || value.error) throw new Error(value.error);
         value.records = [...value.authorityRecords, ...value.answerRecords, ...value.additionalRecords];
         status.remove();
-        queries.prepend(createQueryResult(nameserver, value));
+        queries.append(createQueryResult(nameserver, value));
         return value;
         
     } catch(error) {
