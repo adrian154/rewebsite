@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Image to JSON">
+        <meta property="og:description" content="Extract pixel data from an image">
+        <title>Image to JSON</title>
+        <link rel="stylesheet" href="common.css">
+    </head>
+    <body>
+        <h1>Image to JSON</h1>
+        <p><a href="index.html">&#11172; More Tools</a></p>
+
+        <p>Date is returned in the same scheme as ImageData.</p>
+
+        <input type="file" id="file">
+        <textarea id="output" readonly></textarea>
+        <canvas id="canvas" style="display: none"></canvas>
+        
+        <script>
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+
+            document.getElementById("file").addEventListener("input", event => {
+                const reader = new FileReader();
+                reader.addEventListener("load", event => {
+                    const image = new Image();
+                    image.onload = () => {
+                        canvas.width = image.width;
+                        canvas.height = image.height;
+                        ctx.drawImage(image, 0, 0);
+                        const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        document.getElementById("output").value = JSON.stringify({
+                            width: data.width,
+                            height: data.height,
+                            data: JSON.stringify(Array.from(data.data))
+                        });
+                    };
+                    image.src = event.target.result;
+                });
+                reader.readAsDataURL(event.target.files[0]);
+            });
+        </script>
+        
+    </body>
+</html>
