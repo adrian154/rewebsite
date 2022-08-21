@@ -18,21 +18,22 @@
                 <div class="bubble">
                     <div class="blurb">
                         <div><p><img src="images/minecraft-icon.png"></p></div>
-                        <div><p><b>Do you have Minecraft?</b> Come play on our 1.18.2 survival server! Join at <code>mc.bithole.dev</code>, or check out the <a href="https://dynmap.bithole.dev">online map</a>.</p></div>
+                        <div><p><b>Do you have Minecraft?</b> Come play on our 1.18.2 SMP, now featuring the Create mod! Join at <code>mc.bithole.dev</code>, or check out the <a href="https://dynmap.bithole.dev">online map</a>.</p></div>
                     </div>
                     <p>Hi, I'm Adrian. I'm a student and a programmer. Welcome to my website! You can contribute to its code on <a href="https://github.com/adrian154/rewebsite">GitHub</a>, or browse my <a href="projects.html">projects</a> and <a href="misc.html">miscellaneous tinkerings</a>.</p>
-                    <p>Oh, and also check out my burgeoning <a href="https://blog.bithole.dev/">blog</a>.</p>
-                    <p><i>Remember Aaron Swartz. <a href="https://custodians.online/">Stand behind Open Access</a>.</i></p>
+                    <p>Oh, and also check out my burgeoning <a href="https://blog.bithole.dev/">blog</a>. You might find it interesting.</p>
+                    <p><i>Remember Aaron Swartz. Democratize knowledge&mdash;<a href="https://custodians.online/">stand behind Open Access!</a></i></p>
                 </div>
 
                 <h1>profiles / contact</h1>
                 <div class="bubble">
                     <ul>
-                        <li>To contact me, please send me a message via <b>Discord (drain#5012)</b> or <b>email (azhangcc@gmail.com)</b>.</li>
-                        <li>I do pretty much all of my open-source contributions on GitHub as <a href="https://github.com/adrian154">adrian154</a>.</li>
-                        <li>In my spare time, I enjoy taking pretty pictures, which I sometimes post on Flickr as <a href="https://www.flickr.com/photos/192931620@N06/">adrian.z</a>.</li>
-                        <li>If you need to reach me securely, the signature of my <a href="pgp-key.txt">PGP key</a> is <code>30CAFC0DFD7CCAF2A9A2CDAF2C5DE528CF2D242B</code>.</li>
+                        <li><b>Discord:</b> drain#5012</li>
+                        <li><b>Email:</b> azhangcc@gmail.com</li>
+                        <li><b>GitHub:</b> <a href="https://github.com/adrian154">adrian154</a></li>
                     </ul>
+                    <p>My preferred method of contact is Discord, though I'm okay with pretty much any platform. If you need to reach me securely, the signature of my <a href="pgp-key.txt">PGP key</a> is <code>30CAFC0DFD7CCAF2A9A2CDAF2C5DE528CF2D242B</code>.</p>
+                    <p>I also like to take pictures, which I occasionally upload to my Flickr as <a href="https://www.flickr.com/photos/192931620@N06/">adrian.z</a>. Pretty much every picture there was taken on the same beat-up Nikon D7000 using a 16-85mm lens.</p>
                 </div>
 
                 <h1>other links</h1>
@@ -50,7 +51,7 @@
                     </ul>
                 </div>
 
-                <p id="copyright">&copy; 2021 Adrian Zhang &bull; <a href="javascript:animate()">party mode</span></p>
+                <p id="copyright">&copy; 2022 Adrian Zhang &bull; <a href="javascript:toggle()">toggle party mode</span></p>
                 
             </div>
         </div>
@@ -58,14 +59,21 @@
         <script>
 
             /* partymode */
-            let color = 0;
+            let partyMode = false, color = 0;
             const background = document.getElementById("background");
 
             const animate = () => {
-                background.style.background = `linear-gradient(${color}deg, hsl(${color}, 100%, 75%), hsl(${(color + 180) % 360}, 100%, 75%))`;
-                color += 2;
+                if(partyMode) {
+                    background.style.background = `linear-gradient(${color}deg, hsl(${color}, 100%, 75%), hsl(${(color + 180) % 360}, 100%, 75%))`;
+                    color += 6;
+                } else {
+                    background.style.background = "";
+                }
                 requestAnimationFrame(animate);
             };
+            
+            animate();
+            const toggle = () => partyMode = !partyMode;
 
         </script>
 
