@@ -7,6 +7,9 @@ const sounds = {
     explode: new Audio("explosion.wav")
 };
 
+sounds.shoot.volume = 0.3;
+sounds.explode.volume = 0.3;
+
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
