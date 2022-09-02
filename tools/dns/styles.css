@@ -27,8 +27,8 @@ th {
 }
 
 .query {
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    padding: 1.0em;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    padding: 1.5em;
     margin: 2.0em 0;
 }
 
