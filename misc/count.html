@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                display: flex;
+                margin: 0;
+                width: 100vw;
+                height: 100vh; 
+                background-color: #000000;
+            }
+
+            canvas {
+                margin: auto;
+            }
+        </style>
+
+    </head>
+    <body>
+        <canvas id="count" width="640" height="480"></canvas>
+        <script>
+            const canvas = document.getElementById("count");
+            const ctx = canvas.getContext("2d");
+            ctx.font = "36px Arial";
+            let frame = 0;
+            const animate = () => {
+                frame++;
+                ctx.fillStyle = `rgb(${Math.sin(frame/30)*128+128}, 0, ${Math.cos(frame/30+1)*128+128})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = `#ffffff`;
+                ctx.textAlign = "center";
+                ctx.fillText(frame, canvas.width / 2, canvas.height / 2);
+                if(frame == 1000) {
+                    window.location.href = "https://twitter.com";
+                }
+                requestAnimationFrame(animate);  
+            };
+            animate();
+        </script>
+    </body>
+</html>
