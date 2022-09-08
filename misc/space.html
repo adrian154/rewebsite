@@ -6,11 +6,12 @@
                 width: 100vw;
                 height: 100vh;
                 margin: 0;
-                background-image: url('https://c.tenor.com/eVjGbC5txMUAAAAC/neil-degrasse-tyson.gif');
             }
         </style>
     </head>
     <body>
-
+        <script>
+            document.getElementById("body").style.backgroundImage = `url('${new URL(window.location).searchParams.get("gif")}')`;
+        </script>
     </body>
 </html>
