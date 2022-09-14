@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Click Counter">
+        <meta property="og:description" content="Use your computer as a click counter!">
+        <title>Click Counter</title>
+        <link rel="stylesheet" href="common.css">
+        <style>
+            #button {
+                width: 100%;
+                height: 5.0em;
+                background-color: #00aa55;
+                border: none;
+                border-radius: 5px;
+                color: #ffffff;
+                font-size: 4.0em;
+                font-weight: 500;
+                transition: transform 0.1s;
+            }
+
+            #button:active {
+                transform: scale(0.98);
+            }
+
+            #clear {
+                float: right;
+                color: #a3a3a3;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <p><a href="index.html">&#11172; More Tools</a><a id="clear">clear</a></p>
+        <button id="button">0</button>
+        <script>
+            const button = document.getElementById("button");
+            let value = 0;
+
+            const setValue = newValue => {
+                value = newValue;
+                button.textContent = value;
+                localStorage.setItem("count", value);  
+            };
+
+            const storedCount = Number(localStorage.getItem("count"));
+            if(storedCount) {
+                setValue(storedCount);
+            }
+
+            button.addEventListener("click", () => setValue(value + 1));
+            document.getElementById("clear").addEventListener("click", () => setValue(0));
+        </script>
+    </body>
+</html>
