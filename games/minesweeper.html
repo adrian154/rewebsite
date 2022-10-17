@@ -265,7 +265,10 @@ const draw = function() {
 
 };
 
-canvas.addEventListener("mousedown", (event) => {
+// keep track of left clicks for chording
+let lastClick = {};
+
+canvas.addEventListener("mouseup", (event) => {
 
     if(game.state == PLAY || game.state == INITIAL) {
 
@@ -276,11 +279,22 @@ canvas.addEventListener("mousedown", (event) => {
 
         if(event.button == 0 && !tile.flagged) {
             clear(x, y);
-        } else if(event.button == 2 && !tile.cleared) {
-            if(tile.flagged = !tile.flagged)
-                game.flagCount--;
-            else
-                game.flagCount++;
+            lastClick.time = Date.now();
+            lastClick.x = x;
+            lastClick.y = y;
+            console.log(lastClick);
+        } else if(event.button == 2) {
+            if(tile.cleared) {
+                console.log(x==lastClick.x, y==lastClick.y,Date.now()-lastClick.time)
+                if(x == lastClick.x && y == lastClick.y && Date.now() - lastClick.time < 500) {
+                    console.log("chord");
+                }
+            } else {
+                if(tile.flagged = !tile.flagged)
+                    game.flagCount--;
+                else
+                    game.flagCount++;
+            }
         }
 
         // if every tile was cleared, win

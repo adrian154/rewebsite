@@ -7,22 +7,15 @@
         <meta property="og:description" content="Unofficial viewer for the xkcd webcomic">
         <title>xkcd viewer</title>
         <style>
-            body, html {
-                width: 100%;
-                height: 100%;
-                margin: 0;
-            }
-
             body {
-                display: flex;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; 
             }
 
             #container {
-                max-width: 100%;
+                max-width: 40em;
                 box-sizing: border-box;
                 padding: 1.0em;
                 margin: 0 auto;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; 
             }
 
             h1 {
@@ -34,7 +27,8 @@
             }
 
             img {
-                display: inline-block;
+                max-width: 100%;
+                display: block;
                 margin: auto;
             }
 
@@ -54,13 +48,18 @@
                 font-size: 10pt;
             }
 
+            #footnote {
+                text-align: right;
+            }
+
             h1:hover {
                 text-decoration: underline;
             }
 
             #alt-text {
                 color: rgba(0, 0, 0, 75%);
-                font-style: italic;
+                font-size: 10pt;
+                opacity: 75%;
             }
 
             #buttons {
