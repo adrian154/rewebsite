@@ -80,6 +80,12 @@ a:visited {
     flex-shrink: 0;
 }
 
+/* christmas !! */
+.blurb {
+    border-left: 2px solid #cf5353;
+    background-color: rgba(207, 83, 83, 10%);
+}
+
 .blurb img {
     width: 3.0em;
     height: auto;
