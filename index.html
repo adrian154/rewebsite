@@ -78,14 +78,16 @@
             // christmas countdown
             const christmas = new Date(2022, 11, 25);
             const SECOND = 1000, MINUTE = 60*SECOND, HOUR = 60*MINUTE, DAY = 24*HOUR;
-            setInterval(() => {
+            const update = () => {
                 let diff = christmas - Date.now();
                 const days = Math.floor(diff / DAY); diff -= days*DAY;
                 const hours = Math.floor(diff / HOUR); diff -= hours*HOUR;
                 const minutes = Math.floor(diff / MINUTE); diff -= minutes*MINUTE;
                 const seconds= Math.floor(diff / SECOND);
                 document.getElementById("christmas-countdown").textContent = `It will be christmas in ${days} ${days == 1 ? "day" : "days"}, ${hours} ${hours == 1 ? "hour" : "hours"}, ${minutes} ${minutes == 1 ? "minute" : "minutes"}, and ${seconds} ${seconds == 1 ? "second" : "seconds"}.`;
-            }, 100);
+                requestAnimationFrame(update);
+            };
+            update();
 
         </script>
 
