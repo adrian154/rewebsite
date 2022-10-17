@@ -20,8 +20,8 @@
                         <div><p><img src="images/christmas.png"></p></div>
                         <div><p id="christmas-countdown">Enable JavaScript to see a dynamic countdown to Christmas here.</div>
                     </div>
-                    <p>Hi, I'm Adrian. I'm a student and a programmer. Welcome to my website! You can contribute to its code on <a href="https://github.com/adrian154/rewebsite">GitHub</a>, or browse my <a href="projects.html">projects</a> and <a href="misc.html">miscellaneous tinkerings</a>.</p>
-                    <p>Oh, and also check out my burgeoning <a href="https://blog.bithole.dev/">blog</a>. You might find it interesting.</p>
+                    <p>Hi, I'm Adrian. Welcome to my website! You can browse its code on <a href="https://github.com/adrian154/rewebsite">GitHub</a>, or check out my <a href="projects.html">projects</a> and <a href="misc.html">miscellaneous tinkerings</a>.</p>
+                    <p>Oh, and be sure to visit my <a href="https://blog.bithole.dev/">blog</a>, where I write about whatever weird tech-related stuff I've been up to.</p>
                     <p><i>Remember Aaron Swartz. Democratize knowledge&mdash;<a href="https://custodians.online/">stand behind Open Access!</a></i></p>
                 </div>
 
@@ -32,13 +32,13 @@
                         <li><b>Email:</b> <a href="mailto:azhangcc@gmail.com">azhangcc@gmail.com</a></li>
                         <li><b>GitHub:</b> <a href="https://github.com/adrian154">adrian154</a></li>
                     </ul>
-                    <p>My preferred method of contact is Discord, though I'm okay with pretty much any platform. If you need to reach me securely, the signature of my <a href="pgp-key.txt">PGP key</a> is <code>30CAFC0DFD7CCAF2A9A2CDAF2C5DE528CF2D242B</code>.</p>
+                    <p>If you need to reach me securely, the signature of my <a href="pgp-key.txt">PGP key</a> is <code>30CAFC0DFD7CCAF2A9A2CDAF2C5DE528CF2D242B</code>.</p>
                     <p>I also like to take pictures, which I occasionally upload to my Flickr as <a href="https://www.flickr.com/photos/192931620@N06/">adrian.z</a>.</p>
                 </div>
 
                 <h1>other links</h1>
                 <div class="bubble">
-                    <p>These are some of my friends whose stuff is also worth checking out.</p>
+                    <p>These guys also make some pretty cool stuff.</p>
                     <ul>
                         <li><a href="https://jayp570.github.io/">@jayp570</a></li>
                         <li><a href="https://mee42.dev/">@Mee42</a></li>
@@ -84,7 +84,7 @@
                 const hours = Math.floor(diff / HOUR); diff -= hours*HOUR;
                 const minutes = Math.floor(diff / MINUTE); diff -= minutes*MINUTE;
                 const seconds= Math.floor(diff / SECOND);
-                document.getElementById("christmas-countdown").textContent = `It will be christmas in ${days} ${days == 1 ? "day" : "days"}, ${hours} ${hours == 1 ? "hour" : "hours"}, ${minutes} ${minutes == 1 ? "minute" : "minutes"}, and ${seconds} ${seconds == 1 ? "second" : "seconds"}.`;
+                document.getElementById("christmas-countdown").textContent = `It will be Christmas in ${days} ${days == 1 ? "day" : "days"}, ${hours} ${hours == 1 ? "hour" : "hours"}, ${minutes} ${minutes == 1 ? "minute" : "minutes"}, and ${seconds} ${seconds == 1 ? "second" : "seconds"}.`;
                 requestAnimationFrame(update);
             };
             update();
