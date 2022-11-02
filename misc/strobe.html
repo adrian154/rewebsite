@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            canvas {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+        <script>
+            const ctx = document.getElementById("canvas").getContext("2d");
+            let frame = 0;
+            
+            const strobe = () => {
+
+                ctx.fillStyle = "#000000";
+                if(frame % 10 == 0) {
+                    ctx.fillStyle = "#ffffff";
+                }
+                
+                ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+                frame++;
+                requestAnimationFrame(strobe);
+
+            };
+            strobe();
+        </script>
+    </body>
+</html>

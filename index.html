@@ -51,7 +51,7 @@
                     </ul>
                 </div>
 
-                <p id="copyright">&copy; 2022 Adrian Zhang &bull; <a href="javascript:toggle()">toggle party mode</span></p>
+                <p id="copyright">&copy; 2022 Adrian Zhang &bull; <a href="javascript:toggle()">toggle party mode</a></span><span id="eternal-september"></span></p>
                 
             </div>
         </div>
@@ -88,6 +88,11 @@
                 requestAnimationFrame(update);
             };
             update();
+
+
+            // eternal september epoch
+            const septEpoch = new Date(746845200000);
+            document.getElementById("eternal-september").textContent = `September ${Math.floor((Date.now() - septEpoch) / 8.64e7)}, 1993`;
 
         </script>
 

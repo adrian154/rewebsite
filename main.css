@@ -92,9 +92,6 @@ a:visited {
     margin: 0;
 }
 
-#abuseipdb-badge {
-    position: fixed;
-    right: 5px; bottom: 5px;
-    opacity: 50%;
-    width: 160px;
+#eternal-september {
+    float: right;
 }
