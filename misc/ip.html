@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>What's My IP?</title>
+        <style>
+            .loading {
+                font-style: italic;
+            }
+
+            .error {
+                color: #f00;
+            }
+
+            p {
+                font-family: sans-serif;
+                font-size: 24pt;
+            }
+
+            html {
+                height: 100%;
+            }
+
+            body {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                margin: 0;
+            }
+            
+            main {
+                margin: auto;
+            }
+
+            span {
+                font-family: monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <p><b>IPv4 address:</b> <span class="loading" id="v4">loading...</span></p>
+            <p><b>IPv6 address:</b> <span class="loading" id="v6">loading...</span></p>
+        </main>
+        <script>
+            const v4 = document.getElementById("v4"), v6 = document.getElementById("v6");
+            fetch("https://v4-api.bithole.dev/ip")
+                .then(resp => resp.text())
+                .then(ip => {
+                    v4.textContent = ip;
+                    v4.classList.remove("loading");
+                }).catch(err => {
+                    v4.textContent = "(error)";
+                    v4.classList.remove("loading");
+                    v4.classList.add("error");
+                });
+
+                fetch("https://v6-api.bithole.dev/ip")
+                .then(resp => resp.text())
+                .then(ip => {
+                    v6.textContent = ip;
+                    v6.classList.remove("loading");
+                }).catch(err => {
+                    v6.textContent = "(error)";
+                    v6.classList.remove("loading");
+                    v6.classList.add("error");
+                });
+        </script>
+    </body>
+</html>
