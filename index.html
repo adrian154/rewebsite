@@ -17,8 +17,8 @@
                 <h1>about</h1>
                 <div class="bubble">
                     <div class="blurb">
-                        <div><p><img src="images/christmas.png"></p></div>
-                        <div><p id="christmas-countdown">Enable JavaScript to see a dynamic countdown to Christmas here.</div>
+                        <div><p><img src="images/champagne.png"></p></div>
+                        <div><p id="new-years-countdown">Enable JavaScript to see a dynamic countdown to the new year here.</div>
                     </div>
                     <p>Hi, I'm Adrian. Welcome to my website! You can browse its code on <a href="https://github.com/adrian154/rewebsite">GitHub</a>, or check out my <a href="projects.html">projects</a> and <a href="misc.html">miscellaneous tinkerings</a>.</p>
                     <p>Oh, and be sure to visit my <a href="https://blog.bithole.dev/">blog</a>, where I write about whatever weird tech-related stuff I've been up to.</p>
@@ -76,15 +76,15 @@
             const toggle = () => partyMode = !partyMode;
 
             // christmas countdown
-            const christmas = new Date(2022, 11, 25);
+            const newYear = new Date(2023, 0, 1);
             const SECOND = 1000, MINUTE = 60*SECOND, HOUR = 60*MINUTE, DAY = 24*HOUR;
             const update = () => {
-                let diff = christmas - Date.now();
+                let diff = newYear - Date.now();
                 const days = Math.floor(diff / DAY); diff -= days*DAY;
                 const hours = Math.floor(diff / HOUR); diff -= hours*HOUR;
                 const minutes = Math.floor(diff / MINUTE); diff -= minutes*MINUTE;
                 const seconds= Math.floor(diff / SECOND);
-                document.getElementById("christmas-countdown").textContent = `It will be Christmas in ${days} ${days == 1 ? "day" : "days"}, ${hours} ${hours == 1 ? "hour" : "hours"}, ${minutes} ${minutes == 1 ? "minute" : "minutes"}, and ${seconds} ${seconds == 1 ? "second" : "seconds"}.`;
+                document.getElementById("new-years-countdown").textContent = `It will be 2023 in ${days} ${days == 1 ? "day" : "days"}, ${hours} ${hours == 1 ? "hour" : "hours"}, ${minutes} ${minutes == 1 ? "minute" : "minutes"}, and ${seconds} ${seconds == 1 ? "second" : "seconds"}.`;
                 requestAnimationFrame(update);
             };
             update();
