@@ -95,3 +95,38 @@ a:visited {
 #eternal-september {
     float: right;
 }
+
+#links {
+    text-align: center;
+    font-size: 12pt;
+}
+
+#links a {
+    color: #000;
+    text-decoration: underline;
+}
+
+#links a:hover {
+    color: #777;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    padding: 0.5em 1.5em;
+}
+
+tr:not(:last-child) td {
+    border-bottom: 1px solid #ccc;
+}
+
+th {
+    font-weight: bold;
+    border-bottom: 1px solid #000000;
+}
+
+td:first-child { 
+    text-align: left;
+}

@@ -32,6 +32,10 @@
             button {
                 margin-top: 0.3em;
             }
+
+            canvas {
+                user-select: none;
+            }
         </style>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
@@ -109,7 +113,7 @@ const clear = (x, y) => {
     if(!game.inBounds(x, y))
         return;
 
-    const tile= game.board[x][y];
+    const tile = game.board[x][y];
 
     // if the player clicks a mine on their first click, clear it
     if(game.state == INITIAL) {
@@ -265,9 +269,6 @@ const draw = function() {
 
 };
 
-// keep track of left clicks for chording
-let lastClick = {};
-
 canvas.addEventListener("mouseup", (event) => {
 
     if(game.state == PLAY || game.state == INITIAL) {
@@ -277,23 +278,34 @@ canvas.addEventListener("mouseup", (event) => {
         const y = Math.floor(event.offsetY / game.fullTileSize);
         const tile = game.board[x][y];
 
+        console.log(event.button);
         if(event.button == 0 && !tile.flagged) {
             clear(x, y);
-            lastClick.time = Date.now();
-            lastClick.x = x;
-            lastClick.y = y;
-            console.log(lastClick);
         } else if(event.button == 2) {
-            if(tile.cleared) {
-                console.log(x==lastClick.x, y==lastClick.y,Date.now()-lastClick.time)
-                if(x == lastClick.x && y == lastClick.y && Date.now() - lastClick.time < 500) {
-                    console.log("chord");
-                }
-            } else {
+            if(!tile.cleared) {
                 if(tile.flagged = !tile.flagged)
                     game.flagCount--;
                 else
                     game.flagCount++;
+            }
+        } else if(event.button == 1) {
+            if(tile.cleared) {
+
+                let ok = true;
+                for(let dx = -1; dx <= 1; dx++) {
+                    for(let dy = -1; dy <= 1; dy++) {
+                        if(x + dx < 0 || y + dy < 0 || x + dx > game.board.length || y + dy > game.board[0].length) continue;
+                        if(game.board[x+dx][y+dy].isMine != game.board[x+dx][y+dy].flagged) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                }
+
+                if(ok) {
+
+                }
+
             }
         }
 

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        .scene {
+            width: 512px;
+            height: 512px;
+            perspective: 600px;
+            border: 1px solid #aaa;
+            background-color: #000;
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: 1s;
+        }
+
+        .cube.whatever {
+            transform: rotateY(45deg) rotateX(-77deg) translateZ(100px);
+        }
+
+        .U, .D, .L, .R, .B, .F {
+            position: absolute;
+            width: 256px;
+            height: 256px;
+            font-size: 72pt;
+            color: #ffffff;
+            font-family: sans-serif;
+        }
+
+        .F { transform: rotateY(  0deg) translateZ(128px); }
+        .R { transform: rotateY( 90deg) translateZ(128px); }
+        .B { transform: rotateY(180deg) translateZ(128px); }
+        .L { transform: rotateY(-90deg) translateZ(128px); }
+        .U { transform: rotateX( 90deg) translateZ(128px); }
+        .D { transform: rotateX(-90deg) translateZ(128px); }
+
+        .F { background-color: rgba(0, 255, 0, 0.9);}
+        .B { background-color: rgba(0, 0, 255, 0.9);}
+        .U { background-color: rgba(255, 255, 255, 0.9);}
+        .D { background-color: rgba(255, 255, 0, 0.9);}
+        .L { background-color: rgba(255, 128, 0, 0.9);}
+        .R { background-color: rgba(255, 0, 0, 0.9);}
+    </style>
+    <body>
+        <div class="scene">
+            <div class="cube">
+                <div class="U">U</div>
+                <div class="D">D</div>
+                <div class="L">L</div>
+                <div class="R">R</div>
+                <div class="B">B</div>
+                <div class="F">F</div>
+            </div>
+        </div>
+        <script>
+            setTimeout(() => {document.querySelector(".cube").classList.add("whatever");});
+        </script>
+    </body>
+</html>
