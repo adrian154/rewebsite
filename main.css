@@ -130,3 +130,8 @@ th {
 td:first-child { 
     text-align: left;
 }
+
+#pronouns {
+    color: #888888;
+    font-size: 80%;
+}
