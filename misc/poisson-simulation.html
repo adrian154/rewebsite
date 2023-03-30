@@ -35,6 +35,8 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 // draw gridlines
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 1;
                 ctx.globalAlpha = 0.25;
                 for(let x = 1; x < 10; x++) {
                     ctx.beginPath();
@@ -81,6 +83,9 @@
                 ctx.stroke();
                 ctx.fill();
 
+                ctx.globalAlpha = 1.0;
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "#0000ff";
                 const poissonpdf = (lambda, k) => Math.exp(k * Math.log(lambda) - lambda - ieee754gamma.lngamma(k + 1));
                 for(let i = 0; i < freqs.length; i++) {
                     freqs[i] = poissonpdf(NUM_POINTS / 100, i);
