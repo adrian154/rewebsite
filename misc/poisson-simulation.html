@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Poisson Process Demo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body { 
+                margin: 1em;
+            }
+
+            canvas {
+                width: min(100%, 600px);
+                border: 1px solid #aaa;
+            }
+        </style>
+    </head>
+    <body>
+        <p>If we randomly place points on a canvas and count the number of points within a grid cell, we find that the number of points per cell follows a <a href="https://en.wikipedia.org/wiki/Poisson_distribution">Poisson distribution</a>.</p>
+        <button onclick="draw()">Redraw</button><br><br>
+        <canvas id="canvas"></canvas>
+        <script src="ieee754gamma.js"></script>
+        <script>
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+            
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.width;
+
+            const NUM_POINTS = 300;
+
+            const draw = () => {
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // draw gridlines
+                ctx.globalAlpha = 0.25;
+                for(let x = 1; x < 10; x++) {
+                    ctx.beginPath();
+                    ctx.moveTo(x * canvas.width / 10, 0);
+                    ctx.lineTo(x * canvas.width / 10, canvas.height);
+                    ctx.closePath();
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(0, x * canvas.height / 10);
+                    ctx.lineTo(canvas.width, x * canvas.height / 10);
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+
+                const counts = new Array(100).fill(0);
+                ctx.fillStyle = "#ff0000";
+                ctx.globalAlpha = 0.7;
+                for(let i = 0; i < NUM_POINTS; i++) {
+                    const x = Math.random(), y = Math.random();
+                    ctx.beginPath();
+                    ctx.arc(x * canvas.width, y * canvas.height, 2, 0, 2 * Math.PI);
+                    ctx.closePath();
+                    ctx.fill();
+                    const tileX = Math.floor(x * 10), tileY = Math.floor(y * 10);
+                    counts[tileY * 10 + tileX]++;
+                }
+
+                const freqs = new Array(100).fill(0);
+                for(const count of counts) {
+                    if(count < 100)
+                        freqs[count]++;
+                }
+
+                // draw freq
+                ctx.globalAlpha = 0.5;
+                ctx.fillStyle = "#0000ff";
+                const max = freqs.reduce((a,c) => Math.max(a,c));
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height);
+                for(let i = 0; i < freqs.length; i++) {
+                    ctx.lineTo(i / 10 * canvas.width, canvas.height - freqs[i] / max * canvas.height / 4);
+                }
+                ctx.closePath();
+                ctx.stroke();
+                ctx.fill();
+
+                const poissonpdf = (lambda, k) => Math.exp(k * Math.log(lambda) - lambda - ieee754gamma.lngamma(k + 1));
+                for(let i = 0; i < freqs.length; i++) {
+                    freqs[i] = poissonpdf(NUM_POINTS / 100, i);
+                }
+                const max2 = freqs.reduce((a,c) => Math.max(a,c));
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height);
+                for(let i = 0; i < freqs.length; i++) {
+                    ctx.lineTo(i / 10 * canvas.width, canvas.height - freqs[i] / max2 * canvas.height / 4);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            };
+
+            draw();
+        </script>
+    </body>
+</html>
