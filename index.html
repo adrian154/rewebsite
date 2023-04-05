@@ -17,7 +17,7 @@
                 <h1>about</h1>
                 <div class="bubble">
                     <p>Hi, I'm Adrian <span id="pronouns">(he/him)</span>. I like making computers do stuff. Welcome to my website :)</p>
-                    <p><i>Remember Aaron Swartz. Democratize knowledge&mdash;<a href="https://custodians.online/">stand behind Open Access</a> and <a href="https://www.battleforlibraries.com/">defend libraries</a></i>!</p>
+                    <p><i>Remember Aaron Swartz. Democratize knowledge&mdash;<a href="https://custodians.online/">stand behind Open Access</a> and <a href="https://www.battleforlibraries.com/">defend libraries</a>!</i></p>
                     <p id="links">
                         <a href="https://blog.bithole.dev/">blog</a> &bull;
                         <a href="https://bithole.dev/photography/">photography</a> &bull;
@@ -57,21 +57,17 @@
         <script>
 
             /* partymode */
-            let partyMode = false, color = 0;
+            let color = 0;
             const background = document.getElementById("background");
 
             const animate = () => {
-                if(partyMode) {
-                    background.style.background = `linear-gradient(${color}deg, hsl(${color}, 100%, 75%), hsl(${(color + 180) % 360}, 100%, 75%))`;
-                    color += 6;
-                } else {
-                    background.style.background = "";
-                }
+                background.style.background = `linear-gradient(${color}deg, hsl(${color}, 100%, 75%), hsl(${(color + Math.sin(color/200)*50+100) % 360}, 100%, 75%))`;
+                color += 6;
                 requestAnimationFrame(animate);
             };
             
             animate();
-            const toggle = () => partyMode = !partyMode;
+            const toggle = () => background.classList.toggle("shown");
 
             // eternal september epoch
             const septEpoch = new Date(746845200000);
