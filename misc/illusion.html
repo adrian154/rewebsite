@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Illusion</title>
+        <style>
+            body {
+                width: 100vw;
+                height: 100vh;
+                margin: 0;
+                display: flex;
+            }
+
+            canvas {
+                width: 50em;
+                margin: auto;
+                box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas>Canvas not supported...</canvas>
+        <script>
+            const canvas = document.querySelector("canvas"),
+                  ctx = canvas.getContext("2d");
+            
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.width / 3;
+
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, "#000000");
+            gradient.addColorStop(1, "#ffffff");
+
+            const BOX_SIZE = canvas.height / 3;
+
+            let t = 0;
+            const draw = () => {
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // draw box
+                ctx.fillStyle = "#808080";
+                ctx.fillRect(canvas.width / 2 - BOX_SIZE / 2 + Math.sin(t / 60) * canvas.width * 0.4, canvas.height / 2 - BOX_SIZE / 2, BOX_SIZE, BOX_SIZE)
+
+                t++;
+                requestAnimationFrame(draw);
+
+            };
+
+            draw();
+        </script>
+    </body>
+</html>
