@@ -12,15 +12,23 @@
                 display: flex;
             }
 
-            canvas {
+            main {
                 width: 50em;
                 margin: auto;
+                padding: 1em;
+            }
+
+            canvas {
+                width: 100%;
                 box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
             }
         </style>
     </head>
     <body>
-        <canvas>Canvas not supported...</canvas>
+        <main>
+            <p>The color of the square does not change, yet it appears to grow lighter and darker as it moves across the gradient.</p>
+            <canvas>Canvas not supported...</canvas>
+        </main>
         <script>
             const canvas = document.querySelector("canvas"),
                   ctx = canvas.getContext("2d");
