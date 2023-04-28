@@ -51,6 +51,7 @@ const draw = () => {
     }
 
     // draw notes
+    // FIXME: notes longer than 256 ticks have a tendency to disappear off the left
     for(let tick = START_TICK - 256; tick < END_TICK; tick++) {
         const notes = song.notes.get(tick);
         if(notes) {
@@ -64,7 +65,7 @@ const draw = () => {
     }
 
     // draw keyboard
-    ctx.font = "14px Arial";
+    ctx.font = "14px sans-serif";
     ctx.textAlign = "right";
     ctx.strokeStyle = "#000000";
     for(let key = 0; key < 84; key++) {
@@ -94,6 +95,16 @@ const draw = () => {
             ctx.fillStyle = "#000000";
         ctx.fillText(NOTE + octave, PIANO_WIDTH - 4, y + ROW_HEIGHT * 0.65);
 
+    }
+
+    // draw bar number
+    ctx.fillStyle = "rgb(255, 255, 255, 10%)";
+    ctx.font = "20px sans-serif";
+    ctx.textAlign = "left";
+    for(let tick = START_TICK; tick < END_TICK; tick++) {
+        if(tick % (32 * song.rhythm) == 0) {
+            ctx.fillText(tick / 32 / song.rhythm, tick * tickSize - horizScroll + 4, vertScroll + 22);
+        }
     }
 
 };
