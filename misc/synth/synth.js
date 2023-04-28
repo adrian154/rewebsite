@@ -8,4 +8,10 @@ let instruments = [
     {name: "beep", type: "square", attack: 0.015, delay: 0.05, color: "#4e61d8"}
 ];
 
-song.notes.set(100, [{note: 60, length: 32, instrument: instruments[0]}]);
+for(let i = 0; i < 100; i++) {
+    song.notes.set(i * 50 + 100, [
+        {note: 60 + i, length: 32, instrument: instruments[0]},
+        {note: 50 + i, length: 64, instrument: instruments[0]},
+        {note: 40 + i, length: 8, instrument: instruments[0]}
+    ]);
+}

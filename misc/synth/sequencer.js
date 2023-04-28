@@ -36,16 +36,30 @@ const draw = () => {
         ctx.stroke();
     }
 
+    const START_TICK = Math.floor(horizScroll / tickSize),
+          END_TICK = START_TICK + canvas.width / tickSize;
+
     // draw barlines
-    const START_TICK = Math.floor(horizScroll),
-          END_TICK = START_TICK + (canvas.width - PIANO_WIDTH) / tickSize;
     for(let tick = START_TICK; tick < END_TICK; tick++) {
         if(tick % 32 == 0) {
             ctx.strokeStyle = (tick / 32) % song.rhythm == 0 ? "rgba(0, 0, 0, 50%)" : "rgba(0, 0, 0, 25%)";
             ctx.beginPath();
-            ctx.moveTo(tick * tickSize - horizScroll + PIANO_WIDTH, 0);
-            ctx.lineTo(tick * tickSize - horizScroll + PIANO_WIDTH, 84 * ROW_HEIGHT);
+            ctx.moveTo(tick * tickSize - horizScroll, 0);
+            ctx.lineTo(tick * tickSize - horizScroll, 84 * ROW_HEIGHT);
             ctx.stroke();
+        }
+    }
+
+    // draw notes
+    for(let tick = START_TICK - 256; tick < END_TICK; tick++) {
+        const notes = song.notes.get(tick);
+        if(notes) {
+            for(const note of notes) {
+                if(tick + note.length > START_TICK) {
+                    ctx.fillStyle = note.instrument.color;
+                    ctx.fillRect(tick * tickSize - horizScroll, (83 - note.note + 24) * ROW_HEIGHT, note.length * tickSize, ROW_HEIGHT);
+                }
+            }
         }
     }
 
@@ -82,21 +96,11 @@ const draw = () => {
 
     }
 
-    // draw notes
-    for(let tick = START_TICK; tick < END_TICK; tick++) {
-        const notes = song.notes.get(tick);
-        if(notes) {
-            for(const note of notes) {
-                ctx.fillStyle = note.instrument.color;
-                ctx.fillRect(tick * tickSize - horizScroll + PIANO_WIDTH, (83 - note.note + 24) * ROW_HEIGHT, note.length * tickSize, ROW_HEIGHT);
-            }
-        }
-    }
-
 };
 
 canvas.addEventListener("wheel", event => {
     vertScroll = Math.max(0, Math.min(84 * ROW_HEIGHT - canvas.height, vertScroll + event.deltaY));
+    horizScroll = Math.max(0, horizScroll + event.deltaX);
     draw();
 });
 
