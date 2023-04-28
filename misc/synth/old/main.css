@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400;0,600;1,400&display=swap');
+
+body {
+    font-family: 'Schibsted Grotesk', sans-serif;
+    max-width: 40rem;
+    margin: 3rem auto;
+    font-size: 18px;
+}
+
+#problem { color: #ff0000; }
+
+#waveforms {
+    margin: 1em 0;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    max-width: 75%;
+}
+
+#waveforms input {
+    display: none;
+}
+
+#waveforms label {
+    background-color: #787878;
+    padding: 1em;
+    font-weight: bold;
+    color: #ffffff;
+    cursor: pointer;
+    flex: 1 1 0;
+    text-align: center;
+}
+
+#waveforms label:hover {
+    background-color: #a1a1a1;
+}
+
+#waveforms input:checked + label {
+    background-color: #26b3ff;
+}
