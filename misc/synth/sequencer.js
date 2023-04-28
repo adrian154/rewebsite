@@ -21,6 +21,7 @@ let horizScroll = 0,
 const draw = () => {
 
     // draw background
+    ctx.resetTransform();
     ctx.fillStyle = "#333333";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -93,6 +94,11 @@ const draw = () => {
     }
 
 };
+
+canvas.addEventListener("wheel", event => {
+    vertScroll = Math.max(0, Math.min(84 * ROW_HEIGHT - canvas.height, vertScroll + event.deltaY));
+    draw();
+});
 
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
