@@ -8,31 +8,38 @@ const elements = {
 const audioCtx = new AudioContext();
 const notes = new Array(128);
 
-const gainNode = audioCtx.createGain();
-gainNode.gain.value = 1;
-gainNode.connect(audioCtx.destination);
-let numNotes = 0;
+const ATTACK = 0,
+      DELAY = 0.1;
 
 const playNote = note => {
     
-    numNotes++;
-    gainNode.gain.value = 1 / numNotes;
+    console.log("play", note);
+
+    const envelope = audioCtx.createGain();
+    envelope.gain.setValueAtTime(0, audioCtx.currentTime);
+    envelope.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + ATTACK);
+    envelope.connect(audioCtx.destination);
+    notes[note] = envelope;
 
     const waveform = waveforms.querySelector(":checked").id;
     const osc = new OscillatorNode(audioCtx, {type: waveform, frequency: 440 * Math.pow(2, (note - 69) / 12)});
-    osc.connect(gainNode);
+    osc.connect(envelope);
     osc.start();
-    notes[note] = osc;
 
 };
 
 const stopNote = note => {
-    
-    numNotes--;
-    gainNode.gain.value = 1 / Math.max(numNotes, 1);
 
-    notes[note].disconnect();
-    notes[note] = null;
+    console.log("stop", note);
+    
+    const envelope = notes[note];
+    envelope.gain.cancelAndHoldAtTime(audioCtx.currentTime);
+    envelope.gain.setValueAtTime(envelope.gain.value, audioCtx.currentTime);
+    envelope.gain.linearRampToValueAtTime(0, audioCtx.currentTime + DELAY);
+    
+    setTimeout(() => {
+        envelope.disconnect();
+    }, DELAY * 1000);
 
 };
 
