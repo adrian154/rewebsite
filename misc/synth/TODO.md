@@ -19,3 +19,4 @@
 # Application
 
 - import/export
+- pick MIDI output

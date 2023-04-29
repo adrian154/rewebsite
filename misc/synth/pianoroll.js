@@ -96,7 +96,7 @@ const draw = () => {
             for(const note of notes) {
                 if(tick + note.length > startTick) {
                     ctx.fillStyle = note.instrument.color;
-                    ctx.fillRect(tick * tickSize - horizScroll, noteToRow(note.note) * ROW_HEIGHT, note.length * tickSize, ROW_HEIGHT);
+                    ctx.fillRect(tick * tickSize - horizScroll + 1, noteToRow(note.note) * ROW_HEIGHT + 1, note.length * tickSize - 2, ROW_HEIGHT - 2);
                 }
             }
         }
@@ -105,13 +105,13 @@ const draw = () => {
     // draw outlines for currently editing note / hovered note
     if(editingNote) {
         ctx.strokeStyle = "#ffffff";
-        ctx.strokeRect(editingNoteStartTick * tickSize - horizScroll - 1, noteToRow(editingNote.note) * ROW_HEIGHT, editingNote.length * tickSize, ROW_HEIGHT);
+        ctx.strokeRect(editingNoteStartTick * tickSize - horizScroll, noteToRow(editingNote.note) * ROW_HEIGHT, editingNote.length * tickSize, ROW_HEIGHT);
     } else if(highlightedNote) {
         ctx.strokeStyle = "#ffffff";
-        ctx.strokeRect(highlightedNoteStartTick * tickSize - horizScroll - 1, noteToRow(highlightedNote.note) * ROW_HEIGHT, highlightedNote.length * tickSize, ROW_HEIGHT);
+        ctx.strokeRect(highlightedNoteStartTick * tickSize - horizScroll, noteToRow(highlightedNote.note) * ROW_HEIGHT, highlightedNote.length * tickSize, ROW_HEIGHT);
     } else if(hoverStartTick) {
         ctx.strokeStyle = "#ffffff";
-        ctx.strokeRect(hoverStartTick * tickSize - horizScroll - 1, hoverRow * ROW_HEIGHT, noteLength * tickSize, ROW_HEIGHT);
+        ctx.strokeRect(hoverStartTick * tickSize - horizScroll, hoverRow * ROW_HEIGHT, noteLength * tickSize, ROW_HEIGHT);
     }
 
     // draw bar number
