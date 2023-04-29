@@ -18,15 +18,19 @@ let horizScroll = 0,
     vertScroll = 600,
     tickSize = 4; 
 
-
 let noteLength = 12,
     noteSnap = 3,
     hoverStartTick = null,
     hoverRow = null,
+    highlightedNote = null
+    highlightedNoteStartTick = null,
     editingNote = null,
     editingNoteStartTick = null,
     anchorTick = null,
     floatingTick = null;
+
+// convert MIDI note to row number
+const noteToRow = note => 83 - note + 24;
 
 const draw = () => {
 
@@ -79,26 +83,31 @@ const draw = () => {
             for(const note of notes) {
                 if(tick + note.length > startTick) {
                     ctx.fillStyle = note.instrument.color;
-                    ctx.fillRect(tick * tickSize - horizScroll, (83 - note.note + 24) * ROW_HEIGHT, note.length * tickSize, ROW_HEIGHT);
+                    ctx.fillRect(tick * tickSize - horizScroll, noteToRow(note.note) * ROW_HEIGHT, note.length * tickSize, ROW_HEIGHT);
                 }
             }
         }
     }
 
-
-    // draw hover
-    if(hoverStartTick) {
+    // draw outlines for currently editing note / hovered note
+    if(editingNote) {
         ctx.strokeStyle = "#ffffff";
-        ctx.strokeRect(hoverStartTick * tickSize + horizScroll - 1, hoverRow * ROW_HEIGHT, noteLength * tickSize, ROW_HEIGHT);
+        ctx.strokeRect(editingNoteStartTick * tickSize - horizScroll - 1, noteToRow(editingNote.note) * ROW_HEIGHT, editingNote.length * tickSize, ROW_HEIGHT);
+    } else if(highlightedNote) {
+        ctx.strokeStyle = "#ffffff";
+        ctx.strokeRect(highlightedNoteStartTick * tickSize - horizScroll - 1, noteToRow(highlightedNote.note) * ROW_HEIGHT, highlightedNote.length * tickSize, ROW_HEIGHT);
+    } else if(hoverStartTick) {
+        ctx.strokeStyle = "#ffffff";
+        ctx.strokeRect(hoverStartTick * tickSize - horizScroll - 1, hoverRow * ROW_HEIGHT, noteLength * tickSize, ROW_HEIGHT);
     }
 
     // draw bar number
     ctx.fillStyle = "rgb(255, 255, 255, 20%)";
-    ctx.font = "20px sans-serif";
+    ctx.font = "16px sans-serif";
     ctx.textAlign = "left";
     for(let tick = startTick; tick < endTick; tick++) {
         if(tick % (noteLen * song.timeSig.upper) == 0) {
-            ctx.fillText(tick / noteLen / song.timeSig.upper, tick * tickSize - horizScroll + 4, vertScroll + 22);
+            ctx.fillText(tick / noteLen / song.timeSig.upper, tick * tickSize - horizScroll + 4, vertScroll + 18);
         }
     }
 
@@ -158,8 +167,9 @@ canvas.addEventListener("keydown", event => {
 let mouseDownX = null, mouseDownY = null;
 
 canvas.addEventListener("mousemove", event => {
-
-    const snappedTick = Math.floor((event.offsetX + horizScroll) / tickSize / noteSnap) * noteSnap;
+    
+    const tick = Math.floor((event.offsetX + horizScroll) / tickSize);
+    const snappedTick = Math.floor(tick / noteSnap) * noteSnap;
 
     if(editingNote) {
 
@@ -184,8 +194,28 @@ canvas.addEventListener("mousemove", event => {
         }
 
     } else {
-        hoverStartTick = snappedTick;
+
         hoverRow = Math.floor((event.offsetY + vertScroll) / ROW_HEIGHT);
+
+        // check if we're hovering over a note
+        highlightedNote = null;
+        for(let t = tick - 256; t <= tick; t++) {
+            const notes = song.notes.get(t);
+            if(notes) {
+                for(const note of notes) {
+                    if(note.note == noteToRow(hoverRow) && t + note.length > tick) {
+                        highlightedNote = note;
+                        highlightedNoteStartTick = t;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(!highlightedNote) {
+            hoverStartTick = snappedTick;
+        }
+
     }
 
     draw();
@@ -195,10 +225,25 @@ canvas.addEventListener("mousemove", event => {
 canvas.addEventListener("mousedown", event => {
     mouseDownX = event.offsetX;
     mouseDownY = event.offsetY;
-    editingNote = {note: 83 - hoverRow + 24, length: noteLength, instrument: instruments[0]};
-    anchorTick = hoverStartTick;
-    editingNoteStartTick = hoverStartTick;
-    addNote(editingNote, hoverStartTick);
+    if(highlightedNote) {
+
+        editingNote = highlightedNote;
+        editingNoteStartTick = highlightedNoteStartTick;
+
+        // if the click was on the first half of the note, use the end of the note as the anchor
+        // otherwise, use the start of the note as the anchor
+        if((event.offsetX + horizScroll - highlightedNoteStartTick * tickSize) < highlightedNote.length * tickSize / 2) {
+            anchorTick = highlightedNoteStartTick + highlightedNote.length;
+        } else {
+            anchorTick = highlightedNoteStartTick;
+        }
+        
+    } else {
+        editingNote = {note: noteToRow(hoverRow), length: noteLength, instrument: instruments[0]};
+        anchorTick = hoverStartTick;
+        editingNoteStartTick = hoverStartTick;
+        addNote(editingNote, hoverStartTick);
+    }
     draw();
 });
 
