@@ -222,27 +222,35 @@ canvas.addEventListener("mousemove", event => {
 
 });
 
+canvas.addEventListener("contextmenu", event => event.preventDefault());
+
 canvas.addEventListener("mousedown", event => {
-    mouseDownX = event.offsetX;
-    mouseDownY = event.offsetY;
-    if(highlightedNote) {
-
-        editingNote = highlightedNote;
-        editingNoteStartTick = highlightedNoteStartTick;
-
-        // if the click was on the first half of the note, use the end of the note as the anchor
-        // otherwise, use the start of the note as the anchor
-        if((event.offsetX + horizScroll - highlightedNoteStartTick * tickSize) < highlightedNote.length * tickSize / 2) {
-            anchorTick = highlightedNoteStartTick + highlightedNote.length;
-        } else {
-            anchorTick = highlightedNoteStartTick;
+    if(event.button == 2) {
+        if(highlightedNote) {
+            removeNote(highlightedNote, highlightedNoteStartTick);
         }
-        
     } else {
-        editingNote = {note: noteToRow(hoverRow), length: noteLength, instrument: instruments[0]};
-        anchorTick = hoverStartTick;
-        editingNoteStartTick = hoverStartTick;
-        addNote(editingNote, hoverStartTick);
+        mouseDownX = event.offsetX;
+        mouseDownY = event.offsetY;
+        if(highlightedNote) {
+
+            editingNote = highlightedNote;
+            editingNoteStartTick = highlightedNoteStartTick;
+
+            // if the click was on the first half of the note, use the end of the note as the anchor
+            // otherwise, use the start of the note as the anchor
+            if((event.offsetX + horizScroll - highlightedNoteStartTick * tickSize) < highlightedNote.length * tickSize / 2) {
+                anchorTick = highlightedNoteStartTick + highlightedNote.length;
+            } else {
+                anchorTick = highlightedNoteStartTick;
+            }
+            
+        } else {
+            editingNote = {note: noteToRow(hoverRow), length: noteLength, instrument: instruments[0]};
+            anchorTick = hoverStartTick;
+            editingNoteStartTick = hoverStartTick;
+            addNote(editingNote, hoverStartTick);
+        }
     }
     draw();
 });
