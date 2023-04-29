@@ -29,7 +29,6 @@ body {
     cursor: pointer;
     flex: 1 1 0;
     text-align: center;
-    user-select: none;
 }
 
 #waveforms label:hover {
