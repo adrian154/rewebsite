@@ -18,6 +18,15 @@ let horizScroll = 0,
     vertScroll = 600,
     tickSize = 4; 
 
+
+let noteLength = 12,
+    noteSnap = 3,
+    hoverStartTick = null,
+    hoverRow = null,
+    editingNote = null,
+    firstTick = null,
+    secondTick = null;
+
 const draw = () => {
 
     // draw background
@@ -69,10 +78,17 @@ const draw = () => {
             for(const note of notes) {
                 if(tick + note.length > startTick) {
                     ctx.fillStyle = note.instrument.color;
-                    ctx.fillRect(tick * tickSize - horizScroll + 1, (83 - note.note + 24) * ROW_HEIGHT + 1, note.length * tickSize - 2, ROW_HEIGHT - 2);
+                    ctx.fillRect(tick * tickSize - horizScroll, (83 - note.note + 24) * ROW_HEIGHT, note.length * tickSize, ROW_HEIGHT);
                 }
             }
         }
+    }
+
+
+    // draw hover
+    if(hoverStartTick) {
+        ctx.strokeStyle = "#ffffff";
+        ctx.strokeRect(hoverStartTick * tickSize + horizScroll - 1, hoverRow * ROW_HEIGHT, 50, ROW_HEIGHT);
     }
 
     // draw bar number
@@ -120,15 +136,47 @@ const draw = () => {
 
 };
 
-let noteLength = 12;
-
 canvas.addEventListener("wheel", event => {
     vertScroll = Math.max(0, Math.min(84 * ROW_HEIGHT - canvas.height, vertScroll + event.deltaY));
     horizScroll = Math.max(0, horizScroll + event.deltaX);
     draw();
 });
 
-// 
+canvas.addEventListener("keydown", event => {
+    if(event.key === "ArrowLeft") {
+        horizScroll = Math.max(0, horizScroll - 100);
+        draw();
+    } else if(event.key === "ArrowRight") {
+        horizScroll += 100;
+        draw();
+    }
+});
+
+canvas.addEventListener("mousemove", event => {
+
+    const snappedTick = Math.floor((event.offsetX + horizScroll) / tickSize / noteSnap) * noteSnap;
+
+    if(editingNote) {
+        
+    } else {
+        hoverStartTick = snappedTick;
+        hoverRow = Math.floor((event.offsetY + vertScroll) / ROW_HEIGHT);
+    }
+
+    draw();
+
+});
+
+canvas.addEventListener("mousedown", event => {
+    editingNote = {note: 83 - hoverRow + 24, length: noteLength, instrument: instruments[0]};
+    firstTick = 
+    addNote(editingNote, hoverStartTick);
+    draw();
+});
+
+canvas.addEventListener("mouseup", event => {
+
+});
 
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
