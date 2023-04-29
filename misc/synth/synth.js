@@ -25,13 +25,14 @@ const makeInstrument = properties => {
 
     instrument.noteOff = (envelope, time) => {
         time = time || audioCtx.currentTime;
-        envelope.gain.cancelAndHoldAtTime(audioCtx.currentTime);
+        envelope.gain.cancelAndHoldAtTime(time);
         envelope.gain.setValueAtTime(envelope.gain.value, time);
-        envelope.gain.linearRampToValueAtTime(0, audioCtx.currentTime + properties.delay);
+        envelope.gain.linearRampToValueAtTime(0, time + properties.release);
+        setTimeout(() => envelope.disconnect(), (time - audioCtx.currentTime + properties.release) * 1000);
     };
 
     return instrument;
 
 };
 
-const beep = makeInstrument({type: "square", attack: 0.015, delay: 0.05, color: "#4e61d8"});
+const beep = makeInstrument({type: "square", attack: 0.015, release: 0.05, color: "#4e61d8"});

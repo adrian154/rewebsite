@@ -29,6 +29,8 @@ let noteLength = 12,
     anchorTick = null,
     floatingTick = null;
 
+let zoomLevel = 0;
+
 // convert MIDI note to row number
 const noteToRow = note => 83 - note + 24;
 
@@ -159,12 +161,22 @@ canvas.addEventListener("keydown", event => {
     } else if(event.key === "ArrowRight") {
         horizScroll += 100;
         draw();
+    } else if(event.key === "Control") {
+        ctrlHeld = true;
+    }
+});
+
+canvas.addEventListener("keyup", event => {
+    if(event.key === "Control") {
+        ctrlHeld = false;
     }
 });
 
 // keep track of where the mousedown event occurred
 // we use this to ignore small accidental movements, or else clicks may be interpreted as drags
 let mouseDownX = null, mouseDownY = null;
+
+canvas.addEventListener("contextmenu", event => event.preventDefault());
 
 canvas.addEventListener("mousemove", event => {
     
@@ -223,8 +235,6 @@ canvas.addEventListener("mousemove", event => {
 
 });
 
-canvas.addEventListener("contextmenu", event => event.preventDefault());
-
 canvas.addEventListener("mousedown", event => {
     if(event.button == 2) {
         if(highlightedNote) {
@@ -251,6 +261,7 @@ canvas.addEventListener("mousedown", event => {
             anchorTick = hoverStartTick;
             editingNoteStartTick = hoverStartTick;
             song.addNote(editingNote, hoverStartTick);
+            beep.noteOff(beep.noteOn(editingNote.note, null, audioCtx.destination), audioCtx.currentTime + 0.1);
         }
     }
     draw();
