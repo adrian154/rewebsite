@@ -29,10 +29,14 @@ let noteLength = 12,
     anchorTick = null,
     floatingTick = null;
 
-let zoomLevel = 0;
+let selectedInstrument = beep;
 
 // convert MIDI note to row number
 const noteToRow = note => 83 - note + 24;
+
+const previewGain = audioCtx.createGain();
+previewGain.gain.value = 0.1;
+previewGain.connect(audioCtx.destination);
 
 const draw = () => {
 
@@ -44,12 +48,19 @@ const draw = () => {
     ctx.translate(0, -vertScroll);
 
     // draw horizontal lines
+    /*
     ctx.strokeStyle = "rgba(0, 0, 0, 25%)";
     for(let key = 0; key < 84; key++) {
         ctx.beginPath();
         ctx.moveTo(0, key * ROW_HEIGHT);
         ctx.lineTo(canvas.width, key * ROW_HEIGHT);
         ctx.stroke();
+    }*/
+    ctx.fillStyle = "rgba(0, 0, 0, 10%)";
+    for(let key = 0; key < 84; key++) {
+        if([false, true, false, true, false, false, true, false, true, false, true, false][key % 12]) {
+            ctx.fillRect(0, (83 - key) * ROW_HEIGHT, canvas.width, ROW_HEIGHT);
+        }
     }
 
     const startTick = Math.floor(horizScroll / tickSize),
@@ -60,7 +71,7 @@ const draw = () => {
     // draw barlines
     for(let tick = startTick; tick < endTick; tick++) {
         if(tick % noteLen == 0) {
-            ctx.strokeStyle = (tick / noteLen) % song.timeSig.upper == 0 ? "rgba(0, 0, 0, 50%)" : "rgba(0, 0, 0, 10%)";
+            ctx.strokeStyle = (tick / noteLen) % song.timeSig.upper == 0 ? "rgba(0, 0, 0, 65%)" : "rgba(0, 0, 0, 10%)";
             ctx.beginPath();
             ctx.moveTo(tick * tickSize - horizScroll, 0);
             ctx.lineTo(tick * tickSize - horizScroll, 84 * ROW_HEIGHT);
@@ -130,7 +141,7 @@ const draw = () => {
         else
             ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, y, PIANO_WIDTH, ROW_HEIGHT);
-        
+
         // draw line dividing keys 
         ctx.beginPath();
         ctx.moveTo(0, y + 0.5);
@@ -261,7 +272,7 @@ canvas.addEventListener("mousedown", event => {
             anchorTick = hoverStartTick;
             editingNoteStartTick = hoverStartTick;
             song.addNote(editingNote, hoverStartTick);
-            beep.noteOff(beep.noteOn(editingNote.note, null, audioCtx.destination), audioCtx.currentTime + 0.1);
+            beep.noteOff(beep.noteOn(editingNote.note, null, previewGain), audioCtx.currentTime + 0.1);
         }
     }
     draw();
@@ -276,3 +287,36 @@ canvas.addEventListener("mouseup", event => {
 
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
+
+// set up midi play
+(async () => {
+
+    const notes = new Array(128);
+
+    const midi = await navigator?.requestMIDIAccess();
+    if(!midi) {
+        throw new Error("Failed to get MIDI access");
+    }
+    
+    const input = midi.inputs.get("input-0");
+    if(!input) {
+        throw new Error("MIDI input not detected");
+    }
+
+    //document.getElementById("input-name").textContent = input.name;
+    input.addEventListener("midimessage", event => {
+
+        const message = event.data;
+        if(message[0] == 0x90) {
+            if(message[2] > 0) {
+                notes[message[1]] = beep.noteOn(message[1], null, previewGain);
+            } else {
+                beep.noteOff(notes[message[1]]);
+            }
+        } else if(message[0] == 0x80) {
+            beep.noteOff(notes[message[1]]);
+        }
+        
+    });
+
+})().catch(console.error);
