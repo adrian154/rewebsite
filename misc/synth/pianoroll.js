@@ -1,7 +1,7 @@
 const ROW_HEIGHT = 24 * devicePixelRatio,
       PIANO_WIDTH = 90;
 
-const canvas = document.getElementById("sequencer"),
+const canvas = document.getElementById("pianoroll"),
       ctx = canvas.getContext("2d", {alpha: false});
 
 const resizeCanvas = () => {
@@ -24,8 +24,9 @@ let noteLength = 12,
     hoverStartTick = null,
     hoverRow = null,
     editingNote = null,
-    firstTick = null,
-    secondTick = null;
+    editingNoteStartTick = null,
+    anchorTick = null,
+    floatingTick = null;
 
 const draw = () => {
 
@@ -88,7 +89,7 @@ const draw = () => {
     // draw hover
     if(hoverStartTick) {
         ctx.strokeStyle = "#ffffff";
-        ctx.strokeRect(hoverStartTick * tickSize + horizScroll - 1, hoverRow * ROW_HEIGHT, 50, ROW_HEIGHT);
+        ctx.strokeRect(hoverStartTick * tickSize + horizScroll - 1, hoverRow * ROW_HEIGHT, noteLength * tickSize, ROW_HEIGHT);
     }
 
     // draw bar number
@@ -152,12 +153,36 @@ canvas.addEventListener("keydown", event => {
     }
 });
 
+// keep track of where the mousedown event occurred
+// we use this to ignore small accidental movements, or else clicks may be interpreted as drags
+let mouseDownX = null, mouseDownY = null;
+
 canvas.addEventListener("mousemove", event => {
 
     const snappedTick = Math.floor((event.offsetX + horizScroll) / tickSize / noteSnap) * noteSnap;
 
     if(editingNote) {
-        
+
+        if(Math.abs(event.offsetX - mouseDownX) < 2 && Math.abs(event.offsetY - mouseDownY) < 2) {
+            return;
+        }
+
+        // update note duration
+        floatingTick = snappedTick;
+        if(floatingTick >= anchorTick) {
+            editingNote.length = floatingTick - anchorTick + noteSnap;
+            if(editingNoteStartTick < anchorTick) {
+                removeNote(editingNote, editingNoteStartTick);
+                addNote(editingNote, anchorTick);
+                editingNoteStartTick = anchorTick;
+            }
+        } else {
+            removeNote(editingNote, editingNoteStartTick);
+            editingNote.length = anchorTick - floatingTick;
+            addNote(editingNote, floatingTick);
+            editingNoteStartTick = floatingTick;
+        }
+
     } else {
         hoverStartTick = snappedTick;
         hoverRow = Math.floor((event.offsetY + vertScroll) / ROW_HEIGHT);
@@ -168,14 +193,20 @@ canvas.addEventListener("mousemove", event => {
 });
 
 canvas.addEventListener("mousedown", event => {
+    mouseDownX = event.offsetX;
+    mouseDownY = event.offsetY;
     editingNote = {note: 83 - hoverRow + 24, length: noteLength, instrument: instruments[0]};
-    firstTick = 
+    anchorTick = hoverStartTick;
+    editingNoteStartTick = hoverStartTick;
     addNote(editingNote, hoverStartTick);
     draw();
 });
 
 canvas.addEventListener("mouseup", event => {
-
+    if(editingNote) {
+        noteLength = editingNote.length;
+        editingNote = null;
+    }
 });
 
 resizeCanvas();

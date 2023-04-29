@@ -23,7 +23,7 @@ const removeNote = (note, startTick) => {
         console.warn("Attempt to remove note where there is none");
         return;
     }
-    const idx = notes.find(note);
+    const idx = notes.indexOf(note);
     if(idx < 0) {
         console.warn("Attempt to remove note from position it isn't in");
         return;
