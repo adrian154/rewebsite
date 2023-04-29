@@ -182,14 +182,14 @@ canvas.addEventListener("mousemove", event => {
         if(floatingTick >= anchorTick) {
             editingNote.length = floatingTick - anchorTick + noteSnap;
             if(editingNoteStartTick < anchorTick) {
-                removeNote(editingNote, editingNoteStartTick);
-                addNote(editingNote, anchorTick);
+                song.removeNote(editingNote, editingNoteStartTick);
+                song.addNote(editingNote, anchorTick);
                 editingNoteStartTick = anchorTick;
             }
         } else {
-            removeNote(editingNote, editingNoteStartTick);
+            song.removeNote(editingNote, editingNoteStartTick);
             editingNote.length = anchorTick - floatingTick;
-            addNote(editingNote, floatingTick);
+            song.addNote(editingNote, floatingTick);
             editingNoteStartTick = floatingTick;
         }
 
@@ -198,6 +198,7 @@ canvas.addEventListener("mousemove", event => {
         hoverRow = Math.floor((event.offsetY + vertScroll) / ROW_HEIGHT);
 
         // check if we're hovering over a note
+        // FIXME: might not be able to hover on really long note
         highlightedNote = null;
         for(let t = tick - 256; t <= tick; t++) {
             const notes = song.notes.get(t);
@@ -227,7 +228,7 @@ canvas.addEventListener("contextmenu", event => event.preventDefault());
 canvas.addEventListener("mousedown", event => {
     if(event.button == 2) {
         if(highlightedNote) {
-            removeNote(highlightedNote, highlightedNoteStartTick);
+            song.removeNote(highlightedNote, highlightedNoteStartTick);
         }
     } else {
         mouseDownX = event.offsetX;
@@ -246,10 +247,10 @@ canvas.addEventListener("mousedown", event => {
             }
             
         } else {
-            editingNote = {note: noteToRow(hoverRow), length: noteLength, instrument: instruments[0]};
+            editingNote = {note: noteToRow(hoverRow), length: noteLength, instrument: beep};
             anchorTick = hoverStartTick;
             editingNoteStartTick = hoverStartTick;
-            addNote(editingNote, hoverStartTick);
+            song.addNote(editingNote, hoverStartTick);
         }
     }
     draw();

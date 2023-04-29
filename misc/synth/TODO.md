@@ -1,7 +1,7 @@
 # Interface
 
-- edit note length
-- delete note
+- ~~edit note length~~
+- ~~delete note~~
 - move note
 - play note when placing/moving
 - playback

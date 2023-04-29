@@ -1,32 +1,37 @@
-// 1 tick = 1/48 of a beat. `notes` maps ticks to a list of notes that *start* on that tick.
-let song = {
-    notes: new Map(),
-    timeSig: {upper: 5, lower: 4}
+const audioCtx = new AudioContext();
+
+const makeInstrument = properties => {
+
+    const instrument = properties;
+
+    instrument.noteOn = (note, time, dest) => {
+        
+        time = time || audioCtx.currentTime;
+        const envelope = audioCtx.createGain();
+        envelope.gain.setValueAtTime(0, time);
+        envelope.gain.linearRampToValueAtTime(1, time + properties.attack);
+        envelope.connect(dest);
+
+        const osc = new OscillatorNode(audioCtx, {
+            type: properties.type,
+            frequency: 440 * Math.pow(2, (note - 69) / 12)
+        });
+        osc.connect(envelope);
+        osc.start();
+    
+        return envelope;
+
+    };
+
+    instrument.noteOff = (envelope, time) => {
+        time = time || audioCtx.currentTime;
+        envelope.gain.cancelAndHoldAtTime(audioCtx.currentTime);
+        envelope.gain.setValueAtTime(envelope.gain.value, time);
+        envelope.gain.linearRampToValueAtTime(0, audioCtx.currentTime + properties.delay);
+    };
+
+    return instrument;
+
 };
 
-let instruments = [
-    {name: "beep", type: "square", attack: 0.015, delay: 0.05, color: "#4e61d8"}
-];
-
-const addNote = (note, startTick) => {
-    let notes = song.notes.get(startTick);
-    if(!notes) {
-        notes = [];
-        song.notes.set(startTick, notes);
-    }
-    notes.push(note);
-};
-
-const removeNote = (note, startTick) => {
-    const notes = song.notes.get(startTick);
-    if(!notes) {
-        console.warn("Attempt to remove note where there is none");
-        return;
-    }
-    const idx = notes.indexOf(note);
-    if(idx < 0) {
-        console.warn("Attempt to remove note from position it isn't in");
-        return;
-    }
-    notes.splice(idx, 1);
-};
+const beep = makeInstrument({type: "square", attack: 0.015, delay: 0.05, color: "#4e61d8"});
