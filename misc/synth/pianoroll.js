@@ -16,7 +16,8 @@ const resizeCanvas = () => {
 // tickScale = pixels/tick
 let horizScroll = 0,
     vertScroll = 600,
-    tickSize = 4; 
+    tickSize = 4,
+    zoomLevel = 0; 
 
 let noteLength = 12,
     noteSnap = 3,
@@ -34,6 +35,11 @@ let selectedInstrument = beep;
 // convert MIDI note to row number
 const noteToRow = note => 83 - note + 24;
 
+// convert MIDI note to note name, starting from A0
+const noteToName = note => {
+    return ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"][(note - 21) % 12] + Math.floor((note - 12) / 12);
+};
+
 const previewGain = audioCtx.createGain();
 previewGain.gain.value = 0.1;
 previewGain.connect(audioCtx.destination);
@@ -47,15 +53,7 @@ const draw = () => {
 
     ctx.translate(0, -vertScroll);
 
-    // draw horizontal lines
-    /*
-    ctx.strokeStyle = "rgba(0, 0, 0, 25%)";
-    for(let key = 0; key < 84; key++) {
-        ctx.beginPath();
-        ctx.moveTo(0, key * ROW_HEIGHT);
-        ctx.lineTo(canvas.width, key * ROW_HEIGHT);
-        ctx.stroke();
-    }*/
+    // draw black key lines
     ctx.fillStyle = "rgba(0, 0, 0, 10%)";
     for(let key = 0; key < 84; key++) {
         if([false, true, false, true, false, false, true, false, true, false, true, false][key % 12]) {
@@ -90,13 +88,27 @@ const draw = () => {
 
     // draw notes
     // FIXME: notes longer than 256 ticks have a tendency to disappear off the left
+    ctx.textAlign = "left";
     for(let tick = startTick - 256; tick < endTick; tick++) {
         const notes = song.notes.get(tick);
         if(notes) {
             for(const note of notes) {
                 if(tick + note.length > startTick) {
+                    
+                    const x = tick * tickSize - horizScroll + 1,
+                          y = noteToRow(note.note) * ROW_HEIGHT + 1;
+                    
+                    // draw note body
                     ctx.fillStyle = note.instrument.color;
-                    ctx.fillRect(tick * tickSize - horizScroll + 1, noteToRow(note.note) * ROW_HEIGHT + 1, note.length * tickSize - 2, ROW_HEIGHT - 2);
+                    ctx.fillRect(x, y, note.length * tickSize - 2, ROW_HEIGHT - 2);
+                    
+                    // write note name if there's enough space
+                    const name = noteToName(note.note);
+                    if(ctx.measureText(name).width + 6 < note.length * tickSize) {
+                        ctx.fillStyle = "rgba(0, 0, 0, 40%)";
+                        ctx.fillText(name, x + 3, y + 16);
+                    }
+
                 }
             }
         }
@@ -128,15 +140,13 @@ const draw = () => {
     ctx.font = "14px sans-serif";
     ctx.textAlign = "right";
     ctx.strokeStyle = "#000000";
-    for(let key = 0; key < 84; key++) {
+    for(let row = 0; row < 84; row++) {
 
-        const octave = Math.floor(key / 12) + 1;
-        const NOTE = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][key % 12];
-        
-        const y = (83 - key) * ROW_HEIGHT;
+        const note = noteToName(noteToRow(row));
+        const y = row * ROW_HEIGHT;
 
         // draw key
-        if(NOTE.includes("#"))
+        if(note.includes("#"))
             ctx.fillStyle = "#000000";
         else
             ctx.fillStyle = "#ffffff";
@@ -149,11 +159,11 @@ const draw = () => {
         ctx.stroke();
 
         // draw note name
-        if(NOTE.includes("#"))
+        if(note.includes("#"))
             ctx.fillStyle = "#ffffff";
         else
             ctx.fillStyle = "#000000";
-        ctx.fillText(NOTE + octave, PIANO_WIDTH - 4, y + ROW_HEIGHT * 0.65);
+        ctx.fillText(note, PIANO_WIDTH - 4, y + ROW_HEIGHT * 0.65);
 
     }
 
@@ -174,8 +184,20 @@ canvas.addEventListener("keydown", event => {
         draw();
     } else if(event.key === "Control") {
         ctrlHeld = true;
+    } else if(event.key === "PageUp" || event.key === "PageDown") {
+
+        // we want the zoom to be centered on the middle of the screen
+        // in order to achieve this, the horizontal scroll must be adjusted
+        // TODO: center on cursor
+        const originalTickSize = tickSize,
+              originalScroll = horizScroll;
+        zoomLevel += event.key === "PageUp" ? 1 : -1;
+        tickSize = 4 * Math.pow(1.5, zoomLevel);
+        horizScroll = (canvas.width / 2 + originalScroll) * tickSize / originalTickSize - canvas.width / 2;
+        draw();
+
     }
-});
+}); 
 
 canvas.addEventListener("keyup", event => {
     if(event.key === "Control") {
@@ -227,7 +249,7 @@ canvas.addEventListener("mousemove", event => {
             const notes = song.notes.get(t);
             if(notes) {
                 for(const note of notes) {
-                    if(note.note == noteToRow(hoverRow) && t + note.length > tick) {
+                    if(noteToRow(note.note) == hoverRow && t + note.length > tick) {
                         highlightedNote = note;
                         highlightedNoteStartTick = t;
                         break;
@@ -246,11 +268,18 @@ canvas.addEventListener("mousemove", event => {
 
 });
 
+let keyboardNote = null;
+
 canvas.addEventListener("mousedown", event => {
+
+    // handle right click to delete notes
     if(event.button == 2) {
         if(highlightedNote) {
             song.removeNote(highlightedNote, highlightedNoteStartTick);
         }
+    } else if(event.offsetX < PIANO_WIDTH) {
+        const note = Math.floor((event.offsetY + vertScroll) / ROW_HEIGHT);
+        keyboardNote = beep.noteOn(noteToRow(note), null, previewGain);
     } else {
         mouseDownX = event.offsetX;
         mouseDownY = event.offsetY;
@@ -282,6 +311,10 @@ canvas.addEventListener("mouseup", event => {
     if(editingNote) {
         noteLength = editingNote.length;
         editingNote = null;
+    }
+    if(keyboardNote) {
+        beep.noteOff(keyboardNote);
+        keyboardNote = null;
     }
 });
 

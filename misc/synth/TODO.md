@@ -8,15 +8,18 @@
 - tiny preview
 - pick note length / snap mode
 - smooth scrolling
+- scroll bars
+- paint tool
+- selection
 
 # Synthesizer
 
 - waveforms
 - envelope
 - filters
-- effects?
+- effects
 
 # Application
 
 - import/export
-- pick MIDI output
+- pick MIDI input

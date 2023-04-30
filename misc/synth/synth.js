@@ -17,7 +17,7 @@ const makeInstrument = properties => {
             frequency: 440 * Math.pow(2, (note - 69) / 12)
         });
         osc.connect(envelope);
-        osc.start();
+        osc.start(time);
     
         return envelope;
 
@@ -28,7 +28,6 @@ const makeInstrument = properties => {
         envelope.gain.cancelAndHoldAtTime(time);
         envelope.gain.setValueAtTime(envelope.gain.value, time);
         envelope.gain.linearRampToValueAtTime(0, time + properties.release);
-        setTimeout(() => envelope.disconnect(), (time - audioCtx.currentTime + properties.release) * 1000);
     };
 
     return instrument;
