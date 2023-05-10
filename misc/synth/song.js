@@ -41,7 +41,6 @@ const createSong = () => {
 
         // for smooth playback, schedule notes to be played ahead-of-time
         const playNotes = startTick => {
-            console.log("play");
             for(let tick = startTick; tick < startTick + 48; tick++) {
                 const notes = song.notes.get(tick);
                 if(notes) {
