@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Audio Waterfall</title>
+    </head>
+    <body>
+        <button id="start">Start</button><br><br>
+        <canvas id="canvas" width="800"></canvas>
+        <script>
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d", {willReadFrequently: true});
+
+            document.getElementById("start").addEventListener("click", async () => {
+
+                // create analyzer
+                const audioCtx = new AudioContext();
+                const analyzer = audioCtx.createAnalyser();
+                analyzer.fftSize = 1024;
+                canvas.height = analyzer.frequencyBinCount;
+
+                // get microphone input and attach to analyzer
+                const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+                const microphone = audioCtx.createMediaStreamSource(stream);
+                microphone.connect(analyzer);
+
+                const data = new Uint8Array(analyzer.frequencyBinCount);
+                const draw = () => {
+
+                    // read data
+                    analyzer.getByteFrequencyData(data);
+
+                    // shift old rows
+                    const imageData = ctx.getImageData(1, 0, canvas.width, canvas.height);
+                    ctx.putImageData(imageData, 0, 0);
+
+                    for(let i = 0; i < data.length; i++) {
+                        ctx.fillStyle = `rgb(${data[i]},${0},${0})`
+                        ctx.fillRect(canvas.width - 1, canvas.height - i, 1, 1);
+                    }
+
+                    requestAnimationFrame(draw);
+                };
+                draw();
+
+            });
+        </script>  
+    </body>
+</html>
