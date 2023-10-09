@@ -21,6 +21,10 @@
                 font-size: 1em;
                 user-select: none;
             }
+
+            #calibration-message {
+                color: red;
+            }
         </style>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Screen Ruler</title>
@@ -29,6 +33,7 @@
         <h1>Screen Ruler</h1>
 
         <canvas id="ruler"></canvas>
+        <p id="calibration-message">You have not calibrated the ruler yet. Follow the directions below to do so!</p>
 
         <h2>Calibrate</h2>
         <p>
@@ -50,7 +55,52 @@
         <canvas id="calibrator" height="50px"></canvas><br><br>
         <button id="save">Save Calibration</button>
         <script>
+            const calibrationMessage = document.getElementById("calibration-message");
+            const ruler = document.getElementById("ruler"),
+                  rulerCtx = ruler.getContext("2d");
+
+            const drawRuler = () => {
+
+                if(!pixelPerMM) {
+                    return;
+                }
+
+                rulerCtx.font = "16px sans-serif";
+                rulerCtx.fillStyle = "#000000";
+                rulerCtx.fillRect(0, 0, ruler.width, ruler.height);
+                rulerCtx.fillStyle = "#ffffff";
+
+                let eighth = 0;
+                for(let x = 0; x < ruler.width; x += 25.4 / 8 * pixelPerMM) {
+                    if(eighth % 8 == 0) {
+                        rulerCtx.fillRect(x, 0, 1, 30);
+                        rulerCtx.fillText(eighth / 8, x + 3, 28);
+                    } else if(eighth % 2 == 0) {
+                        rulerCtx.fillRect(x, 0, 1, 23);
+                    } else {
+                        rulerCtx.fillRect(x, 0, 1, 15);
+                    }
+                    eighth++;
+                }
+
+                let mm = 0;
+                for(let x = 0; x < ruler.width; x += pixelPerMM) {
+                    if(mm % 10 == 0) {
+                        rulerCtx.fillRect(x, ruler.height - 35, 1, 35);
+                        rulerCtx.fillText(mm / 10, x + 3, ruler.height - 20);
+                    } else {
+                        rulerCtx.fillRect(x, ruler.height - 15, 1, 15);
+                    }
+                    mm++;
+                }
+
+            };
+
             let pixelPerMM = Number(localStorage.getItem("pixelPerMM"));
+            if(pixelPerMM) {
+                drawRuler();
+                calibrationMessage.style.display = "none";
+            } 
 
             // internally we use mm
             const objects = {
@@ -65,10 +115,13 @@
                   calibratorCtx = calibrator.getContext("2d");
 
             const resize = () => {
-                const rect = calibrator.getBoundingClientRect();
-                calibrator.width = Math.floor(rect.width * window.devicePixelRatio);
-                calibrator.height = Math.floor(30 * window.devicePixelRatio);
+                document.querySelectorAll("canvas").forEach(canvas => {
+                    const rect = canvas.getBoundingClientRect();
+                    canvas.width = Math.floor(rect.width * devicePixelRatio);
+                    canvas.height = Math.floor(rect.height * devicePixelRatio);
+                });
                 draw();
+                drawRuler();
             };
 
             let width = 400;
@@ -126,6 +179,8 @@
                 if(!pixelPerMM || confirm("This will overwrite your existing calibration. Are you sure you want to continue?")) {
                     pixelPerMM = width / target;
                     localStorage.setItem("pixelPerMM", pixelPerMM); 
+                    drawRuler();
+                    document.getElementById("calibration-message").style.display = "none";
                     alert("Saved!");   
                 }
             });
