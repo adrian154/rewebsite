@@ -96,7 +96,7 @@
         <script>
             const obfuscatedCheckbox = document.getElementById("obfuscated");
             const search = (list, query) => {
-                const lowercase = query.toLowerCase();
+                query = query.toLowerCase();
                 if(obfuscatedCheckbox.checked)
                     return list.filter(elem => elem.obfuscated.toLowerCase().includes(query));
                 return list.filter(elem => elem.name.toLowerCase().includes(query));
