@@ -50,9 +50,6 @@
         <button id="save">Save Calibration</button>
         <script>
             let pixelPerMM = Number(localStorage.getItem("pixelPerMM"));
-            if(!pixelPerMM) {
-                alert("Not calibrated!");
-            }
 
             // internally we use mm
             const objects = {
@@ -105,7 +102,9 @@
             for(const id in pressed) {
                 const button = document.getElementById(id);
                 button.addEventListener("mousedown", () => pressed[id] = true);
+                button.addEventListener("touchstart", () => pressed[id] = true);
                 button.addEventListener("mouseup", () => pressed[id] = false);
+                button.addEventListener("touchend", () => pressed[id] = false);
             }
 
             const loop = () => {
