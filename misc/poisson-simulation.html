@@ -25,8 +25,8 @@
             const ctx = canvas.getContext("2d");
             
             const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width;
-            canvas.height = rect.width;
+            canvas.width = rect.width * devicePixelRatio;
+            canvas.height = rect.width * devicePixelRatio;
 
             const NUM_POINTS = 300;
 

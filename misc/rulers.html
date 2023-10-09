@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            #ruler {
+                width: 100%;
+                height: 100px;
+            }
+
+            #calibrator {
+                width: 100%;
+                height: 30px;
+            }
+
+            #shrinkFast, 
+            #shrinkSlow,
+            #growSlow,
+            #growFast {
+                width: 3em;
+                height: 3em;
+                font-size: 1em;
+            }
+        </style>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Screen Ruler</title>
+    </head>
+    <body>
+        <h1>Screen Ruler</h1>
+
+        <canvas id="ruler"></canvas>
+
+        <h2>Calibrate</h2>
+        <p>
+            To start, select your object:
+            <select id="object-select">
+                <option value="paperLetter">sheet of US Letter paper</option>
+                <option value="paperA4">sheet of A4 paper</option>
+                <option value="cardID1">ID-1 card (most credit and ID cards)</option>
+                <option value="billUS">US dollar bill</option>
+            </select>
+        </p>
+        <p>Unsure what kind of paper you have? A4 has an aspect ratio of ~1:1.41, whereas US paper has an aspect ratio of ~1:1.294.</p>
+        <p>Pick which side to calibrate against:   
+            <input type="radio" id="long-side" name="side" checked> <label for="long-side">long side</label>
+            <input type="radio" id="short-side" name="side"> <label for="short-side">short side</label>
+        </p>
+        <p>Finally, adjust the length of the bar until it matches the length of the object and click "Save Calibration".</p>
+        <button id="shrinkFast">&lt;&lt;</button> <button id="shrinkSlow">&lt;</button> <button id="growSlow">&gt;</button> <button id="growFast">&gt;&gt;</button><br><br>
+        <canvas id="calibrator" height="50px"></canvas><br><br>
+        <button id="save">Save Calibration</button>
+        <script>
+            let pixelPerMM = Number(localStorage.getItem("pixelPerMM"));
+            if(!pixelPerMM) {
+                alert("Not calibrated!");
+            }
+
+            // internally we use mm
+            const objects = {
+                paperLetter: {short: 215.9, long: 279.4},
+                paperA4: {short: 210, long: 297},
+                cardID1: {short: 53.98, long: 85.60},
+                billUS: {short: 66.3, long: 156}
+                // TODO: static calibration targets
+            };
+
+            const calibrator = document.getElementById("calibrator"),
+                  calibratorCtx = calibrator.getContext("2d");
+
+            const resize = () => {
+                const rect = calibrator.getBoundingClientRect();
+                calibrator.width = Math.floor(rect.width * window.devicePixelRatio);
+                calibrator.height = Math.floor(30 * window.devicePixelRatio);
+                draw();
+            };
+
+            let width = 400;
+            let target = 0;
+
+            const draw = () => {
+                calibratorCtx.clearRect(0, 0, calibrator.width, calibrator.height);
+                calibratorCtx.fillStyle = "#0000ff";
+                calibratorCtx.fillRect(0, 0, width, calibrator.height);
+                calibratorCtx.fillStyle = "#ffffff";
+                calibratorCtx.font = `${Math.floor(18 * devicePixelRatio)}px sans-serif`;
+                calibratorCtx.fillText("Target width: " + target + " mm", 5, calibrator.height - 10);
+            };
+
+            const objectSelect = document.getElementById("object-select"),
+                  longSide = document.getElementById("long-side"),
+                  shortSide = document.getElementById("short-side");
+            const updateTarget = () => {
+                const object = objects[objectSelect.value];
+                if(longSide.checked)
+                    target = object.long;
+                else
+                    target = object.short;
+                draw();
+            };
+            updateTarget();
+            objectSelect.addEventListener("input", updateTarget);
+            longSide.addEventListener("input", updateTarget);
+            shortSide.addEventListener("input", updateTarget);
+
+            const pressed = {shrinkFast: false, shrinkSlow: false, growSlow: false, growFast: false};
+            for(const id in pressed) {
+                const button = document.getElementById(id);
+                button.addEventListener("mousedown", () => pressed[id] = true);
+                button.addEventListener("mouseup", () => pressed[id] = false);
+            }
+
+            const loop = () => {
+                if(pressed.shrinkFast) width -= 2;
+                if(pressed.shrinkSlow) width -= 0.5;
+                if(pressed.growSlow) width += 0.5;
+                if(pressed.growFast) width += 2;
+                draw();
+                requestAnimationFrame(loop);
+            };
+            loop();
+
+            resize();
+            window.addEventListener("resize", resize);
+            draw();
+
+            document.getElementById("save").addEventListener("click", () => {
+                if(!pixelPerMM || confirm("This will overwrite your existing calibration. Are you sure you want to continue?")) {
+                    pixelPerMM = width / target;
+                    localStorage.setItem("pixelPerMM", pixelPerMM); 
+                    alert("Saved!");   
+                }
+            });
+        </script>
+    </body>
+</html>

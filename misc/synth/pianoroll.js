@@ -212,13 +212,16 @@ let mouseDownX = null, mouseDownY = null;
 canvas.addEventListener("contextmenu", event => event.preventDefault());
 
 canvas.addEventListener("mousemove", event => {
-    
-    const tick = Math.floor((event.offsetX + horizScroll) / tickSize);
+
+    const x = event.offsetX * devicePixelRatio,
+          y = event.offsetY * devicePixelRatio;
+
+    const tick = Math.floor((x + horizScroll) / tickSize);
     const snappedTick = Math.floor(tick / noteSnap) * noteSnap;
 
     if(editingNote) {
 
-        if(Math.abs(event.offsetX - mouseDownX) < 2 && Math.abs(event.offsetY - mouseDownY) < 2) {
+        if(Math.abs(x - mouseDownX) < 2 && Math.abs(y - mouseDownY) < 2) {
             return;
         }
 
@@ -240,7 +243,7 @@ canvas.addEventListener("mousemove", event => {
 
     } else {
 
-        hoverRow = Math.floor((event.offsetY + vertScroll) / ROW_HEIGHT);
+        hoverRow = Math.floor((y + vertScroll) / ROW_HEIGHT);
 
         // check if we're hovering over a note
         // FIXME: might not be able to hover on really long note
@@ -272,17 +275,21 @@ let keyboardNote = null;
 
 canvas.addEventListener("mousedown", event => {
 
+    const x = event.offsetX * devicePixelRatio,
+          y = event.offsetY * devicePixelRatio;
+
+
     // handle right click to delete notes
     if(event.button == 2) {
         if(highlightedNote) {
             song.removeNote(highlightedNote, highlightedNoteStartTick);
         }
-    } else if(event.offsetX < PIANO_WIDTH) {
-        const note = Math.floor((event.offsetY + vertScroll) / ROW_HEIGHT);
+    } else if(x < PIANO_WIDTH) {
+        const note = Math.floor((y + vertScroll) / ROW_HEIGHT);
         keyboardNote = beep.noteOn(noteToRow(note), null, previewGain);
     } else {
-        mouseDownX = event.offsetX;
-        mouseDownY = event.offsetY;
+        mouseDownX = x;
+        mouseDownY = y;
         if(highlightedNote) {
 
             editingNote = highlightedNote;
@@ -290,7 +297,7 @@ canvas.addEventListener("mousedown", event => {
 
             // if the click was on the first half of the note, use the end of the note as the anchor
             // otherwise, use the start of the note as the anchor
-            if((event.offsetX + horizScroll - highlightedNoteStartTick * tickSize) < highlightedNote.length * tickSize / 2) {
+            if((x + horizScroll - highlightedNoteStartTick * tickSize) < highlightedNote.length * tickSize / 2) {
                 anchorTick = highlightedNoteStartTick + highlightedNote.length;
             } else {
                 anchorTick = highlightedNoteStartTick;
