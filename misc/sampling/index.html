@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Sampling and Aliasing</title>
+        <style>
+            body {
+                max-width: 40em;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Sampling and Aliasing</h1>
+        <p>The <a href="https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem">Nyquist-Shannon sampling theorem</a> tells us that in order to reconstruct a signal with frequency content up to <i>F</i> Hz, we need to sample at a rate of at least 2<i>F</i> Hz. Sampling at a lower rate may result in frequencies above the Nyquist frequency being turned into nonexistent lower-frequency components.</p>
+        <img src="aliasing.png" alt="illustration of aliasing due to insufficient sample rate"><br>
+        <i>Due to insufficient sample rate, the red signal is indistinguishable from the black signal.</i>
+        <p>The effects of aliasing are very audible. Here's a segment of Taylor Swift's <i>Shake It Off</i>, sampled at 48 KHz.</p>
+        <audio controls src="original.mp3"></audio>
+        <p>Now, we downsample to a rate of 4 KHz by keeping every 12th sample and discarding all the others, producing this clip: (warning, it doesn't sound very good!)</p>
+        <audio controls src="4khz-no-bandlimit.mp3"></audio>
+        <p>To prevent aliasing, we need to remove all frequency content above the Nyquist frequency before downsampling. This can be accomplished by using a low-pass filter. This is the result if we apply a FIR low-pass filter with a cutoff of 2 KHz to our audio before downsampling:</p>
+        <audio controls src="4khz-bandlimited.mp3"></audio>
+        <p>The audible aliasing artifacts are now gone.</p>
+    </body>
+</html>

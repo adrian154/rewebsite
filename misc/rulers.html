@@ -32,6 +32,7 @@
     <body>
         <h1>Screen Ruler</h1>
 
+        <p>Sometimes, you need to measure something but you don't have a ruler. But if you do have a common object available with well-controlled width (e.g. a sheet of printer paper), you can use this tool to calibrate a screen-based ruler that you can then use to measure anything you want.</p>
         <canvas id="ruler"></canvas>
         <p id="calibration-message">You have not calibrated the ruler yet. Follow the directions below to do so!</p>
 
@@ -132,8 +133,6 @@
                 calibratorCtx.fillStyle = "#0000ff";
                 calibratorCtx.fillRect(0, 0, width, calibrator.height);
                 calibratorCtx.fillStyle = "#ffffff";
-                calibratorCtx.font = `${Math.floor(18 * devicePixelRatio)}px sans-serif`;
-                calibratorCtx.fillText("Target width: " + target + " mm", 5, calibrator.height - 10);
             };
 
             const objectSelect = document.getElementById("object-select"),
