@@ -14,7 +14,7 @@
         <h1>Sampling and Aliasing</h1>
         <p>The <a href="https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem">Nyquist-Shannon sampling theorem</a> tells us that in order to reconstruct a signal with frequency content up to <i>F</i> Hz, we need to sample at a rate of at least 2<i>F</i> Hz. Sampling at a lower rate may result in frequencies above the Nyquist frequency being turned into nonexistent lower-frequency components.</p>
         <img src="aliasing.png" alt="illustration of aliasing due to insufficient sample rate"><br>
-        <i>Due to insufficient sample rate, the red signal is indistinguishable from the black signal.</i>
+        <i>Due to insufficient sample rate, the red signal is erroneously reconstructed as the black signal.</i>
         <p>The effects of aliasing are very audible. Here's a segment of Taylor Swift's <i>Shake It Off</i>, sampled at 48 KHz.</p>
         <audio controls src="original.mp3"></audio>
         <p>Now, we downsample to a rate of 4 KHz by keeping every 12th sample and discarding all the others, producing this clip: (warning, it doesn't sound very good!)</p>
