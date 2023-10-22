@@ -1,0 +1,72 @@
+==================================================================
+https://keybase.io/bithole
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://bithole.dev
+  * I am bithole (https://keybase.io/bithole) on keybase.
+  * I have a public key with fingerprint A30C 4FEE 8843 24A2 2DC7  8ED1 F6B8 7EE1 30D2 D6C5
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "0101f302cc90f8bfe102e574017dbb8a4e4af45d467341f693a8ab8fd2cca916f82d0a",
+      "fingerprint": "a30c4fee884324a22dc78ed1f6b87ee130d2d6c5",
+      "host": "keybase.io",
+      "key_id": "f6b87ee130d2d6c5",
+      "kid": "0101f302cc90f8bfe102e574017dbb8a4e4af45d467341f693a8ab8fd2cca916f82d0a",
+      "uid": "799b864d7e5820fca39d02130666cf19",
+      "username": "bithole"
+    },
+    "service": {
+      "hostname": "bithole.dev",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 1
+  },
+  "ctime": 1697948242,
+  "expire_in": 157680000,
+  "prev": "0cf3eb42bb3bb067562fdae858ed3e3808fe10f50845be1de0286580cbbe9909",
+  "seqno": 3,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+
+owGtU21QVFUYXlycdJVRE2MqYelC1hji/d5zN4PiY0B+RFOQiNB2P85lr8Dusnch
+NohJCgQbFgyEwoEccIB+WFAjQyhggyLWOHzolEAMEYzWEBVMgOKSncvkj2b62flz
+5rzneZ73ed/znio/vc7gs9xVNI2PfnfF59tfBB2k670FmGCX3Ji5AMuE6xvMkqDq
+smQqEmbGcAInZAonRZHDZSDIkMBJyJhonDBJggB4GtK8TDMSzZoompBZjuIBLwBZ
+QgyeI1gZkBLOY2GYrNgyoNPhVGwuJMtTuEjLEAJAUyTNk6QkmgCUkIAATBASFC6R
+EisyiGi1qxoDmRN4FYYrdhRDB8u6vf/A/8++c9flTBwnAJaWTJABJC6LPMVJOInS
+siwrygSnAVXotPHZEKEFxWW1Z0HsnTAMBfMUEWp91Qr5NyBcgnmI6XDaXXbRnoUu
+rC6XQzVrRJfboSHfgoLlHw2LoNgk1EXEyINOVbHbMDOBkKJL0UQJljNxNCBpMgyD
++Q7FCS2KhmBMLMDR0vKgdKg1okxBgSaF1wVKEHDWxLCkLPEQMOgFKEgBHGjtkhkc
+0IwACQniJGAZgIuCADkO14pVYY7Njpkp5JPPQJqqkmHjXblOVLOhfAPlq/Mx6AIf
+e8q3eWvib2XRoU37rnpGHk7exg3a2OkMm7c/jPzQt+2BeuiNv4wN08TMweoXlay9
+ZuA3tH/w46NrrR0D3kJfti+tGR+Ne6bobNMrNTTmf82zEnS7t4Iaw+YTAi/v2LM6
+MhHT2xPROqAnV1qePhS/aSxytoanRaw2y/98b2rcSnLXYKa+wqIPuZ2/lbgQemeH
+WrnfWNLUNRC2RIzebAdrQUPj8OiqsX1zyvacu2mVvxfzS+h/lP2amn7GCvZcenvn
+aLG7e2Rjcnml37XJwbkVuJZ5vOSjwu6W5s4t5oiokkcWjrVIwde/WYqtGm5wc562
+w3nF4dFRd4Irzr0W3FX36sEP0vSlSTeH11Iad71vrDcGx0neJ851NHZPXOzo7zl9
+/dZXE0E987GldXVHZha5seHYsBl7YWnZyfEj2Ury94GD8yd0O5/0v7CcvrC45OE/
+O5Ay/ubpOb0ak3gKi5w06FZn+zcEpgbc5Y/ft94Shp+/F9JwdZrPKfsilH4Wv2+N
+D9pd37+8qfvdVSbgsl/Cp3zH3ijvmndLf16Ha2DXkOfzsaDaBvuj+9w9NyqnFqBp
+kk3puxfwR8XUgbPln0QY69oitw3MsZc8pOHHDxd/eo6J3l17OMlbyqxU/6lUP7g4
+OduY0EdcKcpIb+38suKM4+UXuoT8eP000aIea+RuZNcUnE9MqnKEuMNPtlvGO9ts
+1S/FjD7+Hvi6bMqV+7Pac6o19W8=
+=D0sS
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/bithole
+
+==================================================================
