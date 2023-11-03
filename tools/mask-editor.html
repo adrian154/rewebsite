@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Bitmask Editor">
+        <meta property="og:description" content="Tool for editing bitmasks">
+        <title>Bitmask Editor</title>
+        <link rel="stylesheet" href="common.css">
+        <style>
+            body {
+                max-width: 70em;
+            }
+
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                table-layout: fixed;
+            }
+
+            td {
+                border: 1px solid rgba(0, 0, 0, 50%);
+                text-align: center;
+            }
+
+            label {
+                display: block;
+                padding: 0.5em;
+            }
+
+            .light-grey { background-color: rgba(0, 0, 0, 14%); }
+            .dark-grey { background-color: rgba(0, 0, 0, 30%); }
+        </style>
+    </head>
+    <body>
+        <h1>Bitmask Editor</h1>
+        <p><a href="index.html">&#11172; More Tools</a></p>
+        <input id="result" readonly><br><br>
+        <table>
+            <tr id="labels">
+
+            </tr>
+            <tr id="bits">
+
+            </tr>
+        </table>
+        <script>
+            const labelsRow = document.getElementById("labels"),
+                  bitsRow = document.getElementById("bits");
+
+            const bits = new Array(32);
+
+            for(let i = 31; i >= 0; i--) {
+
+                const bitCell = document.createElement("td");
+                const bitCellLabel = document.createElement("label");
+                bitCellLabel.htmlFor = i;
+                const bit = document.createElement("input");
+                bit.type = "checkbox";
+                bit.id = i;
+                bitCellLabel.append(bit);
+                bitCell.append(bitCellLabel);
+                bitsRow.append(bitCell);
+
+                const labelCell = document.createElement("td");
+                const label = document.createElement("label");
+                label.textContent = i;
+                label.htmlFor = i;
+                labelCell.append(label);
+                labelsRow.append(labelCell);
+
+                if(Math.floor(i / 4) % 2 == 0)
+                    labelCell.classList.add("light-grey");
+                else
+                    labelCell.classList.add("dark-grey");
+
+                bits[i] = bit;
+                bit.addEventListener("input", () => {
+                    let mask = 0;
+                    for(let i = 0; i < 32; i++) {
+                        mask |= Number(bits[i].checked) << i;
+                    }
+                    document.getElementById("result").value = '0x' + (mask >>> 0).toString(16);
+                });
+
+            }
+        </script>
+    </body>
+</html>
