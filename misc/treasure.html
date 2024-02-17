@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            html, body {
+                height: 100%;
+            }
+
+            body {
+                background-color: #000000;
+                margin: 0;
+                display: flex;
+                color: #ffffff;
+            }
+
+            #center {
+                margin: auto;
+            }
+
+            #announcer {
+                font-size: 2em;
+                margin: 0;
+                display: none;
+            }
+
+            #counter {
+                text-align: center;
+            }
+
+            button {
+                display: block;
+                margin: auto;
+            }
+
+            .Divine {
+                background: linear-gradient(to right, red, orange , yellow, green, cyan, blue, violet);
+                background-clip: text;
+                color: transparent
+            }
+            .Legendary { color: #ff0000; }
+            .Epic { color: #ffff00; }
+            .Rare { color: #8000ff; }
+            .Uncommon { color: #0091ff; }
+            .Common { color: #ffffff; }
+        </style>
+    </head>
+    <body>
+        <div id="center">
+            <p id="announcer">You got: <span id="result"></span></p><br>
+            <p id="counter">Treasures opened: <span id="num-opened">0</span></p>
+            <button id="open">Open Treasure</button>
+        </div>
+        <script>
+            const tiers = [
+                {name: "Divine", chance: 1},
+                {name: "Legendary", chance: 5},
+                {name: "Epic", chance: 10},
+                {name: "Rare", chance: 30},
+                {name: "Uncommon", chance: 200},
+                {name: "Common", chance: 1000}
+            ];  
+
+            const result = document.getElementById("result");
+            const button = document.getElementById("open");
+            const counter = document.getElementById("num-opened");
+            const announcer = document.getElementById("announcer");
+            let num = 0;
+
+            const pick = () => {
+
+                announcer.style.display = "initial";
+                
+                // do draw
+                const draw = Math.random() * 1000;
+                const tier = tiers.find(tier => tier.chance > draw);
+                num++;
+                
+                // animate
+                result.classList.remove(result.classList.item(0))
+                result.textContent = "...";
+                button.disabled = true;
+                
+                setTimeout(() => {
+                    result.textContent = tier.name;
+                    result.classList.add(tier.name);
+                    button.disabled = false;
+                    counter.textContent = num;
+                }, 200);
+
+            };
+
+            button.addEventListener("click", pick);
+        </script>
+    </body>
+</html>
