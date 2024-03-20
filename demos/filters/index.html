@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta property="og:title" content="FIR Filters Demo">
+        <title>FIR Filters Demo</title>
+        <style>
+            body {
+                max-width: 40em;
+                margin: auto;
+            }
+
+            select {
+                width: 15em;
+            }
+
+            #hint {
+                color: green;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>FIR Filters Demo</h1>
+        <fieldset>
+            <legend>Input Signal</legend>
+            <label for="input-type">Type: </label>
+            <select id="input-type">
+                <option value="noise">Noise</option>
+                <option value="sine">Sine</option>
+                <option value="square">Square</option>
+                <option value="sawtooth">Sawtooth</option>
+                <option value="triangle">Triangle</option>
+                <option value="caramelldansen">caramelldansen.mp3</option>
+                <option value="custom">Custom File</option>
+            </select> <button id="play">&#x1f50a; Play</button>
+        </fieldset>
+        <fieldset>
+            <legend>Filter Parameters</legend>
+            <label for="filter-type">Type: </label>
+            <select id="filter-type">
+                <option value="lowpass">Low-pass</option>
+                <option value="highpass">High-pass</option>
+                <option value="bandpass">Band-pass</option>
+                <option value="bandstop">Band-stop</option>
+                <option value="moving-average">Moving Average</option>
+                <option value="custom-frequency">Custom Frequency Response</option>
+                <option value="custom-impulse">Custom Impulse Response</option>
+            </select><br>
+            <span id="hint"></span>
+        </fieldset>
+        <fieldset>
+            <legend>Computed properties</legend>
+            <p><b>Impulse Response</b></p>
+            <canvas id="impulse-response"></canvas>
+            <p><b>Frequency Response</b></p>
+            <canvas id="frequency-response"></canvas>
+        </fieldset>
+        <fieldset>
+            <legend>Measurements</legend>
+            <p><b>Spectrum</b></p>
+            <canvas id="spectrum"></canvas>
+            <p><b>Waveform</b></p>
+            <canvas id="waveform"></canvas>
+        </fieldset>
+        <script src="filters.js"></script>
+    </body>
+</html>
