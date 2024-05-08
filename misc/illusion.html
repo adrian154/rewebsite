@@ -37,17 +37,17 @@
             canvas.width = rect.width;
             canvas.height = rect.width / 3;
 
-            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-            gradient.addColorStop(0, "#000000");
-            gradient.addColorStop(1, "#ffffff");
-
             const BOX_SIZE = canvas.height / 3;
 
             let t = 0;
             const draw = () => {
                 
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                // draw background
+                for(let x = 0; x < canvas.width; x++) {
+                    let val = Math.pow(x/canvas.width, 1.2)*255;
+                    ctx.fillStyle = `rgb(${val},${val},${val})`;
+                    ctx.fillRect(x,0,1,canvas.height);
+                }
 
                 // draw box
                 ctx.fillStyle = "#808080";
