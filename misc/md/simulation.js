@@ -32,15 +32,16 @@ const gaussianRand = () => {
 
 const init = () => {
 
-    for(let X = 0; X < 40; X++) {
-        for(let Y = 0; Y < 40; Y++) {
+    for(let X = 0; X < 20; X++) {
+        for(let Y = 0; Y < 20; Y++) {
 
             // generate position
             const x = (X-20)*INITIAL_DIST+canvas.width/2, y = (Y-20)*INITIAL_DIST+canvas.height/2;
 
             // generate velocity
-            const vx = gaussianRand()*INITIAL_TEMP, vy = gaussianRand()*INITIAL_TEMP;
-           
+            //const vx = gaussianRand()*INITIAL_TEMP, vy = gaussianRand()*INITIAL_TEMP;
+            const vx = Math.random()*INITIAL_TEMP, vy = Math.random()*INITIAL_TEMP;
+
             particles.push({
                 x, y,
                 vx, vy
