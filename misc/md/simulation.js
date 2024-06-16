@@ -12,7 +12,8 @@ const MASS = 1;
 const EPSILON = 50;
 const RADIUS = 10;
 
-const INITIAL_TEMP = 1;
+//const INITIAL_TEMP = 1;
+const INITIAL_VEL = 5;
 const INITIAL_DIST = 15;
 
 // histogram parameters
@@ -39,9 +40,10 @@ const init = () => {
             const x = (X-20)*INITIAL_DIST+canvas.width/2, y = (Y-20)*INITIAL_DIST+canvas.height/2;
 
             // generate velocity
+            const angle = Math.random() * 2 * Math.PI;
+            const vx = Math.cos(angle)*INITIAL_VEL, vy = Math.sin(angle)*INITIAL_VEL;
             //const vx = gaussianRand()*INITIAL_TEMP, vy = gaussianRand()*INITIAL_TEMP;
-            const vx = Math.random()*INITIAL_TEMP, vy = Math.random()*INITIAL_TEMP;
-
+           
             particles.push({
                 x, y,
                 vx, vy
@@ -113,6 +115,8 @@ const computeAcceleration = () => {
     }
 
     for(let i = 0; i < particles.length; i++) {
+
+        // inter-particle interations
         const particle = particles[i];
         for(let j = i + 1; j < particles.length; j++) {
             
@@ -137,6 +141,11 @@ const computeAcceleration = () => {
             totPE += 4*EPSILON*(a*a-a);
 
         }
+
+
+        // boundary interactions
+        
+
     }
 
 };
@@ -174,4 +183,5 @@ const run = () => {
 };
 
 init();
-run();
+draw();
+document.querySelector("begin").addEventListener("click", run);
