@@ -16,6 +16,10 @@
 
                 <h1>about</h1>
                 <div class="bubble">
+                    <div class="blurb">
+                        <div><p><img src="images/christmas.png"></p></div>
+                        <div><p id="christmas-countdown">Christmas is coming!</div>
+                    </div>
                     <p>Hi, I'm Adrian <span id="pronouns">(he/him)</span>. I like making computers do stuff. Welcome to my website!</p>
                     <p><i>Remember Aaron Swartz. Democratize knowledge&mdash;<a href="https://custodians.online/">stand behind Open Access</a> and <a href="https://www.battleforlibraries.com/">defend libraries</a>!</i></p>
                     <p id="links">
@@ -78,6 +82,18 @@
             // eternal september epoch
             const septEpoch = new Date(746845200000);
             document.getElementById("eternal-september").textContent = `September ${Math.floor((Date.now() - septEpoch) / 8.64e7)}, 1993`;
+
+            // countdown
+            const christmas = new Date(2024, 11, 25);
+            const SECOND = 1000, MINUTE = 60*SECOND, HOUR = 60*MINUTE, DAY = 24*HOUR;
+            setInterval(() => {
+                let diff = christmas - Date.now();
+                const days = Math.floor(diff / DAY); diff -= days*DAY;
+                const hours = Math.floor(diff / HOUR); diff -= hours*HOUR;
+                const minutes = Math.floor(diff / MINUTE); diff -= minutes*MINUTE;
+                const seconds= Math.floor(diff / SECOND);
+                document.getElementById("christmas-countdown").textContent = `It will be christmas in ${days} ${days == 1 ? "day" : "days"}, ${hours} ${hours == 1 ? "hour" : "hours"}, ${minutes} ${minutes == 1 ? "minute" : "minutes"}, and ${seconds} ${seconds == 1 ? "second" : "seconds"}.`;
+            }, 100);
 
         </script>
 
