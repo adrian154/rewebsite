@@ -50,7 +50,8 @@
                 }
 
                 // draw box
-                ctx.fillStyle = "#808080";
+                val = Math.pow(0.5, 1.2)*255;
+                ctx.fillStyle = `rgb(${val},${val},${val})`;
                 ctx.fillRect(canvas.width / 2 - BOX_SIZE / 2 + Math.sin(t / 60) * canvas.width * 0.4, canvas.height / 2 - BOX_SIZE / 2, BOX_SIZE, BOX_SIZE)
 
                 t++;

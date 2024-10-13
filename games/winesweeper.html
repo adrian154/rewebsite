@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta property="og:title" content="Minesweeper">
+        <title>Minesweeper</title>
+        <style>
+            html {
+                height: 100%;
+            }
+
+            body {
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+            }
+
+            main {
+                margin: auto;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            }
+
+            span {
+                font-size: 18pt;
+            }
+
+            p {
+                margin: 0.1em;
+            }
+
+            button {
+                margin-top: 0.3em;
+            }
+
+            canvas {
+                user-select: none;
+            }
+        </style>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <main>
+            <h1>WineSweeper</h1>
+            <h2 style="font-weight: normal;"><i>Is Not an Emulator!</i></h2>
+            <span id="timer"></span><span style="float: right" id="flagcount"></span><br>
+            <canvas id="output" tabindex="0"></canvas><br>
+            <select id="select-difficulty"></select>
+            <button onclick="reset()">reset</button>
+            <img src="wine.png" style="display: none" id="wine">
+        </main>
+
+        <script>
+const canvas = document.getElementById("output");
+const ctx = canvas.getContext("2d");
+
+const INITIAL = 0, 
+      PLAY = 1,
+      LOSE = 2,
+      WIN = 3;
+
+const DIFFICULTIES = {
+    "easy": {name: "easy", width: 9, height: 9, mines: 10},
+    "medium": {name: "medium", width: 16, height: 16, mines: 40},
+    "expert": {name: "expert", width: 30, height: 16, mines: 99}
+};
+
+const difficultyPicker = document.getElementById("select-difficulty");
+for(const difficulty in DIFFICULTIES) {
+    const option = document.createElement("option");
+    option.textContent = difficulty;
+    difficultyPicker.append(option);
+}
+
+const createGame = (difficulty, tileSize, spacing) => {
+    
+    const fullTileSize = tileSize + spacing;
+    canvas.width = fullTileSize * difficulty.width;
+    canvas.height = fullTileSize * difficulty.height;
+
+    // generate the board
+    const board = Array.from({length: difficulty.width}, () => Array.from({length: difficulty.height}, () => ({
+        isMine: false
+    })));
+
+    // add mines
+    for(let i = 0; i < difficulty.mines; i++) {
+        while(true) {
+            const x = Math.floor(Math.random() * difficulty.width);
+            const y = Math.floor(Math.random() * difficulty.height);
+            if(!board[x][y].isMine) {
+                board[x][y].isMine = true;
+                break;
+            }
+        }
+    }
+
+    return {
+        board,
+        difficulty: difficulty.name,
+        inBounds: (x, y) => x >= 0 && y >= 0 && x < difficulty.width && y < difficulty.height,
+        state: INITIAL,
+        frames: 0,
+        flagCount: difficulty.mines,
+        tileSize, 
+        spacing,
+        fullTileSize
+    };
+    
+};
+
+let game = null;
+
+const clear = (x, y) => {
+    
+    if(!game.inBounds(x, y))
+        return;
+
+    const tile = game.board[x][y];
+
+    // if the player clicks a mine on their first click, clear it
+    if(game.state == INITIAL) {
+        tile.isMine = false;
+        game.state = PLAY;
+    }
+
+    // if the player clicked a mine, game over
+    if(tile.isMine) {
+        game.state = LOSE;
+        return;
+    } 
+
+    // count number of adjacent mines
+    let mines = 0;
+    for(const dx of [-1, 0, 1]) {
+        for(const dy of [-1, 0, 1]) {
+            if(dx == 0 && dy == 0 || !game.inBounds(x + dx, y + dy)) continue;
+            mines += game.board[x + dx][y + dy].isMine ? 1 : 0;
+        }
+    }
+
+    tile.cleared = true;
+    if(tile.flagged) {
+        tile.flagged = false;
+        game.flagCount++;
+    }
+
+    // if none of the cell's neighbors are mines, recurse
+    if(mines == 0) {
+        for(const dx of [-1, 0, 1]) {
+            for(const dy of [-1, 0, 1]) {
+                if(dx == 0 && dy == 0 || !game.inBounds(x + dx, y + dy)) continue;
+                if(!game.board[x + dx][y + dy].cleared) {
+                    clear(x + dx, y + dy);
+                }
+            }
+        }
+    } else {
+        tile.count = mines;
+    }
+
+};
+
+const formatTime = frames => {
+    const seconds = Math.floor(frames / 60); 
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+};
+
+const step = () => {
+    if(game.state == PLAY) {
+        game.frames++;
+    }
+    document.getElementById("timer").textContent = formatTime(game.frames);
+    requestAnimationFrame(step);
+};
+
+const wine = document.getElementById("wine");
+
+const draw = function() {
+
+    // draw white background
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    for(let x = 0; x < game.board.length; x++) {
+        for(let y = 0; y < game.board[x].length; y++) {
+            
+            const tile = game.board[x][y];
+            const screenX = x * game.fullTileSize,
+                  screenY = y * game.fullTileSize;
+
+            if(tile.cleared) {
+                ctx.fillStyle = "#eeeeee";
+            } else if(game.state == LOSE && tile.isMine) {
+                ctx.fillStyle = "#ff0000";
+            } else {
+                ctx.fillStyle = "#888888";
+            }
+
+            ctx.fillRect(screenX, screenY, game.tileSize, game.tileSize);
+            if(game.state == LOSE && tile.isMine) {
+                ctx.drawImage(wine, screenX, screenY, );
+            }
+
+            // draw flag
+            if(tile.flagged) {
+            
+                ctx.translate(screenX, screenY);
+                ctx.scale(game.tileSize / 16, game.tileSize / 16);
+                
+                // draw stem
+                ctx.fillStyle = "#3f3f3f";
+                ctx.beginPath();
+                ctx.moveTo(2, 12);
+                ctx.lineTo(7, 12);
+                ctx.lineTo(7, 5);
+                ctx.lineTo(9, 5);
+                ctx.lineTo(9, 12);
+                ctx.lineTo(14, 12);
+                ctx.lineTo(14, 14);
+                ctx.lineTo(2, 14);
+                ctx.closePath();
+                ctx.fill();
+
+                // draw flag
+                ctx.fillStyle = "#ff0000";
+                ctx.beginPath();
+                ctx.moveTo(9, 2);
+                ctx.lineTo(2, 5);
+                ctx.lineTo(9, 8);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.resetTransform();
+            
+            }
+
+            // draw mine number
+            if(tile.count) {
+            
+                // change color based on # of neighbors (TODO)
+                ctx.fillStyle = "#000000";
+            
+                ctx.font = "20px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText(tile.count, screenX + game.tileSize / 2, screenY + game.tileSize / 2 + 8);
+            
+            }
+
+        }
+    }
+
+    if(game.state == WIN || game.state == LOSE) {
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, canvas.width, canvas.width);
+        
+        ctx.globalAlpha = 1.0;
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "60px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(game.state == WIN ? "you win" : "you wine", canvas.width / 2, canvas.height / 2);
+
+        // only draw time if the player won
+        ctx.font = "24px Arial";
+        if(game.state == WIN) {
+            ctx.fillText(`your time: ${formatTime(game.frames)}`, canvas.width / 2, canvas.height / 2 + 30);
+        }
+
+        // draw best time
+        const bestTime = localStorage.getItem(game.difficulty);
+        ctx.fillText(`best time: ${bestTime ? formatTime(bestTime) : "\u2014"}`, canvas.width / 2, canvas.height / 2 + 60);
+
+    } 
+
+    document.getElementById("flagcount").textContent = game.flagCount;
+
+};
+
+canvas.addEventListener("mouseup", (event) => {
+
+    if(game.state == PLAY || game.state == INITIAL) {
+
+        // determine which tile was clicked
+        const x = Math.floor(event.offsetX / game.fullTileSize);
+        const y = Math.floor(event.offsetY / game.fullTileSize);
+        const tile = game.board[x][y];
+
+        console.log(event.button);
+        if(event.button == 0 && !tile.flagged) {
+            clear(x, y);
+        } else if(event.button == 2) {
+            if(!tile.cleared) {
+                if(tile.flagged = !tile.flagged)
+                    game.flagCount--;
+                else
+                    game.flagCount++;
+            }
+        } else if(event.button == 1) {
+            if(tile.cleared) {
+
+                let ok = true;
+                for(let dx = -1; dx <= 1; dx++) {
+                    for(let dy = -1; dy <= 1; dy++) {
+                        if(x + dx < 0 || y + dy < 0 || x + dx > game.board.length || y + dy > game.board[0].length) continue;
+                        if(game.board[x+dx][y+dy].isMine != game.board[x+dx][y+dy].flagged) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                }
+
+                if(ok) {
+
+                }
+
+            }
+        }
+
+        // if every tile was cleared, win
+        let numUncleared = 0;
+        for(const col of game.board) {
+            for(const tile of col) {
+                if(!tile.isMine && !tile.cleared) {
+                    numUncleared++;
+                }
+            }
+        }
+
+        if(numUncleared == 0) {
+            
+            game.state = WIN;
+            
+            // check if this is a best time
+            const bestTime = localStorage.getItem(game.difficulty);
+            if(bestTime == null || bestTime > game.frames) {
+                localStorage.setItem(game.difficulty, game.frames);
+            }
+
+        }
+
+        // redraw
+        draw();
+
+    }
+
+    event.preventDefault();
+    return false;
+
+});
+
+canvas.addEventListener("contextmenu", event => {
+    event.preventDefault();
+});
+
+const reset = () => {
+    game = createGame(DIFFICULTIES[difficultyPicker.value], 28, 2);
+    draw();
+};
+
+reset();
+step();
+
+        </script>
+    </body>
+</html>
