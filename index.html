@@ -11,16 +11,12 @@
     </head>
     <body>
         <div id="background"></div>
-        <div id="vertical-container">
+        <div id="content">
             <div id="inner-col">
 
                 <h1>about</h1>
                 <div class="bubble">
-                    <div class="blurb">
-                        <div><p><img src="images/christmas.png"></p></div>
-                        <div><p id="christmas-countdown">Christmas is coming!</div>
-                    </div>
-                    <p>Hi, I'm Adrian <span id="pronouns">(he/him)</span>. I like making computers do stuff. Welcome to my website!</p>
+                    <p>Hi, I'm Adrian <span id="pronouns">(he/him/any)</span>. I like making computers do stuff. Welcome to my website!</p>
                     <p><i>Remember Aaron Swartz. Democratize knowledge&mdash;<a href="https://custodians.online/">stand behind Open Access</a> and <a href="https://www.battleforlibraries.com/">defend libraries</a>!</i></p>
                     <p id="links">
                         <a href="https://blog.bithole.dev/">blog</a> &bull;
@@ -44,23 +40,51 @@
 
                 <h1>people</h1>
                 <div class="bubble">
-                    <p>These guys also make some pretty cool stuff!</p>
+                    <p>These guys also make some pretty cool stuff, go check them out!</p>
                     <ul>
                         <li><a href="https://jayp570.github.io/">@jayp570</a></li>
-                        <li><a href="https://mee42.dev/">@Mee42</a></li>
                         <li><a href="https://akarsho.github.io/">@akarsho</a></li>
                         <li><a href="https://xz.ax/">@chop0</a></li>
-                        <li><a href="https://aplet.me/">@Aplet123</a></li>
-                        <li><a href="https://grian.dev/">@grian32</a></li>
                         <li><a href="https://arhan.sh/">@ArhanChaudhary</a></li>
                         <li><a href="https://gitlab.com/bbworld1">@bbworld</a></li>
-                        <li><a href="https://github.com/ry755/">@ryfox755</a></li>
+                        <li><a href="https://foxboy.dev/">@ryfox755</a></li>
+                        <li><a href="https://mothcompute.lilylenora.net/">@mothcompute</a></li>
+                        <li><a href="https://sanspapyrus683.github.io/index.html">@SansPapyrus683</a></li>
                         <li><a href="https://hana-qq.neocities.org/">@hanamoroll</a> &lt;3</li>
+                    </ul>
+                    <p>dead links :( but still cool</p>
+                    <ul>
+                        <li><a href="https://carson.sh/">@Mee42</a></li>
+                        <li><a href="https://aplet.me/">@Aplet123</a></li>
+                        <li><a href="https://grian.dev/">@grian32</a></li>
                     </ul>
                 </div>
 
-                <p id="copyright">&copy; 2022 Adrian Zhang &bull; <a href="javascript:void(toggle())">toggle party mode</a></span><span id="eternal-september"></span></p>
+                <p id="copyright">&copy; 2022 Adrian Zhang &bull; <a href="javascript:void(toggle())">toggle party mode</a><a href="images/internet-is-full.jpg"><span id="eternal-september"></span></a></p>
                 
+            </div>
+            <div id="side-col">
+                <h1>&nbsp;</h1>
+
+                <!-- redo this -->
+                <div class="blurb">
+                    <div><p><img src="images/christmas.png"></p></div>
+                    <div style="margin: auto;"><p id="christmas-countdown">Christmas is coming!</div>
+                </div>
+
+                <span style="font-variant: small-caps; opacity: 50%;">currently listening to</span>
+                <div id="now-listening-to">
+                    <img id="album" src="images/muted.png">
+                    <div id="not-listening">
+                        (no song info)
+                    </div>
+                    <div id="song-info" style="display: none">
+                        <a id="song-name"></a>
+                        <br>
+                        by <span id="artist-name"></span>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -92,8 +116,24 @@
                 const hours = Math.floor(diff / HOUR); diff -= hours*HOUR;
                 const minutes = Math.floor(diff / MINUTE); diff -= minutes*MINUTE;
                 const seconds= Math.floor(diff / SECOND);
-                document.getElementById("christmas-countdown").textContent = `It will be christmas in ${days} ${days == 1 ? "day" : "days"}, ${hours} ${hours == 1 ? "hour" : "hours"}, ${minutes} ${minutes == 1 ? "minute" : "minutes"}, and ${seconds} ${seconds == 1 ? "second" : "seconds"}.`;
+                document.getElementById("christmas-countdown").textContent = `It will be Christmas in ${days} ${days == 1 ? "day" : "days"}, ${hours} ${hours == 1 ? "hour" : "hours"}, ${minutes} ${minutes == 1 ? "minute" : "minutes"}, and ${seconds} ${seconds == 1 ? "second" : "seconds"}.`;
             }, 100);
+
+            // load current song 
+            const album = document.getElementById("album"),
+                  songName = document.getElementById("song-name"),
+                  artistName = document.getElementById("artist-name");
+            
+            fetch("https://apis.bithole.dev/song").then(resp => resp.json()).then(song => {
+                if(song) {
+                    document.getElementById("not-listening").style.display = "none";
+                    document.getElementById("song-info").style.display = "";
+                    album.src = song.iconUrl;
+                    songName.textContent = song.title;
+                    songName.href = song.songUrl;
+                    artistName.textContent = song.artist;
+                }
+            });
 
         </script>
 
