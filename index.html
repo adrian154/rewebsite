@@ -75,7 +75,7 @@
                 </div>
 
                 <span style="font-variant: small-caps; opacity: 50%;">currently listening to</span>
-                <div id="now-listening-to">
+                <div id="now-listening-to" class="blob">
                     <img id="album" src="images/nomusic.png" style="margin: auto 0;">
                     <div id="not-listening">
                         (not available)
@@ -84,6 +84,14 @@
                         <a id="song-name"></a>
                         <br>
                         by <span id="artist-name"></span>
+                    </div>
+                </div>
+
+                <span style="font-variant: small-caps; opacity: 50%;">server uptime</span>
+                <div id="uptime-blob" class="blob">
+                    <img src="images/server.png">
+                    <div>
+                        <span id="uptime">Couldn't retrieve uptime, sorry!</span>
                     </div>
                 </div>
 
@@ -135,6 +143,11 @@
                     songName.href = song.songUrl;
                     artistName.textContent = song.artist;
                 }
+            });
+
+            fetch("https://apis.bithole.dev/uptime").then(resp => resp.json()).then(uptime => {
+                const days = Math.floor(uptime/24/60/60);
+                document.getElementById("uptime").textContent = `Server has been hard at work for ${days} ${days == 1 ? 'day' : 'days'} :)`;
             });
 
         </script>
