@@ -167,7 +167,7 @@ td:first-child {
 .blob > img {
     height: 4em;
     max-width: initial;
-    margin: initial;
+    margin: auto;
     border-radius: 3px;
 }
 
@@ -209,4 +209,9 @@ td:first-child {
 /* not used on main page, but the auxiliary indexes still use this class */
 #vertical-container {
     margin: auto;
+}
+
+.sidebar-label {
+    font-variant: small-caps;
+    opacity: 50%;
 }

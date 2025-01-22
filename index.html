@@ -81,7 +81,7 @@
                     <div style="margin: auto;"><p>Happy New Year! Here's to a wonderful 2025 :)</div>
                 </div>
 
-                <span style="font-variant: small-caps; opacity: 50%;">currently listening to</span>
+                <span class="sidebar-label">currently listening to</span>
                 <div id="now-listening-to" class="blob">
                     <img id="album" src="images/nomusic.png" style="margin: auto 0;">
                     <div id="not-listening">
@@ -94,12 +94,18 @@
                     </div>
                 </div>
 
-                <span style="font-variant: small-caps; opacity: 50%;">server uptime</span>
+                <span class="sidebar-label">server uptime</span>
                 <div id="uptime-blob" class="blob">
                     <img src="images/server.png">
                     <div>
                         <span id="uptime">Couldn't retrieve uptime, sorry!</span>
                     </div>
+                </div>
+
+                <span class="sidebar-label">join nmdp</span>
+                <div class="blob">
+                    <img src="images/hsc.jpg">
+                    <div style="font-size: 0.9em;">Every year, 3,000 Americans die waiting for a bone marrow transplant. <a href="https://my.bethematch.org/s/join">Join the registry for free</a>&mdash;you could save a life!</div>
                 </div>
 
             </div>
@@ -154,7 +160,7 @@
 
             fetch("https://apis.bithole.dev/uptime").then(resp => resp.json()).then(uptime => {
                 const days = Math.floor(uptime/24/60/60);
-                document.getElementById("uptime").textContent = `Server has been hard at work for ${days} ${days == 1 ? 'day' : 'days'} :)`;
+                document.getElementById("uptime").textContent = `Server has been online for ${days} ${days == 1 ? 'day' : 'days'} :)`;
             });
 
         </script>
