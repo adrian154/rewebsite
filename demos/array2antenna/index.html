@@ -5,14 +5,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
             body {
+                width: 100vw;
+                height: 100vh;
+                margin: 0;
                 display: flex;
                 font-family: sans-serif;
             }
             
             main {
-                max-width: 40em;
+                max-width: 35em;
                 max-height: 90%;
                 margin: auto;
+                padding: 1.5em;
             }
 
             #plot {
@@ -32,14 +36,20 @@
             datalist option {
                 font-size: 11pt;
             }
+
+            label {
+                display: inline-block;
+                font-weight: bold;
+                margin-top: 1.5em;
+            }
         </style>
     </head>
     <body>
         <main>
             <canvas id="plot"></canvas>
+            <label for="baseline">distance between sources</label>
             <input type="range" id="baseline" max="1" step="any" list="steplist">
-            <datalist id="steplist">
-            </datalist>
+            <datalist id="steplist"></datalist>
         </main>
         <script src="two-element-array.js"></script>
     </body>
