@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Two-Element Array Antenna</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body {
+                display: flex;
+                font-family: sans-serif;
+            }
+            
+            main {
+                max-width: 40em;
+                max-height: 90%;
+                margin: auto;
+            }
+
+            #plot {
+                width: 100%;
+            }
+
+            #baseline {
+                width: 100%;
+            }
+
+            datalist {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            datalist option {
+                font-size: 11pt;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <canvas id="plot"></canvas>
+            <input type="range" id="baseline" max="1" step="any" list="steplist">
+            <datalist id="steplist">
+            </datalist>
+        </main>
+        <script src="two-element-array.js"></script>
+    </body>
+</html>
