@@ -48,7 +48,7 @@ const plot = () => {
     ctx.fillStyle = "#000000ba"
     ctx.textBaseline = "middle";
     for(let deg = 0; deg < 360; deg += 30) {
-        const angle = deg*Math.PI/180;
+        const angle = deg*Math.PI/180 - Math.PI/2;
         const cosAngle = Math.cos(angle);
         const sinAngle = Math.sin(angle);
         ctx.beginPath();
