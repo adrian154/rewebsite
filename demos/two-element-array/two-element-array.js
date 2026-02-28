@@ -1,8 +1,10 @@
 const canvas = document.getElementById("plot"),
       ctx = canvas.getContext("2d");
 
-const slider = document.getElementById("baseline");
-const datalist = document.getElementById("steplist");
+const distanceSlider = document.getElementById("distance");
+const phaseSlider = document.getElementById("phase");
+const distanceDatalist = document.getElementById("distance-steplist");
+const phaseDatalist = document.getElementById("phase-steplist");
 
 const resizeCanvas = () => {
     const rect = canvas.getBoundingClientRect();
@@ -17,22 +19,30 @@ document.addEventListener("readystatechange", resizeCanvas);
 // angular resolution of plot
 const numPoints = 1000;
 
-// distance between sources, over wavelength
-let dRel = 0.25;
-
-// populate datalist
+// populate datalists
 for(let i = 0; i <= 8; i++) {
-    const option = document.createElement("option");
-    option.value = i / 8;
-    option.textContent = `${i*2/8}\u03bb`;
-    datalist.append(option);
+
+    const distanceTick = document.createElement("option");
+    distanceTick.value = i / 8;
+    distanceTick.textContent = `${i*2/8}\u03bb`;
+    distanceDatalist.append(distanceTick);
+
+    const phaseTick = document.createElement("option");
+    phaseTick.value = i / 8;
+    phaseTick.textContent = `${i*2/8}\u03c0`;
+    phaseDatalist.append(phaseTick);
+
 }
+
 
 const plot = () => {
         
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const maxRadius = 0.9 * canvas.width/2;
+
+    const dRel = distanceSlider.value/distanceSlider.max * 2;
+    const phaseDiff = phaseSlider.value/phaseSlider.max * 2 * Math.PI;
 
     // plot grid circles
     ctx.strokeStyle = "#00000020"
@@ -65,8 +75,8 @@ const plot = () => {
     for(let i = 0; i < numPoints; i++) {
         
         const angle = i / numPoints * 2 * Math.PI;
-        const phase = 2*Math.PI*Math.cos(angle)*dRel;
-        const power = Math.cos(phase);
+        const phase = 2*Math.PI*Math.cos(angle)*dRel + phaseDiff;
+        const power = Math.abs(Math.cos(phase/2));
 
         const x = Math.cos(angle) * power * maxRadius + canvas.width/2;
         const y = Math.sin(angle) * power * maxRadius + canvas.height/2;
@@ -82,7 +92,5 @@ const plot = () => {
 
 };
 
-slider.addEventListener("input", () => {
-    dRel = slider.value / slider.max * 2;
-    plot();
-});
+distanceSlider.addEventListener("input", plot);
+phaseSlider.addEventListener("input", plot);
