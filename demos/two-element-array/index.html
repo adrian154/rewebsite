@@ -16,7 +16,7 @@
             }
             
             main {
-                max-width: 32em;
+                max-width: 35em;
                 margin: auto;
                 padding: 1.5em;
             }
@@ -44,11 +44,20 @@
                 font-weight: bold;
                 margin-top: 1.5em;
             }
+
+            p.footer {
+                text-align: center;
+                opacity: 50%;
+                font-size: 11pt;
+                margin-top: 1em; 
+            }
         </style>
     </head>
     <body>
         <main>
             
+            <h1>Radiation Pattern of a Two-Element Array</h1>
+
             <canvas id="plot"></canvas>
             
             <label for="distance">distance between sources</label>
@@ -58,6 +67,8 @@
             <label for="phase">phase difference</label>
             <input type="range" id="phase" max="1" step="any" value="0" list="phase-steplist">
             <datalist id="phase-steplist"></datalist>
+
+            <p class="footer">&copy; 2026 Adrian Zhang &bull; <a href="https://github.com/adrian154/rewebsite/tree/main/demos/two-element-array">source code</a></p>
 
         </main>
         <script src="two-element-array.js"></script>
