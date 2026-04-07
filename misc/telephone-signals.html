@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+        <title>DTMF Dialer</title>
+        <style>
+            body {
+                max-width: 20em;
+                margin: 2em auto;
+            }
+
+            #buttons {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 1em;
+            }
+
+            #buttons button {
+                aspect-ratio: 1/1;
+                border: none;
+                color: white;
+                font-family: monospace;
+                font-size: 13pt;
+                
+                background-color: #5a6864;
+                transition: all 0.1s linear;
+                box-shadow: 0px 5px 2px black;
+
+            }
+
+            #buttons button:active {
+                box-shadow: 0px 2px 2px black;
+                transform: translateY(3px);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="buttons"></div>
+        <script>
+            
+            const DTMF_HI = [1209, 1336, 1477, 1633];
+            const DTMF_LO = [697, 770, 852, 941];
+            const DTMF_KEYS = [
+                ["1", "2", "3", "A"],
+                ["4", "5", "6", "B"], 
+                ["7", "8", "9", "C"], 
+                ["\u26b9", "0", "#", "D"]
+            ];
+
+            const DTMF_LABELS = [
+                ["", "ABC", "DEF", ""],
+                ["GHI", "JKL", "MNO", ""],
+                ["PRS", "TUV", "WXY", ""],
+                ["", "", "", ""]
+            ];
+
+            const audioCtx = new AudioContext();
+            
+            const makeOscillator = freq => {
+                
+                const osc = audioCtx.createOscillator();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                osc.start();
+
+                const gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                return {
+                    play: () => {
+                        gain.gain.value = 0;
+                        gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.006);
+                    },
+                    stop: () => {
+                        gain.gain.value = 0.2;
+                        gain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.006);
+                    }
+                };
+
+            };
+
+            const dtmfHiOscs = DTMF_HI.map(makeOscillator);
+            const dtmfLoOscs = DTMF_LO.map(makeOscillator);
+            const keyMap = {};
+            for(const y in DTMF_KEYS) {
+                for(const x in DTMF_KEYS[y]) {
+                    keyMap[DTMF_KEYS[y][x]] = {
+                        play: () => {
+                            dtmfHiOscs[x].play();
+                            dtmfLoOscs[y].play();
+                        },
+                        stop: () => {
+                            dtmfHiOscs[x].stop();
+                            dtmfLoOscs[y].stop();
+                        }
+                    };
+                }
+            }
+            
+            const buttonsDiv = document.getElementById("buttons");
+            for(let y in DTMF_KEYS) {
+                for(let x in DTMF_KEYS) {
+                    
+                    const keyName = DTMF_KEYS[y][x];
+                    const key = keyMap[keyName];
+
+                    const button = document.createElement("button");
+                    if(DTMF_LABELS[y][x])
+                        button.append(DTMF_LABELS[y][x], document.createElement("br"), keyName);
+                    else
+                        button.append(keyName);
+                    buttonsDiv.append(button);
+                    
+                    button.addEventListener("mousedown", () => {
+                        if(audioCtx.state === "suspended") {
+                            audioCtx.resume();
+                        }
+                        key.play();
+                    });
+
+                    button.addEventListener("mouseup", () => {
+                        key.stop();
+                    });
+
+                }
+            }
+
+            window.addEventListener("keydown", event => {
+                const keyUpper = event.key.toUpperCase();
+                if(keyMap[keyUpper]) {
+                    keyMap[keyUpper].play();
+                }
+            });
+
+            window.addEventListener("keyup", event => {
+                const keyUpper = event.key.toUpperCase();
+                if(keyMap[keyUpper]) {
+                    keyMap[keyUpper].stop();
+                }
+            });
+            
+        </script>
+    </body>
+</html>
