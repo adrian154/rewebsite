@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>fox time</title>
+        <style>
+            body {
+                font-family: monospace;
+                background-color: #000000;
+                color: #ffffff;
+                height: 100vh;
+                margin: 0;
+                display: flex;
+            }
+
+            h1 {
+                font-size: 36pt;
+            }
+
+            div {
+                display: flex;
+                margin: auto;
+            }
+
+            #fox {
+                flex-direction: column;
+            }
+
+            #fox p {
+                text-align: center;
+                font-size: 16pt;
+            }
+
+            video {
+                aspect-ratio: 1/1;
+                max-width: 90%;
+                max-height: 90%;
+                margin: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="initial">
+            <h1>click anywhere to begin</h1>
+        </div>
+        <div id="fox" style="display: none">
+            <p>you have foxed for: <span id="time">0.0</span> seconds</p>
+            <video loop muted>
+                <source src="fox.mp4">
+            </video>
+        </div>
+        <script>
+            const sound = new Audio("music.ogg");
+            const soundCopy = sound.cloneNode();
+
+            let playing = sound;
+            let nextToPlay = soundCopy;
+            const OVERLAP = 0.02;
+            const playSound = () => {
+                nextToPlay.play();
+                [playing, nextToPlay] = [nextToPlay, playing];
+                setTimeout(playSound, (sound.duration - OVERLAP)*1000);
+            };
+
+            const runTimer = () => {
+                const start = Date.now();
+                const step = () => {
+                    document.getElementById("time").textContent = Number((Date.now()-start)/1000).toFixed(2);
+                    requestAnimationFrame(step);
+                };
+                step();
+            };
+
+            let running = false;
+            window.addEventListener("click", () => {
+                if(running) {
+                    return;
+                }
+                running = true;
+                document.getElementById("initial").style.display = "none";
+                document.getElementById("fox").style.display = "";
+                document.querySelector("video").play();
+                playSound();
+                runTimer();
+            });
+        </script>
+    </body>
+</html>
