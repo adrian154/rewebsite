@@ -55,6 +55,7 @@
 
             const ctx = new AudioContext();
             const playSound = () => {
+                ctx.resume();
                 fetch("fox.mp3")
                     .then(resp => resp.arrayBuffer())
                     .then(buffer => ctx.decodeAudioData(buffer))
