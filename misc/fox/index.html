@@ -53,7 +53,9 @@
         </div>
         <script>
 
-            navigator.audioSession?.type = "playback";
+            if("audioSession" in navigator) {
+                navigator.audioSession.type = "playback";
+            }
 
             const ctx = new AudioContext();
             const playSound = () => {
