@@ -53,6 +53,8 @@
         </div>
         <script>
 
+            navigator.audioSession.type = "playback";
+
             const ctx = new AudioContext();
             const playSound = () => {
                 ctx.resume();
