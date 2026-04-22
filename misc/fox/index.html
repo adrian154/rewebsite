@@ -61,7 +61,7 @@
             const playSound = () => {
                 nextToPlay.play();
                 [playing, nextToPlay] = [nextToPlay, playing];
-                setTimeout(playSound, (sound.duration - OVERLAP)*1000);
+                setTimeout(playSound, (sound.duration-0.01)*1000);
             };
 
             const runTimer = () => {
@@ -74,7 +74,7 @@
             };
 
             let running = false;
-            window.addEventListener("click", () => {
+            const run = () => {
                 if(running) {
                     return;
                 }
@@ -84,7 +84,10 @@
                 document.querySelector("video").play();
                 playSound();
                 runTimer();
-            });
+            };
+
+            window.addEventListener("click", run);
+            window.addEventListener("touchstart", run);
         </script>
     </body>
 </html>
