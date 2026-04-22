@@ -64,18 +64,21 @@
                     .then(resp => resp.arrayBuffer())
                     .then(buffer => ctx.decodeAudioData(buffer))
                     .then(data => {
-                        
-                        let playTime = ctx.currentTime + 0.2;
-                        const queueSound = () => {
+
+                        let playTime = ctx.currentTime;
+                        const queueSound = playbackTime => {
+                            console.log("h");
                             const source = new AudioBufferSourceNode(ctx);
                             source.buffer = data;
                             source.connect(ctx.destination);
                             source.start(playTime);
                             playTime += data.duration;
-                            setTimeout(queueSound, data.duration);
                         };
 
                         queueSound();
+                        queueSound();
+                        queueSound();
+                        setInterval(queueSound, data.duration*1000);
 
                     });
             };
