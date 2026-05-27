@@ -67,7 +67,6 @@
 
                         let playTime = ctx.currentTime;
                         const queueSound = playbackTime => {
-                            console.log("h");
                             const source = new AudioBufferSourceNode(ctx);
                             source.buffer = data;
                             source.connect(ctx.destination);
